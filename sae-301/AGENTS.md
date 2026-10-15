@@ -39,7 +39,7 @@ En cas de conflit ou de doute entre ces sources, demander à PIDEILLOU.
 
 ## Fonctionnement
 - Une itération = une user story = une branche. Suivre l'ordre du README et ne pas le modifier sans l'accord de PIDEILLOU.
-- PIDEILLOU fait lui-même tous les git push après chaque itération (voir .claude/rules/git-workflow.md).
+- En fin de user story, l'agent commit et pousse sur une nouvelle branche cumulative US-NNN (numéro d'ordre de la user story, qui contient aussi les précédentes), uniquement à la demande de PIDEILLOU (voir .claude/rules/git-workflow.md).
 - Une user story n'est terminée que si ses critères d'acceptation, sa Definition of Done spécifique et la Definition of Done commune sont remplis (voir .claude/rules/qualite-livrable.md).
 - La qualité prime sur la quantité : mieux vaut moins de user stories, bien faites.
 
@@ -54,7 +54,7 @@ En cas de conflit ou de doute entre ces sources, demander à PIDEILLOU.
 ## Rules (.claude/rules/)
 - mvc-javascript.md : architecture MVC, front et back
 - tailwind-css.md : style, charte Razer, responsive
-- git-workflow.md : branches, commits, pushs faits par PIDEILLOU
+- git-workflow.md : branches US-NNN, commits et push à la demande de PIDEILLOU
 - qualite-livrable.md : Definition of Done commune
 - securite.md : authentification, sessions, droits, validation, identifiants
 - donnees-et-stock.md : commandes, options, variantes, stock, schéma SQL
