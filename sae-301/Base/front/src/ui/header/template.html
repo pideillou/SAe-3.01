@@ -1,6 +1,10 @@
 <header class="border-b border-bordure bg-fond">
   <div class="mx-auto flex h-18 max-w-300 items-center gap-5 px-5 md:h-22 md:gap-12 md:px-8">
-    <a href="/" data-link class="h-full shrink-0">
+    <button type="button" data-action="ouvrir-menu" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="menu-mobile" class="shrink-0 md:hidden">
+      <img src="{{iconeMenu}}" width="24" height="24" alt="" class="size-6" />
+    </button>
+
+    <a href="/" data-link class="h-full shrink-0 py-0.5">
       <img src="{{logo}}" width="442" height="176" alt="Razer, retour au catalogue" class="h-full w-auto" />
     </a>
 
@@ -8,10 +12,61 @@
 
     <!-- Le routeur pose aria-current="page" sur le lien de la page affichée. -->
     <nav aria-label="Navigation principale" class="ml-auto flex items-center gap-6 text-sm">
-      <a href="/admin" data-link class="flex items-center gap-2 text-texte transition-colors hover:text-razer aria-[current=page]:text-razer">
+      <a href="/admin" data-link class="hidden items-center gap-2 text-texte transition-colors hover:text-razer aria-[current=page]:text-razer md:flex">
         <img src="{{iconeAdmin}}" width="24" height="24" alt="" class="size-6" />
-        <span class="sr-only md:not-sr-only">Admin</span>
+        Admin
+      </a>
+      <a href="/espace-personnel" data-link class="hidden items-center gap-2 text-texte transition-colors hover:text-razer aria-[current=page]:text-razer md:flex">
+        <img src="{{iconeUtilisateur}}" width="20" height="20" alt="" class="size-5" />
+        Espace personnel
+      </a>
+      <a href="/panier" data-link class="flex items-center gap-2 text-texte transition-colors hover:text-razer aria-[current=page]:text-razer">
+        <img src="{{iconePanier}}" width="20" height="20" alt="" class="size-5" />
+        <span class="sr-only md:not-sr-only">Panier</span>
+        <span data-compteur-panier class="flex size-5.5 items-center justify-center bg-razer text-xs font-bold text-fond">0</span>
       </a>
     </nav>
+  </div>
+
+  <!-- Menu mobile (Figma : « Menu burger ouvert »), plein écran. -->
+  <div id="menu-mobile" data-menu role="dialog" aria-modal="true" aria-label="Menu" hidden class="fixed inset-0 z-50 flex flex-col gap-7 overflow-y-auto border-b border-bordure bg-surface px-6 pt-12 pb-5 md:hidden">
+    <div class="flex items-center justify-between">
+      <p class="font-titres text-marque-menu font-semibold text-razer">RAZER</p>
+      <button type="button" data-action="fermer-menu" aria-label="Fermer le menu" class="shrink-0">
+        <img src="{{iconeFermer}}" width="24" height="24" alt="" class="size-6" />
+      </button>
+    </div>
+
+    <p class="font-titres text-2xl leading-tight font-semibold uppercase">Catalogue</p>
+
+    <ul data-menu-categories class="flex flex-col">
+      <!-- Rempli par HeaderView.afficherCategories dès que l'API a répondu. -->
+    </ul>
+
+    <ul class="flex flex-col gap-1 text-[0.9375rem]">
+      <li>
+        <a href="/panier" data-link class="flex h-13 items-center gap-3 text-texte">
+          <img src="{{iconePanierVert}}" width="20" height="20" alt="" class="size-5" />
+          <span class="flex-1">Panier</span>
+          <span data-compteur-panier class="text-sm text-razer">0</span>
+        </a>
+      </li>
+      <li>
+        <a href="/espace-personnel" data-link class="flex h-13 items-center gap-3 text-texte">
+          <img src="{{iconeUtilisateurVert}}" width="20" height="20" alt="" class="size-5" />
+          Espace personnel
+        </a>
+      </li>
+      <li>
+        <a href="/historique" data-link class="flex h-13 items-center gap-3 text-texte">
+          <img src="{{iconeHistorique}}" width="20" height="20" alt="" class="size-5" />
+          Historique des commandes
+        </a>
+      </li>
+    </ul>
+
+    <hr class="border-bordure" />
+
+    <p class="text-xs text-texte-secondaire">Retrait en magasin uniquement. Aucun paiement en ligne.</p>
   </div>
 </header>

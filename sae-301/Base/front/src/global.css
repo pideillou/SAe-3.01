@@ -51,8 +51,16 @@
   --text-titre-page-mobile: 1.75rem; /* 28 px */
   --text-titre-page: 2.5rem; /* 40 px */
 
-  /* Proportions des photos produit fournies par Razer (767 × 511). */
+  --text-note: 0.625rem; /* 10 px */
+  --text-marque-menu: 1.6875rem; /* 27 px */
+  --text-titre-fiche-mobile: 2.125rem; /* 34 px */
+  --text-titre-fiche: 2.875rem; /* 46 px */
+  --text-prix-fiche: 2.25rem; /* 36 px */
+
+  /* Proportions des photos produit fournies par Razer (767 × 511), et de la
+     grande image de la fiche produit (588 × 435 dans le Figma). */
   --aspect-photo: 3 / 2;
+  --aspect-fiche: 4 / 3;
 }
 
 @layer base {
