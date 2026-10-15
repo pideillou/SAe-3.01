@@ -83,6 +83,8 @@ CREATE TABLE produit (
     slug         VARCHAR(140)      NOT NULL,
     accroche     VARCHAR(255)          NULL,
     description  TEXT              NOT NULL,
+    -- Points forts affichés sous la fiche, un par ligne (3 chez Razer).
+    caracteristiques TEXT              NULL,
     prix         DECIMAL(8,2)      NOT NULL,
 
     PRIMARY KEY (id),
@@ -238,7 +240,7 @@ INSERT INTO categorie (id, nom, slug, description, ordre) VALUES
 -- Page d'achat : https://www.razer.com/fr-fr/gaming-keyboards/razer-blackwidow-v4/RZ03-04690500-R3F1
 -- Prix relevés le 15/10/2026.
 -- ---------------------------------------------------------------------------
-INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, prix) VALUES
+INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, caracteristiques, prix) VALUES
     (1, 1, 'Razer BlackWidow V4', 'razer-blackwidow-v4', 'Clavier gaming mécanique avec Razer Chroma™ RGB',
      'Exploitez votre setup de manière optimale avec le centre de commande parfait pour votre PC. Accédez aux commandes et raccourcis avancés grâce aux touches macro et multimédias : l''immersion est totale avec ce clavier mécanique sophistiqué, doté de la technologie Razer Chroma™ RGB.
 
@@ -265,6 +267,9 @@ Construit pour durer plus longtemps avec une finition raffinée.
 
 CÂBLE TYPE C AMOVIBLE
 Fourni avec un câble tressé de type A vers type C pour la connexion du clavier.',
+     'Switches mécaniques verts Razer™
+Éclairage sous-jacent sur les 2 côtés et éclairage par touche
+6 touches macros dédiées',
      189.99);
 
 INSERT INTO option_produit (id, produit_id, nom, ordre) VALUES
@@ -309,7 +314,7 @@ INSERT INTO image_produit (id, produit_id, variante_id, chemin_moyen, chemin_gra
 -- Page d'achat : https://www.razer.com/fr-fr/gaming-keyboards/razer-blackwidow-v4-x/RZ03-04700500-R3F1
 -- Prix relevés le 15/10/2026.
 -- ---------------------------------------------------------------------------
-INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, prix) VALUES
+INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, caracteristiques, prix) VALUES
     (2, 1, 'Razer BlackWidow V4 X', 'razer-blackwidow-v4-x', 'Clavier gaming mécanique avec Razer Chroma™ RGB',
      'Améliorez le cœur de votre setup avec le Razer BlackWidow V4 X, un clavier gaming mécanique de pointe conçu pour offrir un contrôle total. Exécutez instantanément des commandes avancées et des raccourcis avec un ensemble de touches macro et multimédias, tout en faisant passer votre immersion au niveau supérieur avec Razer Chroma™ RGB.
 
@@ -333,6 +338,9 @@ Avec une couche de mousse spéciale sous le circuit imprimé et des stabilisateu
 
 Razer™ Snap Tap
 Avec Razer Synapse 4 , vous pouvez donner la priorité à la dernière entrée de deux touches sélectionnées sans avoir à relâcher la première. Bénéficiez d’une meilleure réactivité pour des changements de direction quasi-instantanés.',
+     'Switchs mécaniques verts Razer™
+6 touches macros dédiées
+Molette multifonction et touches multimédias secondaires',
      149.99);
 
 INSERT INTO option_produit (id, produit_id, nom, ordre) VALUES
@@ -400,7 +408,7 @@ INSERT INTO image_produit (id, produit_id, variante_id, chemin_moyen, chemin_gra
 -- Page d'achat : https://www.razer.com/fr-fr/gaming-keyboards/razer-huntsman-v3-pro/RZ03-04970500-R3F1
 -- Prix relevés le 15/10/2026.
 -- ---------------------------------------------------------------------------
-INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, prix) VALUES
+INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, caracteristiques, prix) VALUES
     (3, 1, 'Razer Huntsman V3 Pro', 'razer-huntsman-v3-pro', 'Clavier eSport analogique à switches optiques',
      'Élevez instantanément votre niveau de jeu avec le meilleur clavier eSport, le Razer Huntsman V3 Pro. Grâce aux modes Razer™ Snap Tap et Déclenchement rapide, exécutez des entrées plus réactives à des vitesses incroyables. Apportez davantage de personnalisation avec une activation réglable pour optimiser votre avantage concurrentiel.
 
@@ -427,6 +435,9 @@ Appuyez simplement sur FN + Tab pour ajuster le point d’activation du clavier.
 
 MODE DE RÉGLAGE RAPIDE DU DÉCLENCHEMENT RAPIDE
 Appuyez simplement sur FN + Caps Lk pour commencer à ajuster les paramètres de déclenchement rapide et appuyez sur Caps Lk pour activer ou désactiver le mode déclenchement rapide. Ensuite, appuyez sur n’importe quelle touche pour tester vos paramètres de déclenchement rapide actuels et utilisez le bouton numérique ou les flèches de direction pour ajuster les réglages en conséquence. Appuyez sur Esc pour quitter le mode et enregistrer vos paramètres dans la mémoire intégrée.',
+     'Mode déclenchement rapide
+Razer™ Frappe instantanée
+Activation réglable',
      209.99);
 
 INSERT INTO option_produit (id, produit_id, nom, ordre) VALUES
@@ -509,7 +520,7 @@ INSERT INTO image_produit (id, produit_id, variante_id, chemin_moyen, chemin_gra
 -- Page d'achat : https://www.razer.com/fr-fr/gaming-keyboards/razer-ornata-v3/RZ03-04460500-R3F1
 -- Prix relevés le 15/10/2026.
 -- ---------------------------------------------------------------------------
-INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, prix) VALUES
+INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, caracteristiques, prix) VALUES
     (4, 1, 'Razer Ornata V3', 'razer-ornata-v3', 'Clavier RGB à méca-membrane au profil bas',
      'Découvrez le Razer Ornata V3, un clavier de gaming ergonomique au profil bas alimenté par Razer Chroma™ RGB. Doté d’un nouveau format ultra fin, de touches plus durables et de switchs méca-membrane uniques, améliorez votre rendement au travail et dans vos jeux avec ce clavier hybride qui combine le meilleur des deux mondes.
 
@@ -533,6 +544,9 @@ Grâce aux 16,8 millions de couleurs et à une suite d’effets RGB, personnalis
 
 Razer™ Snap Tap
 Avec Razer Synapse 4 , vous pouvez donner la priorité à la dernière entrée de deux touches sélectionnées sans avoir à relâcher la première. Bénéficiez d’une meilleure réactivité pour des changements de direction quasi-instantanés.',
+     'Touches au profil bas
+Switchs méca-membrane Razer
+Touches vernies UV',
      89.99);
 
 INSERT INTO option_produit (id, produit_id, nom, ordre) VALUES
@@ -605,7 +619,7 @@ INSERT INTO image_produit (id, produit_id, variante_id, chemin_moyen, chemin_gra
 -- Page d'achat : https://www.razer.com/fr-fr/gaming-mice/razer-deathadder-v3-pro/RZ01-04630100-R3G1
 -- Prix relevés le 15/10/2026.
 -- ---------------------------------------------------------------------------
-INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, prix) VALUES
+INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, caracteristiques, prix) VALUES
     (5, 2, 'Razer DeathAdder V3 Pro', 'razer-deathadder-v3-pro', 'Souris gaming sans fil ergonomique ultra-légère pour l''e-sport pro',
      'La victoire prend une nouvelle forme avec la Razer DeathAdder V3 Pro. Raffinée et repensée avec l’aide des meilleurs pros de l’esport, sa forme ergonomique emblématique est désormais 25 % plus légère que le modèle précédent. De plus, elle bénéficie d’un ensemble d’améliorations innovantes qui vous permettront de repousser les limites du jeu en compétition.
 
@@ -626,6 +640,9 @@ Grâce à la technologie de suivi intelligent, le capteur optique Razer™ Focus
 
 UNE PLUS GRANDE RÉACTIVITÉ ET UN SUIVI PLUS COHÉRENT
 Grâce à la fonction de synchronisation du mouvement, le capteur optique Razer™ Focus Pro synchronise ses signaux aux mêmes intervalles qu’utilise votre PC pour extraire des informations, ce qui vous permet d’obtenir l’emplacement exact de votre souris pour un suivi plus cohérent.',
+     'Conception ultra-légère de 63 g
+Forme ergonomique raffinée
+Capteur optique 30 K Razer™ Focus Pro',
      159.99);
 
 INSERT INTO option_produit (id, produit_id, nom, ordre) VALUES
@@ -675,7 +692,7 @@ INSERT INTO image_produit (id, produit_id, variante_id, chemin_moyen, chemin_gra
 -- Page d'achat : https://www.razer.com/fr-fr/gaming-mice/razer-basilisk-v3-pro-35k/RZ01-05240100-R3G1
 -- Prix relevés le 15/10/2026.
 -- ---------------------------------------------------------------------------
-INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, prix) VALUES
+INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, caracteristiques, prix) VALUES
     (6, 2, 'Razer Basilisk V3 Pro 35K', 'razer-basilisk-v3-pro-35k', 'Souris gaming sans fil RGB ergonomique entièrement personnalisable',
      'Le comble de l''immersion avec la Razer Basilisk V3 Pro 35K, une souris gaming sans fil RGB ergonomique, plus sophistiquée et plus personnalisable que jamais. Jouez vraiment comme vous l''entendez grâce à notre capteur le plus précis, ainsi que notre molette de défilement et nos options de configuration les plus poussées.
 
@@ -702,6 +719,9 @@ Multipliez la vitesse à laquelle vous souhaitez parcourir les contenus en chois
 
 ADAPTATEUR DE SENSIBILITÉ DPI
 Transférez facilement et précisément les paramètres DPI de votre souris actuelle sur la Razer Basilisk V3 Pro 35K.',
+     'Molette inclinable Razer™ HyperScroll configurable
+Capteur optique 35 K Razer™ Focus Pro de 2e génération
+Jusqu’à 140 heures avec Razer™ HyperSpeed Wireless',
      179.99);
 
 INSERT INTO option_produit (id, produit_id, nom, ordre) VALUES
@@ -745,7 +765,7 @@ INSERT INTO image_produit (id, produit_id, variante_id, chemin_moyen, chemin_gra
 -- Page d'achat : https://www.razer.com/fr-fr/gaming-mice/razer-viper-v3-pro/RZ01-05120100-R3G1
 -- Prix relevés le 15/10/2026.
 -- ---------------------------------------------------------------------------
-INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, prix) VALUES
+INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, caracteristiques, prix) VALUES
     (7, 2, 'Razer Viper V3 Pro', 'razer-viper-v3-pro', 'Souris gaming sans fil symétrique ultra-légère pour l''esport avec HyperPolling 8 000 Hz',
      'La GOAT des souris esport sans fil revient pour redéfinir la compétition. Avec une conception ultralégère et les meilleures technologies de sa catégorie, la Razer Viper V3 Pro est sans conteste le choix idéal pour des performances et une maniabilité optimales : c''est l’arme parfaite, conçue avec les pros et approuvée par les pros.
 
@@ -772,6 +792,9 @@ Obtenez une sensibilité parfaite au pixel près, avec des paliers au DPI près.
 
 ADAPTATEUR DE SENSIBILITÉ
 Utilisez les paramètres DPI de votre souris actuelle sur la Viper V3 Pro.',
+     'Conception ultralégère de 54 g
+Capteur optique 35K Razer™ Focus Pro de 2e génération
+Technologie Razer™ 8K Hz HyperPolling',
      179.99);
 
 INSERT INTO option_produit (id, produit_id, nom, ordre) VALUES
@@ -823,7 +846,7 @@ INSERT INTO image_produit (id, produit_id, variante_id, chemin_moyen, chemin_gra
 -- Page d'achat : https://www.razer.com/fr-fr/gaming-mice/razer-cobra/RZ01-04650100-R3M1
 -- Prix relevés le 15/10/2026.
 -- ---------------------------------------------------------------------------
-INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, prix) VALUES
+INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, caracteristiques, prix) VALUES
     (8, 2, 'Razer Cobra', 'razer-cobra', 'Souris gaming filaire légère avec Razer Chroma™ RGB',
      'Vous visez la précision et l’immersion ? Frappez dans le mille avec la Razer Cobra, une souris gaming filaire et légère alimentée par Razer Chroma RGB. Armée de switches ultra-durables et dotée d’un éclairage sous-jacent Chroma dégradé, elle vous surprendra par ses puissantes performances pour une très petite taille.
 
@@ -847,6 +870,9 @@ Fabriqués à partir du PTFE le plus pur et de la plus haute qualité, les pieds
 
 PROFIL DE MÉMOIRE INTÉGRÉ
 Soyez prêt à jouer n’importe où grâce à l’accès à votre dernier profil Razer Synapse utilisé, comprenant notamment les paramètres DPI personnalisés, les configurations des boutons, et plus encore.',
+     'Conception légère de 58 g
+Switchs optiques de souris Razer™ de 3e génération
+Éclairage Chroma avec éclairage sous-jacent dégradé',
      49.99);
 
 INSERT INTO option_produit (id, produit_id, nom, ordre) VALUES
@@ -898,7 +924,7 @@ INSERT INTO image_produit (id, produit_id, variante_id, chemin_moyen, chemin_gra
 -- Page d'achat : https://www.razer.com/fr-fr/gaming-headsets/razer-blackshark-v2-pro/RZ04-04530100-R3M1
 -- Prix relevés le 15/10/2026.
 -- ---------------------------------------------------------------------------
-INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, prix) VALUES
+INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, caracteristiques, prix) VALUES
     (9, 3, 'Razer BlackShark V2 Pro', 'razer-blackshark-v2-pro', 'Casque gaming esport sans fil avec isolation du bruit avancée pour les jeux compétitifs',
      'Si l’esport est votre vocation, jouez-y avec le meilleur casque gaming sans-fil pour la compétition, développé en collaboration avec les meilleurs professionnels de l’esport. Primé à de nombreuses reprises, le Razer BlackShark V2 Pro profite de sons cristallins, d’une isolation phonique avancée et d''un confort permanent : il est conçu pour des performances pures.
 
@@ -925,6 +951,9 @@ Connexion 2,4 GHz à la pointe de l’industrie pour des jeux à très faible la
 
 70 HEURES D’AUTONOMIE DE LA BATTERIE AVEC CHARGEMENT PAR TYPE C
 Jouez pendant 6 heures avec seulement 15 minutes de charge.',
+     'Micro à très large bande Razer™ HyperClear
+Haut-parleurs en titane de 50 mm Razer™ TriForce
+Technologie Razer™ HyperSpeed Wireless',
      229.99);
 
 INSERT INTO option_produit (id, produit_id, nom, ordre) VALUES
@@ -960,7 +989,7 @@ INSERT INTO image_produit (id, produit_id, variante_id, chemin_moyen, chemin_gra
 -- Page d'achat : https://www.razer.com/fr-fr/gaming-headsets/razer-blackshark-v2-x/RZ04-03240100-R3M1
 -- Prix relevés le 15/10/2026.
 -- ---------------------------------------------------------------------------
-INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, prix) VALUES
+INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, caracteristiques, prix) VALUES
     (10, 3, 'Razer BlackShark V2 X', 'razer-blackshark-v2-x', 'Casque filaire multiplateforme pour l’esport',
      'Conçu pour être à la hauteur quand cela compte le plus. Le casque gaming esport Razer BlackShark V2 X allie légèreté et confort à un audio de jeu de haute qualité, un microphone cardioïde d’une clarté cristalline et une annulation passive du bruit avancée. Il est conçu pour les gamers de compétition qui exigent la précision.
 
@@ -984,6 +1013,9 @@ PC. Mac. PS5. Xbox. Nintendo Switch. Mobile. Où que vous jouiez, votre avantage
 
 CONCEPTION DURABLE
 Une âme d’acier inoxydable traverse le bandeau, renforcée par une couche interne de soutien et enveloppée de similicuir durable : conçue pour conserver sa forme lors d’un usage quotidien, session après session.',
+     'Haut-parleurs de 50 mm Razer™ TriForce
+Micro cardioïde Razer™ HyperClear
+Confort et légèreté',
      69.99);
 
 INSERT INTO option_produit (id, produit_id, nom, ordre) VALUES
@@ -1027,7 +1059,7 @@ INSERT INTO image_produit (id, produit_id, variante_id, chemin_moyen, chemin_gra
 -- Page d'achat : https://www.razer.com/fr-fr/gaming-headsets/razer-barracuda-x/RZ04-04430100-R3M1
 -- Prix relevés le 15/10/2026.
 -- ---------------------------------------------------------------------------
-INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, prix) VALUES
+INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, caracteristiques, prix) VALUES
     (11, 3, 'Razer Barracuda X', 'razer-barracuda-x', 'Casque gaming sans fil multiplateforme pour une expérience de jeu fluide à la maison comme en déplacement',
      'Un seul casque pour tous vos jeux : le Razer Barracuda X est un casque de gaming sans fil polyvalent et léger, conçu pour être utilisé facilement sur PC, console et appareils mobiles. Grâce à une conception intelligente double sans fil, passez facilement d’un jeu haute performance à la maison à une utilisation mobile fluide dans la rue.
 
@@ -1046,6 +1078,9 @@ Tandis que le micro est réglé pour supprimer le bruit de fond pour une captati
 Profitez d’une facilité de contrôle sur votre musique, vos vidéos et vos appels grâce aux boutons aisément accessibles situés en dessous des oreillettes du Razer Barracuda X.
 
 Doté d’assez de puissance pour que vous puissiez l’utiliser durant toute une journée de jeu et de déplacements, le Razer Barracuda X est conçu pour avoir une longévité qui correspond à sa polyvalence.',
+     'Razer™ SmartSwitch Dual Wireless
+Conception ergonomique avec un poids de 250 g
+Haut-parleurs de 40 mm Razer™ TriForce',
      119.99);
 
 INSERT INTO option_produit (id, produit_id, nom, ordre) VALUES
@@ -1085,7 +1120,7 @@ INSERT INTO image_produit (id, produit_id, variante_id, chemin_moyen, chemin_gra
 -- Page d'achat : https://www.razer.com/fr-fr/gaming-headsets/razer-kraken-kitty-v2/RZ04-04730100-R3M1
 -- Prix relevés le 15/10/2026.
 -- ---------------------------------------------------------------------------
-INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, prix) VALUES
+INSERT INTO produit (id, categorie_id, nom, slug, accroche, description, caracteristiques, prix) VALUES
     (12, 3, 'Razer Kraken Kitty V2', 'razer-kraken-kitty-v2', 'Casque filaire RGB avec oreilles de chat',
      'Créez votre personnage de stream le plus adorable dans un style félin mortel avec le nouveau Razer Kraken Kitty Edition V2. Démarquez-vous et faites tourner les têtes avec des oreilles de chat uniques alimentées par Razer Chroma™ RGB et faites le show avec un éclairage réagissant au streaming et un micro d’une grande clarté.
 
@@ -1106,6 +1141,9 @@ Soyez plus attentif au jeu et ne laissez rien échapper à vos oreilles de chat 
 
 Coussinets En Tissu Hybride Et En Similicuir
 Un look d''enfer et un confort absolu. Les oreillettes douces et confortables du casque vous offrent des heures de streaming sans éprouver de fatigue, et leur excellente isolation sonore assurent une immersion totale en jeu.',
+     'Oreilles de chat
+Éclairage réagissant au streaming
+Micro cardioïde Razer™ HyperClear',
      119.99);
 
 INSERT INTO option_produit (id, produit_id, nom, ordre) VALUES
