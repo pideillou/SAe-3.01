@@ -27,11 +27,11 @@ description: Réalise une user story de la SAé 3.01 de bout en bout (code MVC, 
 - Rester dans le périmètre de la user story. Signaler les améliorations hors périmètre sans les faire.
 
 ## Après
-Passer en revue la Definition of Done commune (.claude/rules/qualite-livrable.md), puis écrire le résumé de fin d'itération :
+Lancer la skill validateur-w3c sur toutes les pages touchées, corriger les erreurs à la source et relancer jusqu'à zéro erreur HTML. Passer en revue la Definition of Done commune (.claude/rules/qualite-livrable.md), puis écrire le résumé de fin d'itération :
 
 - User story et branche proposée
 - Critères d'acceptation et DoD : faits, non faits
-- Vérifications faites, et celles que PIDEILLOU doit faire (navigateurs, validateur W3C)
+- Vérifications faites, avec le rapport de validation W3C (erreurs avant et après), et celles que PIDEILLOU doit faire (navigateurs, CSS compilé)
 - Modifications du back ou de sql/ à déposer ou importer sur le serveur avant de tester
 - Fichiers créés ou modifiés
 - Messages de commit proposés

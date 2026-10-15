@@ -11,6 +11,7 @@ Une user story n'est terminée que si, en plus de ses critères d'acceptation et
 
 ## Pour l'agent
 - Ne jamais déclarer une user story terminée sans avoir passé chaque point en revue.
+- Valider avec la skill validateur-w3c toutes les pages touchées, à chaque itération, avant de présenter le résumé. Ne jamais écrire « valide » sans avoir lu zéro erreur dans la sortie de l'outil.
 - Indiquer explicitement ce qui n'a pas pu être vérifié, notamment les tests sur plusieurs navigateurs et la validation W3C, que PIDEILLOU devra faire lui-même.
 - Le catalogue doit se charger en moins de 3 secondes (DEC-b).
 - Évaluation : la note combine la quantité de user stories réalisées et la qualité (application et réalisation). Un livrable qui fonctionne parfaitement vaut mieux que beaucoup de fonctionnalités bancales.

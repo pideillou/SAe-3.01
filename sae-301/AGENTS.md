@@ -49,7 +49,7 @@ En cas de conflit ou de doute entre ces sources, demander à PIDEILLOU.
 - Réponses concises et directes. Aucun emoji, ni dans les réponses, ni dans le code, ni dans les messages d'erreur.
 - Textes évalués (README, analyse) : vocabulaire et ton d'un étudiant, sans jargon inutile.
 - Tout message visible par l'utilisateur final est en français.
-- Fin d'itération : résumé court selon le modèle de la skill implementer-user-story.
+- Fin d'itération : validation W3C de toutes les pages touchées (skill validateur-w3c), puis résumé court selon le modèle de la skill implementer-user-story.
 
 ## Rules (.claude/rules/)
 - mvc-javascript.md : architecture MVC, front et back
@@ -64,6 +64,7 @@ En cas de conflit ou de doute entre ces sources, demander à PIDEILLOU.
 - implementer-user-story : réaliser une user story de bout en bout
 - integrer-maquette-tailwind : passer du Figma au HTML et Tailwind
 - stock-et-commandes : transactions, journal de stock, test de concurrence
+- validateur-w3c : validation HTML et CSS, à chaque itération
 - verifier-livraison : contrôle final avant le rendu
 
 ## Livrables (vendredi 23 octobre 2026)
