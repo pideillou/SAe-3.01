@@ -18,7 +18,9 @@ use App\Core\Response;
 use App\Core\Router;
 use App\Controller\AuthController;
 use App\Controller\CatalogueController;
+use App\Controller\CategorieController;
 use App\Controller\StatsController;
+use App\Model\CategorieModel;
 use App\Model\ProduitModel;
 
 // --- Chargement automatique des classes ------------------------------------
@@ -59,10 +61,12 @@ try {
     // --- Assemblage ---------------------------------------------------------
     // Les dépendances sont créées explicitement : le modèle reçoit la connexion,
     // le contrôleur reçoit le modèle. Aucune magie, tout est lisible ici.
-    $produits = new ProduitModel($pdo);
+    $produits   = new ProduitModel($pdo);
+    $categories = new CategorieModel($pdo);
 
     $controleurs = [
-        CatalogueController::class => new CatalogueController($produits),
+        CatalogueController::class => new CatalogueController($produits, $categories),
+        CategorieController::class => new CategorieController($categories),
         AuthController::class      => new AuthController(),
         StatsController::class     => new StatsController($produits),
     ];

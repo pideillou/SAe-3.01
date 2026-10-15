@@ -23,14 +23,21 @@ final class ProduitModel
     }
 
     /**
-     * Tous les produits du catalogue, avec leur catégorie et leur image
-     * principale, rangés par catégorie puis dans l'ordre d'ajout.
+     * Les produits du catalogue, avec leur catégorie et leur image principale,
+     * rangés par catégorie puis dans l'ordre d'ajout.
      *
      * Une seule requête : les jointures sur des clés indexées gardent le
      * catalogue rapide, quel que soit le nombre de produits.
+     *
+     * @param int|null $categorieId  Ne renvoie que les produits de cette
+     *                               catégorie ; null pour tout le catalogue.
      */
-    public function lister(): array
+    public function lister(?int $categorieId = null): array
     {
+        // Fragment écrit ici, jamais construit à partir d'une entrée : seule la
+        // valeur de la catégorie passe par un paramètre lié.
+        $filtre = $categorieId === null ? '' : 'WHERE produit.categorie_id = :categorie';
+
         $sql = "SELECT produit.id,
                        produit.nom,
                        produit.slug,
@@ -46,9 +53,18 @@ final class ProduitModel
                     ON image_produit.produit_id = produit.id
                    AND image_produit.est_principale = 1
                    AND image_produit.variante_id IS NULL
+                 {$filtre}
               ORDER BY categorie.ordre, categorie.nom, produit.id";
 
-        return $this->pdo->query($sql)->fetchAll();
+        $requete = $this->pdo->prepare($sql);
+
+        if ($categorieId !== null) {
+            $requete->bindValue(':categorie', $categorieId, PDO::PARAM_INT);
+        }
+
+        $requete->execute();
+
+        return $requete->fetchAll();
     }
 
     /**
