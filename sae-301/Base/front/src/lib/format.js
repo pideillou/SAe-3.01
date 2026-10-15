@@ -19,3 +19,28 @@ export function formaterPrix(prix) {
 export function pluriel(nombre, singulier, plurielForme = singulier + "s") {
   return `${nombre} ${nombre > 1 ? plurielForme : singulier}`;
 }
+
+/**
+ * Découpe la description d'un produit, telle que la renvoie l'API : des blocs
+ * séparés par une ligne vide, chacun étant un paragraphe seul ou un titre suivi
+ * de son paragraphe (sur la ligne suivante).
+ *
+ * Renvoie l'introduction (premier bloc) et les blocs suivants :
+ * { introduction: "…", blocs: [ { titre: "…" | null, texte: "…" }, … ] }
+ */
+export function decouperDescription(description) {
+  let [introduction = "", ...blocs] = description
+    .split("\n\n")
+    .map((bloc) => bloc.trim())
+    .filter((bloc) => bloc !== "");
+
+  return {
+    introduction,
+    blocs: blocs.map((bloc) => {
+      let [premiere, ...suite] = bloc.split("\n");
+      return suite.length === 0
+        ? { titre: null, texte: premiere }
+        : { titre: premiere, texte: suite.join(" ") };
+    }),
+  };
+}

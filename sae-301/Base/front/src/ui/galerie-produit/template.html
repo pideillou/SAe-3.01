@@ -1,0 +1,9 @@
+<div class="flex flex-col gap-3">
+  <div class="border border-bordure bg-surface">
+    <img src="{{image}}" alt="{{alt}}" width="1199" height="799" class="aspect-fiche w-full object-contain" />
+  </div>
+
+  <ul class="grid grid-cols-4 gap-3 sm:grid-cols-7" aria-label="Images du produit">
+    <slot name="miniatures"></slot>
+  </ul>
+</div>
