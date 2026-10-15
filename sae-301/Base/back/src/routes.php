@@ -17,7 +17,7 @@ use App\Controller\StatsController;
  */
 
 return [
-    'GET  /api/films'       => [CatalogueController::class, 'index'],
+    'GET  /api/produits'    => [CatalogueController::class, 'index'],
     'POST /api/login'       => [AuthController::class,      'login'],
     'POST /api/logout'      => [AuthController::class,      'logout'],
     'GET  /api/admin/stats' => [StatsController::class,     'index'],
