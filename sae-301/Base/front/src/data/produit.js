@@ -24,4 +24,25 @@ ProduitData.fetchAll = async function (categorie) {
   return getRequest(`produits?categorie=${encodeURIComponent(categorie)}`);
 };
 
+/**
+ * La fiche d'un produit : GET /api/produit?slug=razer-cobra
+ *
+ * { produit: { id, nom, slug, accroche, description,
+ *              caracteristiques: [ "…", … ],        // points forts
+ *              prix: "49.99", prixMax: "79.99",
+ *              categorie: { nom, slug },
+ *              images: [ { moyen, grand, alt }, ... ],
+ *              options: [ { nom, valeurs: [ { id, valeur }, … ] }, … ],
+ *              variantes: [ { id, reference, nom, prix, stock,
+ *                             etat: "en-stock" | "bientot-epuise" | "epuise",
+ *                             defaut, valeurs: [ id, … ], image } , … ] } }
+ *
+ * « prix » est celui de la variante la moins chère, « prixMax » celui de la
+ * plus chère. La première image est la principale. Un produit inconnu donne
+ * une ErreurApi de statut 404.
+ */
+ProduitData.fetchOne = async function (slug) {
+  return getRequest(`produit?slug=${encodeURIComponent(slug)}`);
+};
+
 export { ProduitData };

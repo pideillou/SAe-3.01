@@ -1,12 +1,15 @@
-<article class="flex flex-col overflow-hidden border border-bordure bg-surface">
-  <img src="{{image}}" width="500" height="500" alt="{{alt}}" decoding="async" class="aspect-photo w-full object-contain" />
+<article class="border border-bordure bg-surface transition-colors hover:border-texte-secondaire">
+  <a href="{{chemin}}" data-link class="flex h-full flex-col">
+    <!-- alt vide : le nom du produit, juste en dessous, fait déjà partie du lien. -->
+    <img src="{{image}}" width="500" height="500" alt="" decoding="async" class="aspect-photo w-full object-contain" />
 
-  <div class="flex flex-1 flex-col gap-2 p-3 md:p-5">
-    <h3 class="font-titres text-base leading-tight font-semibold text-texte md:text-xl">{{nom}}</h3>
+    <div class="flex flex-1 flex-col gap-2 p-3 md:p-5">
+      <h3 class="font-titres text-base leading-tight font-semibold text-texte md:text-xl">{{nom}}</h3>
 
-    <p class="mt-auto flex items-center justify-between gap-2">
-      <span class="text-prix-mobile font-semibold text-texte md:text-lg">{{prix}}</span>
-      <img src="{{fleche}}" width="18" height="18" alt="" class="size-4.5 shrink-0" />
-    </p>
-  </div>
+      <span class="mt-auto flex items-center justify-between gap-2">
+        <span class="text-prix-mobile font-semibold text-texte md:text-lg">{{prix}}</span>
+        <img src="{{fleche}}" width="18" height="18" alt="" class="size-4.5 shrink-0" />
+      </span>
+    </div>
+  </a>
 </article>

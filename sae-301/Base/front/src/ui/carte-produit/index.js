@@ -4,7 +4,7 @@ import fleche from "../../assets/fleche.svg";
 import template from "./template.html?raw";
 
 // Carte d'un produit, tel que le renvoie l'API :
-// { nom, prix, image: { moyen, grand, alt } }
+// { nom, slug, prix, image: { moyen } } ; la carte est un lien vers la fiche.
 let CarteProduitView = {
   html: function (produit) {
     // Les valeurs sont mises en forme avant d'être passées au template.
@@ -14,7 +14,7 @@ let CarteProduitView = {
       // L'image principale est un original carré de 500 px : assez net pour
       // une carte, même sur un écran haute densité.
       image: urlPublique(produit.image.moyen),
-      alt: produit.image.alt,
+      chemin: `/produit/${produit.slug}`,
       fleche: fleche,
     });
   },

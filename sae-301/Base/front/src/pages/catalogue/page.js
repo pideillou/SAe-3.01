@@ -1,6 +1,7 @@
 import { CategorieData } from "../../data/categorie.js";
 import { ProduitData } from "../../data/produit.js";
 import { pluriel } from "../../lib/format.js";
+import { definirMetadonnees } from "../../lib/seo.js";
 import { genericRenderer, htmlToFragment } from "../../lib/utils.js";
 import { FilArianeView } from "../../ui/fil-ariane/index.js";
 import { GrilleProduitsView } from "../../ui/grille-produits/index.js";
@@ -95,6 +96,8 @@ C.init = async function (params) {
     return The404Page();
   }
 
+  definirMetadonnees({ titre: M.categorie === null ? undefined : M.categorie.nom });
+
   return V.init();
 };
 
@@ -161,7 +164,12 @@ V.createPageFragment = function () {
     slotContenu.replaceWith(...sections);
   } else {
     // Une catégorie : le titre de la page est déjà son nom, la grille suffit.
-    slotContenu.replaceWith(GrilleProduitsView.dom(M.rayons[0].produits, CARTES_PRIORITAIRES));
+    // Un titre de niveau 2, visible seulement des lecteurs d'écran, évite de
+    // passer du h1 aux h3 des cartes sans niveau intermédiaire.
+    slotContenu.replaceWith(
+      htmlToFragment('<h2 class="sr-only">Produits</h2>'),
+      GrilleProduitsView.dom(M.rayons[0].produits, CARTES_PRIORITAIRES)
+    );
   }
 
   return pageFragment;

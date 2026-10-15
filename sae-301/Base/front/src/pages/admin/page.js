@@ -1,5 +1,6 @@
 import { AuthData } from "../../data/auth.js";
 import { StatsData } from "../../data/stats.js";
+import { definirMetadonnees } from "../../lib/seo.js";
 import { htmlToFragment } from "../../lib/utils.js";
 import { FormulaireConnexionView } from "../../ui/formulaire-connexion/index.js";
 import { MessageView } from "../../ui/message/index.js";
@@ -69,6 +70,7 @@ C.handler_deconnexion = async function () {
 };
 
 C.init = async function () {
+  definirMetadonnees({ titre: "Administration" });
   M.message = null;
   await C.chargerStats();
   return V.init();
