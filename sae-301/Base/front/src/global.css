@@ -1,44 +1,70 @@
 @import "tailwindcss";
 
 /*
-  Le thème sombre s'active par la classe theme-dark posée sur <html> (voir
-  index.html et lib/theme.js), et non par le réglage du système : c'est ce que
-  déclare cette variante. Une classe préfixée par dark: s'applique donc dès que
-  la page est en thème sombre.
+  Polices de la charte (variables « titres » et « corps » du Figma), servies
+  avec le site plutôt que depuis Google Fonts : aucune requête vers un autre
+  domaine, et un affichage plus rapide. Sous-ensemble latin (accents, €, ™).
 */
-@custom-variant dark (&:where(.theme-dark, .theme-dark *));
-
-/*
-  Bandeau des cartes de film : un dégradé dont la teinte est calculée à partir
-  du titre (voir ui/carte-film/index.js). La teinte arrive par la variable
-  --teinte, posée dans le template. Aucune image n'est chargée.
-*/
-@utility bandeau-clair {
-  background-image: linear-gradient(
-    160deg,
-    hsl(var(--teinte) 28% 96%),
-    hsl(calc(var(--teinte) + 25) 28% 91%)
-  );
+@font-face {
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/polices/chakra-petch-600-latin.woff2") format("woff2");
 }
 
-@utility bandeau-sombre {
-  background-image: linear-gradient(
-    160deg,
-    hsl(var(--teinte) 18% 17%),
-    hsl(calc(var(--teinte) + 25) 18% 12%)
-  );
+/* Inter est une police variable : un seul fichier pour les graisses 400 à 700. */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("./assets/polices/inter-latin.woff2") format("woff2");
+}
+
+/*
+  Variables du prototype Figma (charte Razer). Chaque variable --color-x
+  produit les classes bg-x, text-x, border-x… ; --font-x produit font-x ;
+  --text-x produit text-x.
+*/
+@theme {
+  --color-fond: #0d0d0d; /* main-bg */
+  --color-surface: #1a1a1a; /* main-surface */
+  --color-surface-haute: #242424; /* other-surface */
+  --color-bordure: #353535; /* border */
+  --color-texte: #ffffff; /* text-main */
+  --color-texte-secondaire: #9a9a9a; /* text-secondaire */
+  --color-razer: #44d62c; /* razer : la touche verte de la marque */
+  --color-sur-razer: #000000; /* txt-razer : texte posé sur le vert */
+  --color-alerte: #f2a044; /* alerte : « Bientôt épuisé » */
+  --color-erreur: #f16c6c; /* error : « Épuisé », erreurs */
+
+  --font-titres: "Chakra Petch", ui-sans-serif, system-ui, sans-serif;
+  --font-corps: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Tailles du Figma absentes de l'échelle par défaut de Tailwind. */
+  --text-badge: 0.6875rem; /* 11 px */
+  --text-mention: 0.8125rem; /* 13 px */
+  --text-prix-mobile: 0.9375rem; /* 15 px */
+  --text-titre-categorie-mobile: 1.375rem; /* 22 px */
+  --text-titre-categorie: 1.625rem; /* 26 px */
+  --text-titre-page-mobile: 1.75rem; /* 28 px */
+  --text-titre-page: 2.5rem; /* 40 px */
+
+  /* Proportions des photos produit fournies par Razer (767 × 511). */
+  --aspect-photo: 3 / 2;
 }
 
 @layer base {
-  /* Menus déroulants et barres de défilement natifs, eux aussi en sombre. */
-  .theme-dark {
+  /* Le Figma ne prévoit qu'un thème sombre. */
+  :root {
     color-scheme: dark;
   }
 
-  /* Un seul anneau de focus pour toute l'application, visible uniquement au
-     clavier : :focus-visible ne se déclenche pas sur un clic de souris. */
-  :where(a, button, select, input):focus-visible {
-    outline: 2px solid var(--color-zinc-400);
+  /* Un seul anneau de focus, vert Razer, visible uniquement au clavier :
+     :focus-visible ne se déclenche pas sur un clic de souris. */
+  :where(a, button, select, input, textarea):focus-visible {
+    outline: 2px solid var(--color-razer);
     outline-offset: 2px;
   }
 

@@ -1,18 +1,17 @@
-import { htmlToFragment } from "../../lib/utils.js";
-import { basculerTheme } from "../../lib/theme.js";
+import { genericRenderer, htmlToFragment } from "../../lib/utils.js";
+import logo from "../../assets/logo-razer.webp";
+import iconeAdmin from "../../assets/admin.svg";
 import template from "./template.html?raw";
 
-// HeaderView est un composant sans données : il n'a que son template, et le
-// bouton de thème, dont il gère lui-même le clic.
+// En-tête du site : logo Razer et accès à l'administration. Les liens Espace
+// personnel et Panier du Figma arriveront avec les user stories concernées.
 let HeaderView = {
   html: function () {
-    return template;
+    return genericRenderer(template, { logo, iconeAdmin });
   },
 
   dom: function () {
-    let fragment = htmlToFragment(template);
-    fragment.querySelector('[data-action="theme"]').addEventListener("click", basculerTheme);
-    return fragment;
+    return htmlToFragment(HeaderView.html());
   },
 };
 

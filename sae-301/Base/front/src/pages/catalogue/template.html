@@ -1,8 +1,13 @@
-<section class="mx-auto max-w-5xl px-6 pt-10 pb-16">
-  <h1 class="mb-6 text-2xl font-semibold tracking-tight">Catalogue</h1>
+<div class="mx-auto flex max-w-300 flex-col gap-6 px-5 pt-6 pb-14 md:gap-8 md:px-8 md:pt-8">
+  <nav aria-label="Fil d’Ariane">
+    <p class="text-xs text-texte-secondaire">Catalogue / Tous les produits</p>
+  </nav>
 
-  <slot name="barre-outils"></slot>
+  <div class="flex flex-col gap-2.5">
+    <h1 class="font-titres text-titre-page-mobile leading-tight font-semibold uppercase md:text-titre-page">Tous les produits</h1>
+    <p data-resume class="text-sm text-texte-secondaire">{{resume}}</p>
+  </div>
+
   <slot name="message"></slot>
-  <slot name="grille"></slot>
-  <slot name="pagination"></slot>
-</section>
+  <slot name="categories"></slot>
+</div>

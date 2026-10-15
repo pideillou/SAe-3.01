@@ -1,0 +1,8 @@
+<section class="flex flex-col gap-5" aria-labelledby="categorie-{{slug}}">
+  <div class="flex items-center justify-between gap-4">
+    <h2 id="categorie-{{slug}}" class="font-titres text-titre-categorie-mobile font-semibold uppercase md:text-titre-categorie">{{nom}}</h2>
+    <p class="text-xs text-texte-secondaire">{{nombre}}</p>
+  </div>
+
+  <slot name="grille"></slot>
+</section>

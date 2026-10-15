@@ -2,37 +2,20 @@
  * Petites fonctions de mise en forme, sans dépendance.
  */
 
+const EUROS = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" });
+
 /**
- * 149 -> « 2 h 29 »
+ * "189.99" -> « 189,99 € » (virgule décimale et espace insécable français)
+ *
+ * L'API envoie les prix sous forme de chaîne, pour ne perdre aucun centime.
  */
-export function formaterDuree(minutes) {
-  const heures = Math.floor(minutes / 60);
-  const restant = minutes % 60;
-
-  if (heures === 0) {
-    return `${restant} min`;
-  }
-
-  return `${heures} h ${String(restant).padStart(2, "0")}`;
+export function formaterPrix(prix) {
+  return EUROS.format(Number(prix));
 }
 
 /**
- * 8.6 -> « 8,6 » (la virgule décimale française)
+ * 1 -> « 1 produit », 4 -> « 4 produits »
  */
-export function formaterNote(note) {
-  return Number(note).toFixed(1).replace(".", ",");
-}
-
-/**
- * Calcule une teinte stable à partir d'une chaîne, pour donner à chaque film un
- * visuel qui lui est propre sans charger la moindre image.
- */
-export function teinteDepuisTexte(texte) {
-  let somme = 0;
-
-  for (const caractere of texte) {
-    somme += caractere.codePointAt(0);
-  }
-
-  return somme % 360;
+export function pluriel(nombre, singulier, plurielForme = singulier + "s") {
+  return `${nombre} ${nombre > 1 ? plurielForme : singulier}`;
 }

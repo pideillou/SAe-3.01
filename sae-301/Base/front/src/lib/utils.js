@@ -48,4 +48,16 @@ function htmlToFragment(htmlString) {
   return template.content;
 }
 
-export { genericRenderer, htmlToFragment };
+/**
+ * Adresse d'un fichier du dossier public du front (front/public/), par exemple
+ * une image de produit : « images/produits/cobra/principale-767.webp ».
+ *
+ * La base de données ne stocke que ce chemin relatif ; le chemin du projet sur
+ * le serveur (BASE dans vite.config.js) est ajouté ici, au seul endroit qui le
+ * connaît.
+ */
+function urlPublique(chemin) {
+  return import.meta.env.BASE_URL + chemin;
+}
+
+export { genericRenderer, htmlToFragment, urlPublique };
