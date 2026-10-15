@@ -68,6 +68,108 @@ final class ProduitModel
     }
 
     /**
+     * Un produit d'après son slug, avec sa catégorie et le prix de sa variante
+     * la plus chère (le prix de base, lui, est celui de la moins chère), ou
+     * null si le produit n'existe pas.
+     */
+    public function trouverParSlug(string $slug): ?array
+    {
+        $requete = $this->pdo->prepare(
+            'SELECT produit.id,
+                    produit.nom,
+                    produit.slug,
+                    produit.accroche,
+                    produit.description,
+                    produit.caracteristiques,
+                    produit.prix,
+                    (SELECT MAX(variante.prix)
+                       FROM variante
+                      WHERE variante.produit_id = produit.id) AS prix_max,
+                    categorie.nom  AS categorie_nom,
+                    categorie.slug AS categorie_slug
+               FROM produit
+         INNER JOIN categorie ON categorie.id = produit.categorie_id
+              WHERE produit.slug = :slug'
+        );
+        $requete->execute([':slug' => $slug]);
+
+        return $requete->fetch() ?: null;
+    }
+
+    /**
+     * Les images du produit : la principale d'abord, puis la galerie dans son
+     * ordre. Les images propres à une variante (couleur…) sont exclues.
+     */
+    public function listerImages(int $produitId): array
+    {
+        $requete = $this->pdo->prepare(
+            'SELECT chemin_moyen, chemin_grand, texte_alt
+               FROM image_produit
+              WHERE produit_id = :produit
+                AND variante_id IS NULL
+           ORDER BY est_principale DESC, ordre, id'
+        );
+        $requete->bindValue(':produit', $produitId, PDO::PARAM_INT);
+        $requete->execute();
+
+        return $requete->fetchAll();
+    }
+
+    /**
+     * Les options d'un produit (Couleur, Disposition du clavier…) avec leurs
+     * valeurs, dans l'ordre d'affichage. Une ligne par valeur.
+     */
+    public function listerOptions(int $produitId): array
+    {
+        $requete = $this->pdo->prepare(
+            'SELECT option_produit.id    AS option_id,
+                    option_produit.nom   AS option_nom,
+                    valeur_option.id     AS valeur_id,
+                    valeur_option.valeur AS valeur
+               FROM option_produit
+         INNER JOIN valeur_option ON valeur_option.option_id = option_produit.id
+              WHERE option_produit.produit_id = :produit
+           ORDER BY option_produit.ordre, option_produit.id, valeur_option.ordre, valeur_option.id'
+        );
+        $requete->bindValue(':produit', $produitId, PDO::PARAM_INT);
+        $requete->execute();
+
+        return $requete->fetchAll();
+    }
+
+    /**
+     * Les variantes d'un produit : prix, stock, image propre et identifiants
+     * des valeurs d'options qui les composent (séparés par des virgules).
+     */
+    public function listerVariantes(int $produitId): array
+    {
+        $requete = $this->pdo->prepare(
+            'SELECT variante.id,
+                    variante.reference,
+                    variante.nom,
+                    variante.prix,
+                    variante.stock,
+                    variante.est_defaut,
+                    GROUP_CONCAT(variante_valeur.valeur_id ORDER BY variante_valeur.valeur_id) AS valeurs,
+                    image_produit.chemin_moyen,
+                    image_produit.chemin_grand,
+                    image_produit.texte_alt
+               FROM variante
+          LEFT JOIN variante_valeur ON variante_valeur.variante_id = variante.id
+          LEFT JOIN image_produit   ON image_produit.variante_id = variante.id
+              WHERE variante.produit_id = :produit
+           GROUP BY variante.id, variante.reference, variante.nom, variante.prix, variante.stock,
+                    variante.est_defaut, image_produit.chemin_moyen, image_produit.chemin_grand,
+                    image_produit.texte_alt
+           ORDER BY variante.id'
+        );
+        $requete->bindValue(':produit', $produitId, PDO::PARAM_INT);
+        $requete->execute();
+
+        return $requete->fetchAll();
+    }
+
+    /**
      * Indicateurs simples pour la zone d'administration.
      */
     public function statistiques(): array

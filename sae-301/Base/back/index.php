@@ -21,6 +21,7 @@ use App\Controller\CatalogueController;
 use App\Controller\CategorieController;
 use App\Controller\StatsController;
 use App\Model\CategorieModel;
+use App\Model\ParametreModel;
 use App\Model\ProduitModel;
 
 // --- Chargement automatique des classes ------------------------------------
@@ -63,9 +64,10 @@ try {
     // le contrôleur reçoit le modèle. Aucune magie, tout est lisible ici.
     $produits   = new ProduitModel($pdo);
     $categories = new CategorieModel($pdo);
+    $parametres = new ParametreModel($pdo);
 
     $controleurs = [
-        CatalogueController::class => new CatalogueController($produits, $categories),
+        CatalogueController::class => new CatalogueController($produits, $categories, $parametres),
         CategorieController::class => new CategorieController($categories),
         AuthController::class      => new AuthController(),
         StatsController::class     => new StatsController($produits),
