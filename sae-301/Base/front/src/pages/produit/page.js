@@ -1,6 +1,7 @@
 import { PanierData } from "../../data/panier.js";
 import { ProduitData } from "../../data/produit.js";
 import { decouperDescription, formaterPrix, pluriel } from "../../lib/format.js";
+import { ajouterAuPanier } from "../../lib/panier-stock.js";
 import { definirMetadonnees } from "../../lib/seo.js";
 import { genericRenderer, htmlToFragment, urlPublique } from "../../lib/utils.js";
 import { valeurDisponible, varianteApresChoix, varianteInitiale } from "../../lib/variantes.js";
@@ -63,8 +64,8 @@ C.handler_choisirImage = function (index) {
   V.racine.querySelector(`button[data-index="${index}"]`)?.focus();
 };
 
-C.handler_ajouter = function () {
-  let resultat = PanierData.ajouter(PanierData.articleDepuis(M.produit, M.variante));
+C.handler_ajouter = async function () {
+  let resultat = await ajouterAuPanier(PanierData.articleDepuis(M.produit, M.variante));
 
   V.notifier(
     resultat.ok

@@ -1,4 +1,5 @@
 import { PanierData } from "../../data/panier.js";
+import { synchroniserPanier } from "../../lib/panier-stock.js";
 import { definirMetadonnees } from "../../lib/seo.js";
 import { genericRenderer, htmlToFragment, urlPublique } from "../../lib/utils.js";
 import { FilArianeView } from "../../ui/fil-ariane/index.js";
@@ -12,13 +13,15 @@ import template from "./template.html?raw";
  * quantités modifiables, la suppression d'une ligne et le total, recalculé à
  * chaque modification.
  *
- * Le panier vient du stockage local du navigateur (data/panier.js) : aucun
- * appel à l'API ici.
+ * Le panier vient du stockage local du navigateur (data/panier.js). À
+ * l'ouverture et après chaque changement de quantité, il est confronté au
+ * stock réel (STK-c) : les quantités sont ramenées au stock, les articles
+ * épuisés retirés, et chaque changement est expliqué au visiteur.
  */
 
 let M = {
   lignes: [], // les lignes du panier
-  message: null, // { type, texte }, ou null
+  messages: [], // [{ type, texte }] affichés en haut de page
 };
 
 let C = {};
@@ -27,29 +30,51 @@ C.charger = function () {
   M.lignes = PanierData.lignes();
 };
 
-C.init = function () {
-  C.charger();
-  M.message = null;
+/**
+ * Confronte le panier au stock réel et retient les messages à afficher. Si le
+ * serveur ne répond pas, le panier reste tel quel et le visiteur en est averti.
+ */
+C.synchroniser = async function () {
+  try {
+    let messages = await synchroniserPanier();
+    C.charger();
+    return messages.map((texte) => ({ type: "erreur", texte }));
+  } catch (erreur) {
+    return [{ type: "erreur", texte: `Le stock n'a pas pu être vérifié : ${erreur.message}` }];
+  }
+};
+
+C.init = async function () {
   definirMetadonnees({ titre: "Panier" });
+  C.charger();
+  M.messages = await C.synchroniser();
   return V.init();
 };
 
-C.handler_quantite = function (varianteId, quantite) {
+C.handler_quantite = async function (varianteId, quantite) {
   let resultat = PanierData.changerQuantite(varianteId, quantite);
 
+  // Réponse immédiate : le total est recalculé avec le contrôle local, puis le
+  // serveur confirme ou corrige.
   C.charger();
-  M.message = resultat.ok ? null : { type: "erreur", texte: resultat.raison };
+  M.messages = resultat.ok ? [] : [{ type: "erreur", texte: resultat.raison }];
   V.rafraichir();
-
-  // La page est reconstruite : le focus est rendu au champ modifié.
   V.racine.querySelector(`#quantite-${varianteId}`)?.focus();
+
+  let corrections = await C.synchroniser();
+
+  if (corrections.length > 0) {
+    M.messages = [...M.messages, ...corrections];
+    V.rafraichir();
+    V.racine.querySelector(`#quantite-${varianteId}`)?.focus();
+  }
 };
 
 C.handler_suppression = function (varianteId) {
   PanierData.supprimer(varianteId);
 
   C.charger();
-  M.message = { type: "succes", texte: "L'article a été retiré de votre panier." };
+  M.messages = [{ type: "succes", texte: "L'article a été retiré de votre panier." }];
   V.rafraichir();
 };
 
@@ -79,7 +104,9 @@ V.createPageFragment = function () {
   pageFragment.querySelector('slot[name="fil-ariane"]').replaceWith(
     FilArianeView.dom([{ libelle: "Catalogue", chemin: urlPublique("") }, { libelle: "Panier" }])
   );
-  pageFragment.querySelector('slot[name="message"]').replaceWith(MessageView.dom(M.message));
+  pageFragment
+    .querySelector('slot[name="message"]')
+    .replaceWith(...M.messages.map((message) => MessageView.dom(message)));
 
   if (M.lignes.length === 0) {
     pageFragment.querySelector("[data-contenu]").remove();

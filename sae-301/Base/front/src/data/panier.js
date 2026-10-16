@@ -201,6 +201,65 @@ PanierData.vider = function () {
 };
 
 /**
+ * Met le panier à jour d'après une réponse de /api/panier/verifier (STK-c) :
+ * stock et prix du moment, quantités ramenées au stock, lignes épuisées ou
+ * supprimées retirées. Seules les lignes encore présentes dans le panier sont
+ * touchées (il a pu changer pendant que le serveur répondait).
+ *
+ * @param {Array} reponses  les lignes de la réponse du serveur
+ * @returns {Array<{type: "retiree"|"supprimee"|"ajustee"|"prix", nom: string,
+ *                  quantite?: number, ancien?: string, nouveau?: string}>}
+ *          ce qui a changé, pour en informer le visiteur
+ */
+PanierData.appliquerVerification = function (reponses) {
+  let courantes = lignes();
+  let changements = [];
+  let gardees = [];
+
+  for (let ligne of courantes) {
+    let reponse = reponses.find((r) => r.varianteId === ligne.varianteId);
+
+    if (reponse === undefined) {
+      gardees.push(ligne);
+      continue;
+    }
+
+    if (reponse.statut === "inconnue") {
+      changements.push({ type: "supprimee", nom: ligne.nom });
+      continue;
+    }
+
+    if (reponse.statut === "epuisee") {
+      changements.push({ type: "retiree", nom: reponse.nom });
+      continue;
+    }
+
+    if (reponse.statut === "ajustee") {
+      changements.push({ type: "ajustee", nom: reponse.nom, quantite: reponse.quantiteAcceptee });
+    }
+
+    if (Number(reponse.prix) !== Number(ligne.prix)) {
+      changements.push({ type: "prix", nom: reponse.nom, ancien: ligne.prix, nouveau: reponse.prix });
+    }
+
+    gardees.push({
+      ...ligne,
+      nom: reponse.nom,
+      prix: reponse.prix,
+      stock: reponse.stock,
+      quantite: Math.min(ligne.quantite, reponse.quantiteAcceptee),
+      image: reponse.image ?? ligne.image,
+    });
+  }
+
+  if (changements.length > 0 || JSON.stringify(gardees) !== JSON.stringify(courantes)) {
+    enregistrer(gardees);
+  }
+
+  return changements;
+};
+
+/**
  * Appelle fn à chaque changement du panier, dans cet onglet comme dans les
  * autres onglets ouverts sur le site. Renvoie la fonction qui annule l'abonnement.
  */

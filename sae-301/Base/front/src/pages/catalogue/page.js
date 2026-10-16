@@ -2,6 +2,7 @@ import { CategorieData } from "../../data/categorie.js";
 import { PanierData } from "../../data/panier.js";
 import { ProduitData } from "../../data/produit.js";
 import { pluriel } from "../../lib/format.js";
+import { ajouterAuPanier } from "../../lib/panier-stock.js";
 import { definirMetadonnees } from "../../lib/seo.js";
 import { varianteInitiale } from "../../lib/variantes.js";
 import { genericRenderer, htmlToFragment } from "../../lib/utils.js";
@@ -108,7 +109,7 @@ C.handler_ajouter = async function (produit) {
       return;
     }
 
-    let resultat = PanierData.ajouter(PanierData.articleDepuis(fiche, variante));
+    let resultat = await ajouterAuPanier(PanierData.articleDepuis(fiche, variante));
 
     V.notifier(
       resultat.ok
