@@ -6,6 +6,7 @@ use App\Controller\AdminAuthController;
 use App\Controller\AuthController;
 use App\Controller\CatalogueController;
 use App\Controller\CategorieController;
+use App\Controller\CommandeController;
 use App\Controller\PanierController;
 use App\Controller\StatsController;
 
@@ -24,6 +25,8 @@ return [
     'GET  /api/categories'  => [CategorieController::class, 'index'],
     'GET  /api/produit'     => [CatalogueController::class, 'detail'],
     'POST /api/panier/verifier' => [PanierController::class, 'verifier'],
+    'POST /api/commande'     => [CommandeController::class, 'creer'],
+    'GET  /api/commande'     => [CommandeController::class, 'detail'],
     'POST /api/inscription' => [AuthController::class,      'inscription'],
     'POST /api/login'       => [AuthController::class,      'login'],
     'GET  /api/moi'         => [AuthController::class,      'moi'],

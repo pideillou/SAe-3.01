@@ -20,10 +20,12 @@ use App\Controller\AdminAuthController;
 use App\Controller\AuthController;
 use App\Controller\CatalogueController;
 use App\Controller\CategorieController;
+use App\Controller\CommandeController;
 use App\Controller\PanierController;
 use App\Controller\StatsController;
 use App\Model\AdministrateurModel;
 use App\Model\CategorieModel;
+use App\Model\CommandeModel;
 use App\Model\ParametreModel;
 use App\Model\ProduitModel;
 use App\Model\UtilisateurModel;
@@ -71,12 +73,14 @@ try {
     $parametres = new ParametreModel($pdo);
     $utilisateurs    = new UtilisateurModel($pdo);
     $administrateurs = new AdministrateurModel($pdo);
+    $commandes       = new CommandeModel($pdo);
 
     $controleurs = [
         CatalogueController::class => new CatalogueController($produits, $categories, $parametres),
         CategorieController::class => new CategorieController($categories),
         AuthController::class      => new AuthController($utilisateurs),
         AdminAuthController::class => new AdminAuthController($administrateurs),
+        CommandeController::class  => new CommandeController($commandes),
         PanierController::class    => new PanierController($produits, $parametres),
         StatsController::class     => new StatsController($produits),
     ];
