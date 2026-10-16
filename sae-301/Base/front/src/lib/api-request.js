@@ -16,10 +16,12 @@ const API_URL = import.meta.env.BASE_URL + "api/";
  * message : le message seul ne le permettrait pas.
  */
 class ErreurApi extends Error {
-  constructor(message, statut) {
+  constructor(message, statut, champs = {}) {
     super(message);
     this.name = "ErreurApi";
     this.statut = statut;
+    // Pour un formulaire refusé : un message par champ fautif ({ email: "…" }).
+    this.champs = champs;
   }
 }
 
@@ -39,7 +41,7 @@ let request = async function (uri, options) {
 
   if (!response.ok) {
     // L'API décrit ses erreurs dans un champ « erreur ».
-    throw new ErreurApi(data?.erreur ?? `Erreur ${response.status}`, response.status);
+    throw new ErreurApi(data?.erreur ?? `Erreur ${response.status}`, response.status, data?.champs ?? {});
   }
 
   return data;

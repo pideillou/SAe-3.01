@@ -1,0 +1,34 @@
+<section class="border border-bordure bg-surface p-6 md:p-8">
+  <h1 class="mb-2 font-titres text-titre-page-mobile leading-tight font-semibold uppercase md:text-titre-categorie">{{titre}}</h1>
+  <p class="mb-6 text-sm text-texte-secondaire">{{sousTitre}}</p>
+
+  <slot name="message"></slot>
+
+  <form novalidate class="flex flex-col gap-5">
+    <div class="flex flex-col gap-2">
+      <label for="champ-email" class="text-sm font-medium">Adresse e-mail</label>
+      <input id="champ-email" name="email" type="email" autocomplete="email" value="{{email}}" aria-describedby="erreur-email" class="h-12 border border-bordure bg-fond px-3 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+      <p id="erreur-email" data-erreur="email" class="text-mention text-erreur"></p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="champ-mdp" class="text-sm font-medium">Mot de passe</label>
+      <input id="champ-mdp" name="mdp" type="password" autocomplete="{{autocompleteMdp}}" aria-describedby="aide-mdp erreur-mdp" class="h-12 border border-bordure bg-fond px-3 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+      <p id="aide-mdp" data-aide-mdp class="text-mention text-texte-secondaire">8 caractères minimum.</p>
+      <p id="erreur-mdp" data-erreur="mdp" class="text-mention text-erreur"></p>
+    </div>
+
+    <div data-confirmation class="flex flex-col gap-2">
+      <label for="champ-confirmation" class="text-sm font-medium">Confirmer le mot de passe</label>
+      <input id="champ-confirmation" name="confirmation" type="password" autocomplete="new-password" aria-describedby="erreur-confirmation" class="h-12 border border-bordure bg-fond px-3 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+      <p id="erreur-confirmation" data-erreur="confirmation" class="text-mention text-erreur"></p>
+    </div>
+
+    <button type="submit" class="flex min-h-12 w-full items-center justify-center border border-razer bg-razer px-6 py-3 font-titres text-[0.9375rem] font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90 disabled:cursor-wait disabled:opacity-40">{{bouton}}</button>
+  </form>
+
+  <p data-lien class="mt-6 text-sm text-texte-secondaire">
+    {{questionLien}}
+    <a href="{{cheminLien}}" data-link class="font-semibold text-razer underline-offset-4 hover:underline">{{libelleLien}}</a>
+  </p>
+</section>
