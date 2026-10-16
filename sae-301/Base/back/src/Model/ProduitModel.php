@@ -170,6 +170,86 @@ final class ProduitModel
     }
 
     /**
+     * Confronte des quantités demandées au stock réel de la base (STK-c).
+     *
+     * Renvoie une entrée par variante demandée, dans l'ordre reçu :
+     *   - connue : id, nom, prix, stock, produit_slug, produit_nom, image,
+     *     quantite_demandee et quantite_acceptee (la demande, ramenée au stock) ;
+     *   - inconnue (supprimée depuis l'ajout au panier) : id, quantite_demandee,
+     *     et connue = false.
+     *
+     * Ne modifie rien : c'est une lecture. La validation d'une commande refait
+     * le contrôle dans sa propre transaction (voir la skill stock-et-commandes).
+     *
+     * @param array<int, int> $demandes  quantité demandée, indexée par id de variante
+     */
+    public function verifierDisponibilite(array $demandes): array
+    {
+        if ($demandes === []) {
+            return [];
+        }
+
+        $ids          = array_keys($demandes);
+        $emplacements = implode(',', array_fill(0, count($ids), '?'));
+
+        $requete = $this->pdo->prepare(
+            "SELECT variante.id,
+                    variante.nom,
+                    variante.prix,
+                    variante.stock,
+                    produit.slug AS produit_slug,
+                    produit.nom  AS produit_nom,
+                    COALESCE(image_variante.chemin_moyen, image_produit.chemin_moyen) AS chemin_moyen,
+                    COALESCE(image_variante.texte_alt, image_produit.texte_alt)       AS texte_alt
+               FROM variante
+         INNER JOIN produit ON produit.id = variante.produit_id
+          LEFT JOIN image_produit AS image_variante
+                 ON image_variante.variante_id = variante.id
+          LEFT JOIN image_produit
+                 ON image_produit.produit_id = produit.id
+                AND image_produit.variante_id IS NULL
+                AND image_produit.est_principale = 1
+              WHERE variante.id IN ($emplacements)"
+        );
+        $requete->execute($ids);
+
+        $trouvees = [];
+
+        foreach ($requete->fetchAll() as $ligne) {
+            $trouvees[(int) $ligne['id']] = $ligne;
+        }
+
+        $resultat = [];
+
+        foreach ($demandes as $id => $quantite) {
+            $ligne = $trouvees[$id] ?? null;
+
+            if ($ligne === null) {
+                $resultat[] = ['id' => $id, 'connue' => false, 'quantite_demandee' => $quantite];
+                continue;
+            }
+
+            $stock = (int) $ligne['stock'];
+
+            $resultat[] = [
+                'id'                => $id,
+                'connue'            => true,
+                'nom'               => $ligne['nom'],
+                'prix'              => $ligne['prix'],
+                'stock'             => $stock,
+                'produit_slug'      => $ligne['produit_slug'],
+                'produit_nom'       => $ligne['produit_nom'],
+                'image'             => $ligne['chemin_moyen'],
+                'image_alt'         => $ligne['texte_alt'],
+                'quantite_demandee' => $quantite,
+                'quantite_acceptee' => min($quantite, $stock),
+            ];
+        }
+
+        return $resultat;
+    }
+
+    /**
      * Indicateurs simples pour la zone d'administration.
      */
     public function statistiques(): array
