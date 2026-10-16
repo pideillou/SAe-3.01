@@ -1,0 +1,30 @@
+<div class="mx-auto flex max-w-3xl flex-col gap-6 px-5 pt-6 pb-14 md:gap-8 md:px-8 md:pt-8">
+  <slot name="message"></slot>
+
+  <div data-confirmation class="flex flex-col gap-6 md:gap-8">
+    <header class="flex flex-col gap-3 border border-razer bg-surface p-6 md:p-8">
+      <p class="text-mention font-semibold tracking-wide text-razer uppercase">Commande enregistrée</p>
+      <h1 class="font-titres text-titre-page-mobile leading-tight font-semibold uppercase md:text-titre-page">Merci pour votre commande</h1>
+      <p class="text-sm leading-relaxed text-texte-secondaire">Votre commande a bien été enregistrée avec le compte <span class="font-semibold wrap-anywhere text-texte">{{email}}</span>. Conservez son numéro pour la retrouver.</p>
+    </header>
+
+    <dl class="grid grid-cols-1 gap-px border border-bordure bg-bordure sm:grid-cols-3">
+      <div class="flex flex-col gap-1 bg-surface p-4">
+        <dt class="text-mention text-texte-secondaire">Numéro de commande</dt>
+        <dd class="font-titres text-lg font-semibold wrap-anywhere">{{numero}}</dd>
+      </div>
+      <div class="flex flex-col gap-1 bg-surface p-4">
+        <dt class="text-mention text-texte-secondaire">Statut</dt>
+        <dd class="font-semibold text-razer">{{statut}}</dd>
+      </div>
+      <div class="flex flex-col gap-1 bg-surface p-4">
+        <dt class="text-mention text-texte-secondaire">Passée le</dt>
+        <dd class="font-semibold">{{date}}</dd>
+      </div>
+    </dl>
+
+    <slot name="recapitulatif"></slot>
+
+    <a href="{{cheminCatalogue}}" data-link class="flex min-h-12 w-full items-center justify-center border border-razer bg-razer px-6 py-3 font-titres text-[0.9375rem] font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90 sm:w-auto sm:self-start">Retour au catalogue</a>
+  </div>
+</div>

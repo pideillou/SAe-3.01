@@ -1,0 +1,28 @@
+<div class="mx-auto flex max-w-300 flex-col gap-6 px-5 pt-6 pb-14 md:gap-8 md:px-8 md:pt-8">
+  <slot name="fil-ariane"></slot>
+
+  <h1 class="font-titres text-titre-page-mobile leading-tight font-semibold uppercase md:text-titre-page">Valider ma commande</h1>
+
+  <slot name="message"></slot>
+
+  <div data-vide class="flex flex-col items-start gap-5 border border-bordure bg-surface p-6">
+    <p class="text-sm text-texte-secondaire">Votre panier est vide : il n'y a rien à valider.</p>
+    <a href="{{cheminCatalogue}}" data-link class="flex min-h-12 items-center justify-center border border-razer bg-razer px-6 py-3 font-titres text-[0.9375rem] font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90">Voir le catalogue</a>
+  </div>
+
+  <div data-contenu class="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-12">
+    <div class="min-w-0 flex-1">
+      <slot name="recapitulatif"></slot>
+    </div>
+
+    <aside aria-labelledby="titre-confirmation" class="flex flex-col gap-5 border border-bordure bg-surface p-5 md:p-6 lg:sticky lg:top-6 lg:w-96 lg:shrink-0">
+      <h2 id="titre-confirmation" class="font-titres text-xl font-semibold uppercase">Confirmation</h2>
+
+      <p class="text-sm leading-relaxed text-texte-secondaire">Commande passée avec le compte <span class="font-semibold wrap-anywhere text-texte">{{email}}</span>. Vérifiez les articles et les quantités, puis confirmez : la commande sera enregistrée et les stocks mis à jour.</p>
+
+      <button type="button" data-action="confirmer" class="flex min-h-12 w-full items-center justify-center border border-razer bg-razer px-6 py-3 font-titres text-[0.9375rem] font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90 disabled:cursor-wait disabled:opacity-40">Confirmer ma commande</button>
+
+      <a href="{{cheminPanier}}" data-link class="flex min-h-12 w-full items-center justify-center border border-bordure px-6 py-3 font-titres text-[0.9375rem] font-semibold uppercase transition-colors hover:border-razer hover:text-razer">Modifier mon panier</a>
+    </aside>
+  </div>
+</div>

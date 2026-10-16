@@ -38,7 +38,8 @@ class Router {
       if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
 
       e.preventDefault();
-      this.navigate(this.routePath(lien.pathname));
+      // lien.search : la chaîne de requête (?retour=commande) suit le lien.
+      this.navigate(this.routePath(lien.pathname) + lien.search);
     });
   }
 
@@ -177,7 +178,7 @@ class Router {
   updateLinks(path) {
     for (const lien of this.root.querySelectorAll("a[data-link]")) {
       const route = this.routePath(lien.pathname);
-      lien.setAttribute("href", this.url(route));
+      lien.setAttribute("href", this.url(route) + lien.search);
 
       if (route === path) {
         lien.setAttribute("aria-current", "page");

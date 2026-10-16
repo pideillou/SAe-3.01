@@ -3,6 +3,8 @@ import { RootLayout } from "./layouts/root/layout.js";
 import { CataloguePage } from "./pages/catalogue/page.js";
 import { AdminPage } from "./pages/admin/page.js";
 import { AdminConnexionPage } from "./pages/admin-connexion/page.js";
+import { CommandePage } from "./pages/commande/page.js";
+import { ConfirmationCommandePage } from "./pages/confirmation-commande/page.js";
 import { ConnexionPage } from "./pages/connexion/page.js";
 import { EspacePersonnelPage } from "./pages/espace-personnel/page.js";
 import { InscriptionPage } from "./pages/inscription/page.js";
@@ -19,6 +21,8 @@ router.addRoute("/", CataloguePage);
 router.addRoute("/categorie/:slug", CataloguePage); // params.slug dans la page
 router.addRoute("/produit/:slug", ProduitPage); // params.slug dans la page
 router.addRoute("/panier", PanierPage);
+router.addRoute("/commande", CommandePage);
+router.addRoute("/commande/:numero", ConfirmationCommandePage); // params.numero
 router.addRoute("/connexion", ConnexionPage);
 router.addRoute("/inscription", InscriptionPage);
 router.addRoute("/espace-personnel", EspacePersonnelPage);

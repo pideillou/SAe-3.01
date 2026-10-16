@@ -1,5 +1,5 @@
 import { AuthData } from "../../data/auth.js";
-import { naviguer } from "../../lib/navigation.js";
+import { destinationApresConnexion, naviguer } from "../../lib/navigation.js";
 import { definirMetadonnees } from "../../lib/seo.js";
 import { htmlToFragment } from "../../lib/utils.js";
 import { erreursConnexion } from "../../lib/validation-compte.js";
@@ -38,7 +38,7 @@ C.handler_envoi = async function ({ email, mdp }) {
   try {
     await AuthData.login(email, mdp);
     M.envoiEnCours = false;
-    naviguer("espace-personnel");
+    naviguer(destinationApresConnexion().chemin);
     return;
   } catch (erreur) {
     M.erreurs = erreur.champs ?? {};
@@ -61,7 +61,7 @@ C.init = async function () {
   // remplace celle de cette page, qui n'est jamais affichée.
   try {
     if ((await AuthData.moi()).connecte) {
-      naviguer("espace-personnel");
+      naviguer(destinationApresConnexion().chemin);
       return "";
     }
   } catch (erreur) {
@@ -101,7 +101,13 @@ V.createPageFragment = function () {
   pageFragment.querySelector('slot[name="formulaire"]').replaceWith(
     FormulaireCompteView.dom(
       "connexion",
-      { email: M.email, erreurs: M.erreurs, message: M.message, envoiEnCours: M.envoiEnCours },
+      {
+        email: M.email,
+        erreurs: M.erreurs,
+        message: M.message,
+        envoiEnCours: M.envoiEnCours,
+        retour: destinationApresConnexion().retour,
+      },
       { surEnvoi: C.handler_envoi }
     )
   );

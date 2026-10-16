@@ -1,0 +1,12 @@
+<section aria-labelledby="titre-recapitulatif" class="flex flex-col gap-2">
+  <h2 id="titre-recapitulatif" class="font-titres text-xl font-semibold uppercase">Articles</h2>
+
+  <ul class="border-t border-bordure">
+    <slot name="lignes"></slot>
+  </ul>
+
+  <p class="flex items-center justify-between gap-4 pt-3">
+    <span class="font-semibold">Total</span>
+    <span class="font-titres text-2xl font-semibold">{{total}}</span>
+  </p>
+</section>

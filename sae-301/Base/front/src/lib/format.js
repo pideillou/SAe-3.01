@@ -44,3 +44,12 @@ export function decouperDescription(description) {
     }),
   };
 }
+
+const DATE_HEURE = new Intl.DateTimeFormat("fr-FR", { dateStyle: "long", timeStyle: "short" });
+
+/**
+ * "2026-10-16 14:30:00" (date MySQL) -> « 16 octobre 2026 à 14:30 »
+ */
+export function formaterDateHeure(dateMysql) {
+  return DATE_HEURE.format(new Date(dateMysql.replace(" ", "T")));
+}

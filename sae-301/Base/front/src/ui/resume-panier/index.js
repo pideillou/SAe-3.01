@@ -13,6 +13,7 @@ let ResumePanierView = {
         articles: pluriel(data.articles, "article"),
         total: formaterPrix(data.total),
         cheminCatalogue: urlPublique(""),
+        cheminCommande: urlPublique("commande"),
       })
     );
   },

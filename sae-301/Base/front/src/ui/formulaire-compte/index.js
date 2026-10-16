@@ -47,6 +47,7 @@ let FormulaireCompteView = {
    * @param {{email: string,
    *          erreurs: Object<string, string>,   // un message par champ fautif
    *          message: {type, texte}|null,       // erreur générale
+   *          retour: string|null,               // page à rejoindre après connexion
    *          envoiEnCours: boolean}} data
    * @param {{surEnvoi: (valeurs: {email, mdp, confirmation}) => void}} actions
    */
@@ -57,7 +58,10 @@ let FormulaireCompteView = {
       genericRenderer(template, {
         ...reglages,
         email: data.email,
-        cheminLien: urlPublique(reglages.cheminLien),
+        // Le lien vers l'autre formulaire garde la page à rejoindre ensuite.
+        cheminLien:
+          urlPublique(reglages.cheminLien) +
+          (data.retour === null || data.retour === undefined ? "" : `?retour=${encodeURIComponent(data.retour)}`),
       })
     );
 
