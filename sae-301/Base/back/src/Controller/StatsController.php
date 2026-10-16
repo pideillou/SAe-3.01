@@ -23,8 +23,10 @@ final class StatsController
     public function index(): void
     {
         // La session est déjà ouverte par index.php.
-        if (($_SESSION['role'] ?? '') !== 'admin') {
-            Response::erreur('Accès réservé aux administrateurs', 403);
+        // Seule une session ouverte par AdminAuthController compte : être client
+        // connecté ne suffit pas.
+        if (!isset($_SESSION['admin_id'])) {
+            Response::erreur('Authentification administrateur requise', 401);
         }
 
         Response::json($this->produits->statistiques());

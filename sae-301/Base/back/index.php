@@ -16,13 +16,16 @@ use App\Core\Database;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Router;
+use App\Controller\AdminAuthController;
 use App\Controller\AuthController;
 use App\Controller\CatalogueController;
 use App\Controller\CategorieController;
 use App\Controller\StatsController;
+use App\Model\AdministrateurModel;
 use App\Model\CategorieModel;
 use App\Model\ParametreModel;
 use App\Model\ProduitModel;
+use App\Model\UtilisateurModel;
 
 // --- Chargement automatique des classes ------------------------------------
 // App\Core\Router  ->  back/src/Core/Router.php
@@ -65,11 +68,14 @@ try {
     $produits   = new ProduitModel($pdo);
     $categories = new CategorieModel($pdo);
     $parametres = new ParametreModel($pdo);
+    $utilisateurs    = new UtilisateurModel($pdo);
+    $administrateurs = new AdministrateurModel($pdo);
 
     $controleurs = [
         CatalogueController::class => new CatalogueController($produits, $categories, $parametres),
         CategorieController::class => new CategorieController($categories),
-        AuthController::class      => new AuthController(),
+        AuthController::class      => new AuthController($utilisateurs),
+        AdminAuthController::class => new AdminAuthController($administrateurs),
         StatsController::class     => new StatsController($produits),
     ];
 
