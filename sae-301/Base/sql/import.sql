@@ -34,6 +34,8 @@ DROP TABLE IF EXISTS valeur_option;
 DROP TABLE IF EXISTS option_produit;
 DROP TABLE IF EXISTS produit;
 DROP TABLE IF EXISTS categorie;
+DROP TABLE IF EXISTS administrateur;
+DROP TABLE IF EXISTS utilisateur;
 DROP TABLE IF EXISTS parametre;
 -- Tables de l'exemple du starter, remplacées par le catalogue.
 DROP TABLE IF EXISTS film;
@@ -51,6 +53,46 @@ CREATE TABLE parametre (
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
+-- Comptes clients (CMD-c). Le mot de passe n'est jamais stocké : seulement son
+-- empreinte bcrypt (60 caractères, 255 laissés pour changer d'algorithme).
+-- L'e-mail est enregistré en minuscules ; l'index UNIQUE empêche deux comptes
+-- avec la même adresse, même si deux inscriptions arrivent en même temps.
+-- ---------------------------------------------------------------------------
+CREATE TABLE utilisateur (
+    id           INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    email        VARCHAR(190) NOT NULL,
+    mot_de_passe VARCHAR(255) NOT NULL,
+    cree_le      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_utilisateur_email (email)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
+-- Comptes administrateurs (CMD-c). Table SÉPARÉE de utilisateur : un client ne
+-- peut jamais devenir administrateur par la base, et les deux ouvertures de
+-- session (clés de session différentes) ne se mélangent pas.
+-- ---------------------------------------------------------------------------
+CREATE TABLE administrateur (
+    id           SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    email        VARCHAR(190)      NOT NULL,
+    mot_de_passe VARCHAR(255)      NOT NULL,
+    cree_le      DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_administrateur_email (email)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+-- Compte administrateur de TEST : à supprimer ou à remplacer avant la mise en
+-- production. Seule l'empreinte bcrypt du mot de passe est enregistrée.
+INSERT INTO administrateur (email, mot_de_passe) VALUES
+    ('admin@razer-click-collect.test', '$2y$12$.ojg/XBiG2QNJ8MnUk0.3OWs8VsWWL1u7nyDy.biwkoIUYvk5lNiK');
 
 -- ---------------------------------------------------------------------------
 -- Catégories. Le slug sert à l'adresse /categorie/slug.
