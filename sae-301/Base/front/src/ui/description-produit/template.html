@@ -1,11 +1,16 @@
-<section class="flex flex-col gap-5 border border-bordure bg-surface p-6 md:p-8" aria-labelledby="details-produit">
-  <h2 id="details-produit" class="font-titres text-xl leading-tight font-semibold uppercase">Détails du produit</h2>
+<section class="flex flex-col gap-6" aria-labelledby="details-produit">
+  <h2 id="details-produit" class="font-titres text-xl leading-tight font-semibold uppercase md:text-2xl">Détails du produit</h2>
 
-  <ul data-caracteristiques class="grid gap-4 border-y border-bordure py-5 text-mention text-texte md:grid-cols-3 md:gap-8">
+  <ul data-caracteristiques class="grid gap-3 text-mention text-texte md:grid-cols-3">
     <slot name="caracteristiques"></slot>
   </ul>
 
-  <div class="flex flex-col gap-5">
-    <slot name="blocs"></slot>
+  <div data-paragraphes class="flex max-w-3xl flex-col gap-4">
+    <slot name="paragraphes"></slot>
+  </div>
+
+  <!-- Un argument par ligne repliable : le texte long ne noie pas la page. -->
+  <div data-arguments>
+    <slot name="arguments"></slot>
   </div>
 </section>

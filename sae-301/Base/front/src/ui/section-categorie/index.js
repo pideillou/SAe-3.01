@@ -8,8 +8,9 @@ let SectionCategorieView = {
   /**
    * @param {{nom: string, slug: string, produits: Array}} categorie
    * @param {number} prioritaires  voir GrilleProduitsView
+   * @param {object} actions       voir GrilleProduitsView
    */
-  dom: function (categorie, prioritaires = 0) {
+  dom: function (categorie, prioritaires = 0, actions = {}) {
     let fragment = htmlToFragment(
       genericRenderer(template, {
         nom: categorie.nom,
@@ -20,7 +21,7 @@ let SectionCategorieView = {
 
     fragment
       .querySelector('slot[name="grille"]')
-      .replaceWith(GrilleProduitsView.dom(categorie.produits, prioritaires));
+      .replaceWith(GrilleProduitsView.dom(categorie.produits, prioritaires, actions));
 
     return fragment;
   },

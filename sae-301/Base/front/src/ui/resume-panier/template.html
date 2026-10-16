@@ -1,0 +1,16 @@
+<aside aria-labelledby="titre-resume" class="flex flex-col gap-5 border border-bordure bg-surface p-5 md:p-6 lg:sticky lg:top-6">
+  <h2 id="titre-resume" class="font-titres text-xl font-semibold uppercase">Récapitulatif</h2>
+
+  <dl class="flex flex-col gap-3 text-sm">
+    <div class="flex items-center justify-between gap-4">
+      <dt class="text-texte-secondaire">Articles</dt>
+      <dd>{{articles}}</dd>
+    </div>
+    <div class="flex items-center justify-between gap-4 border-t border-bordure pt-3">
+      <dt class="font-semibold">Total</dt>
+      <dd data-total class="font-titres text-2xl font-semibold">{{total}}</dd>
+    </div>
+  </dl>
+
+  <a href="{{cheminCatalogue}}" data-link class="flex min-h-12 w-full items-center justify-center border border-bordure px-6 py-3 font-titres text-[0.9375rem] font-semibold uppercase transition-colors hover:border-razer hover:text-razer">Continuer mes achats</a>
+</aside>

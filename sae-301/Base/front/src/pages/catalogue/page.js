@@ -1,12 +1,15 @@
 import { CategorieData } from "../../data/categorie.js";
+import { PanierData } from "../../data/panier.js";
 import { ProduitData } from "../../data/produit.js";
 import { pluriel } from "../../lib/format.js";
 import { definirMetadonnees } from "../../lib/seo.js";
+import { varianteInitiale } from "../../lib/variantes.js";
 import { genericRenderer, htmlToFragment } from "../../lib/utils.js";
 import { FilArianeView } from "../../ui/fil-ariane/index.js";
 import { GrilleProduitsView } from "../../ui/grille-produits/index.js";
 import { MessageView } from "../../ui/message/index.js";
 import { NavigationCategoriesView } from "../../ui/navigation-categories/index.js";
+import { NotificationView } from "../../ui/notification/index.js";
 import { SectionCategorieView } from "../../ui/section-categorie/index.js";
 import { The404Page } from "../404/page.js";
 import template from "./template.html?raw";
@@ -89,6 +92,34 @@ C.charger = async function (slug) {
   return true;
 };
 
+/**
+ * « Ajouter au panier » sur une carte. Le catalogue ne connaît pas les
+ * variantes : on demande la fiche du produit et on met sa variante par défaut,
+ * celle que la fiche affiche en premier. Le nom complet de la variante figure
+ * ensuite dans le panier.
+ */
+C.handler_ajouter = async function (produit) {
+  try {
+    let fiche = (await ProduitData.fetchOne(produit.slug)).produit;
+    let variante = varianteInitiale(fiche.variantes);
+
+    if (variante === null) {
+      V.notifier({ type: "erreur", texte: `${produit.nom} n'est pas disponible à la vente.` });
+      return;
+    }
+
+    let resultat = PanierData.ajouter(PanierData.articleDepuis(fiche, variante));
+
+    V.notifier(
+      resultat.ok
+        ? { type: "succes", texte: `${variante.nom} a été ajouté à votre panier.` }
+        : { type: "erreur", texte: resultat.raison }
+    );
+  } catch (erreur) {
+    V.notifier({ type: "erreur", texte: `Impossible d'ajouter ce produit : ${erreur.message}` });
+  }
+};
+
 C.init = async function (params) {
   let trouvee = await C.charger(params.slug);
 
@@ -103,8 +134,23 @@ C.init = async function (params) {
 
 let V = {};
 
+const ACTIONS = { surAjout: C.handler_ajouter };
+
+V.racine = null; // élément racine de la page affichée
+
 V.init = function () {
-  return V.createPageFragment();
+  let fragment = V.createPageFragment();
+  V.racine = fragment.firstElementChild;
+  return fragment;
+};
+
+/**
+ * Affiche un message au bas de l'écran, à la place du précédent. Seul ce
+ * message change : reconstruire toute la page ferait perdre la position de
+ * défilement et le focus au visiteur qui vient de cliquer sur une carte.
+ */
+V.notifier = function (message) {
+  V.racine.querySelector("[data-notification]").replaceChildren(NotificationView.dom(message));
 };
 
 /**
@@ -159,7 +205,7 @@ V.createPageFragment = function () {
   } else if (M.categorie === null) {
     // Tout le catalogue : un rayon par catégorie.
     let sections = M.rayons.map((rayon, i) =>
-      SectionCategorieView.dom(rayon, i === 0 ? CARTES_PRIORITAIRES : 0)
+      SectionCategorieView.dom(rayon, i === 0 ? CARTES_PRIORITAIRES : 0, ACTIONS)
     );
     slotContenu.replaceWith(...sections);
   } else {
@@ -168,7 +214,7 @@ V.createPageFragment = function () {
     // passer du h1 aux h3 des cartes sans niveau intermédiaire.
     slotContenu.replaceWith(
       htmlToFragment('<h2 class="sr-only">Produits</h2>'),
-      GrilleProduitsView.dom(M.rayons[0].produits, CARTES_PRIORITAIRES)
+      GrilleProduitsView.dom(M.rayons[0].produits, CARTES_PRIORITAIRES, ACTIONS)
     );
   }
 

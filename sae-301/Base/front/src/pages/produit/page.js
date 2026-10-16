@@ -1,3 +1,4 @@
+import { PanierData } from "../../data/panier.js";
 import { ProduitData } from "../../data/produit.js";
 import { decouperDescription, formaterPrix, pluriel } from "../../lib/format.js";
 import { definirMetadonnees } from "../../lib/seo.js";
@@ -8,6 +9,7 @@ import { DescriptionProduitView } from "../../ui/description-produit/index.js";
 import { FilArianeView } from "../../ui/fil-ariane/index.js";
 import { GalerieProduitView } from "../../ui/galerie-produit/index.js";
 import { MessageView } from "../../ui/message/index.js";
+import { NotificationView } from "../../ui/notification/index.js";
 import { SelecteurOptionsView } from "../../ui/selecteur-options/index.js";
 import { The404Page } from "../404/page.js";
 import template from "./template.html?raw";
@@ -17,8 +19,7 @@ import template from "./template.html?raw";
  * d'images, nom, description, choix des options avec le prix et le stock de
  * la variante obtenue, et retour vers la catégorie.
  *
- * Le bouton « Ajouter au panier » est présent mais ne fait encore rien : le
- * panier est une user story à part (CMD-b).
+ * Le bouton « Ajouter au panier » met la variante choisie dans le panier (CMD-b).
  */
 
 let M = {
@@ -60,6 +61,16 @@ C.handler_choisirImage = function (index) {
   // La page est reconstruite : le focus, lui, est rendu à la miniature choisie,
   // pour que la navigation au clavier ne reparte pas du début de la page.
   V.racine.querySelector(`button[data-index="${index}"]`)?.focus();
+};
+
+C.handler_ajouter = function () {
+  let resultat = PanierData.ajouter(PanierData.articleDepuis(M.produit, M.variante));
+
+  V.notifier(
+    resultat.ok
+      ? { type: "succes", texte: `${M.variante.nom} a été ajouté à votre panier.` }
+      : { type: "erreur", texte: resultat.raison }
+  );
 };
 
 C.handler_choisirValeur = function (valeurId) {
@@ -117,6 +128,14 @@ V.init = function () {
   let fragment = V.createPageFragment();
   V.racine = fragment.firstElementChild;
   return fragment;
+};
+
+/**
+ * Affiche un message au bas de l'écran, à la place du précédent, sans
+ * reconstruire la page (le visiteur garde sa position et ses choix).
+ */
+V.notifier = function (message) {
+  V.racine.querySelector("[data-notification]").replaceChildren(NotificationView.dom(message));
 };
 
 /**
@@ -244,6 +263,7 @@ V.createPageFragment = function () {
     slotOptions.remove();
     pageFragment.querySelector("[data-note-stock]").remove();
     bouton.disabled = true;
+    bouton.textContent = "Indisponible";
   } else {
     slotStock.replaceWith(BadgeStockView.dom(M.variante.etat));
 
@@ -257,8 +277,12 @@ V.createPageFragment = function () {
       );
     slotOptions.replaceWith(...groupes);
 
-    // Un produit épuisé ne se met pas au panier. (L'ajout lui-même : CMD-b.)
-    bouton.disabled = M.variante.stock === 0;
+    // Un produit épuisé ne se met pas au panier.
+    if (M.variante.stock === 0) {
+      bouton.disabled = true;
+      bouton.textContent = "Épuisé";
+    }
+    bouton.addEventListener("click", C.handler_ajouter);
   }
 
   // Détails

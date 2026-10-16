@@ -1,4 +1,10 @@
-<div class="flex flex-col gap-1.5">
-  <h3 class="text-mention font-semibold text-texte">{{titre}}</h3>
-  <p class="text-sm leading-relaxed text-texte-secondaire">{{texte}}</p>
-</div>
+<details class="group border-b border-bordure py-4 first:border-t">
+  <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-titres text-base font-semibold uppercase transition-colors hover:text-razer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-razer md:text-lg [&::-webkit-details-marker]:hidden">
+    {{titre}}
+    <span class="relative size-4 shrink-0" aria-hidden="true">
+      <span class="absolute top-1/2 left-0 h-0.5 w-full -translate-y-1/2 bg-razer"></span>
+      <span class="absolute top-0 left-1/2 h-full w-0.5 -translate-x-1/2 bg-razer group-open:hidden"></span>
+    </span>
+  </summary>
+  <p class="max-w-3xl pt-3 text-sm leading-relaxed text-texte-secondary">{{texte}}</p>
+</details>

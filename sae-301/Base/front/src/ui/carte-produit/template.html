@@ -1,5 +1,5 @@
-<article class="border border-bordure bg-surface transition-colors hover:border-texte-secondaire">
-  <a href="{{chemin}}" data-link class="flex h-full flex-col">
+<article class="flex flex-col border border-bordure bg-surface transition-colors hover:border-texte-secondaire">
+  <a href="{{chemin}}" data-link class="flex flex-1 flex-col">
     <!-- alt vide : le nom du produit, juste en dessous, fait déjà partie du lien. -->
     <img src="{{image}}" width="500" height="500" alt="" decoding="async" class="aspect-photo w-full object-contain" />
 
@@ -12,4 +12,9 @@
       </span>
     </div>
   </a>
+
+  <!-- Hors du lien : un bouton ne peut pas être placé dans un lien. -->
+  <button type="button" data-action="ajouter-panier" aria-label="Ajouter {{nom}} au panier" class="flex min-h-11 w-full items-center justify-center border-t border-bordure px-3 py-2 font-titres text-sm font-semibold text-razer uppercase transition-colors hover:bg-razer hover:text-sur-razer disabled:cursor-wait disabled:opacity-40">
+    Ajouter au panier
+  </button>
 </article>

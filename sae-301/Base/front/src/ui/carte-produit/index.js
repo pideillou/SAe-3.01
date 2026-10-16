@@ -23,14 +23,20 @@ let CarteProduitView = {
    * @param {object}  produit
    * @param {boolean} prioritaire  true pour les cartes visibles dès l'ouverture
    *                               de la page : leur image n'est pas différée.
+   * @param {{surAjout: (produit: object) => void}} actions  signale le clic sur
+   *        « Ajouter au panier » ; la carte ne sait pas ce qu'on en fait.
    */
-  dom: function (produit, prioritaire = false) {
+  dom: function (produit, prioritaire = false, actions = {}) {
     let fragment = htmlToFragment(CarteProduitView.html(produit));
 
     // Un template n'a pas de condition : le chargement différé se règle ici.
     // Les images hors de l'écran ne sont téléchargées qu'à l'approche du
     // défilement, ce qui garde le catalogue sous les 3 secondes.
     fragment.querySelector("img").loading = prioritaire ? "eager" : "lazy";
+
+    fragment
+      .querySelector('[data-action="ajouter-panier"]')
+      .addEventListener("click", () => actions.surAjout?.(produit));
 
     return fragment;
   },

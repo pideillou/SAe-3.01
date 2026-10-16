@@ -31,16 +31,17 @@
 
         <p data-note-stock class="text-xs leading-relaxed text-texte-secondaire">{{noteStock}}</p>
 
-        <div class="flex flex-col gap-3">
-          <button type="button" data-action="ajouter-panier" class="flex min-h-12 w-full items-center justify-center border border-razer bg-razer px-6 py-3 font-titres text-[0.9375rem] font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40">
+        <div>
+          <button type="button" data-action="ajouter-panier" class="flex min-h-12 w-full items-center justify-center border border-razer bg-razer px-6 py-3 font-titres text-[0.9375rem] font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:border-dashed disabled:border-erreur disabled:bg-surface disabled:text-erreur disabled:hover:opacity-100">
             Ajouter au panier
           </button>
-
-          <p class="text-xs leading-relaxed text-texte-secondaire">Retrait chez RAZER Paris — République. Aucun paiement en ligne.</p>
         </div>
       </div>
     </div>
 
     <slot name="details"></slot>
   </div>
+
+  <!-- Annonce les ajouts au panier aux lecteurs d'écran. -->
+  <div data-notification aria-live="polite"></div>
 </div>

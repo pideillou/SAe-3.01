@@ -1,3 +1,4 @@
+import { PanierData } from "../../data/panier.js";
 import { genericRenderer, htmlToFragment, urlPublique } from "../../lib/utils.js";
 import logo from "../../assets/logo-razer.webp";
 import iconeAdmin from "../../assets/admin.svg";
@@ -45,6 +46,26 @@ let HeaderView = {
         afficherMenu(false);
       }
     });
+
+    // Compteur du panier (icône de l'en-tête et menu mobile) : il suit les
+    // modifications du panier, y compris celles d'un autre onglet. Le layout est
+    // reconstruit à chaque page : l'abonnement s'arrête quand cet en-tête a été
+    // retiré de la page.
+    let afficherCompteur = function () {
+      if (!racine.isConnected) {
+        arreter();
+        return;
+      }
+      let nombre = String(PanierData.nombreArticles());
+      for (let compteur of racine.querySelectorAll("[data-compteur-panier]")) {
+        compteur.textContent = nombre;
+      }
+    };
+    let arreter = PanierData.surChangement(afficherCompteur);
+
+    for (let compteur of racine.querySelectorAll("[data-compteur-panier]")) {
+      compteur.textContent = String(PanierData.nombreArticles());
+    }
 
     return fragment;
   },

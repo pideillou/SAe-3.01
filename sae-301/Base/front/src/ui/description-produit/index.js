@@ -4,8 +4,8 @@ import templateArgument from "./argument.html?raw";
 import templateCaracteristique from "./caracteristique.html?raw";
 import templateParagraphe from "./paragraphe.html?raw";
 
-// Panneau « Détails du produit » : les points forts sur une ligne, puis les
-// arguments de la description, chacun avec son titre quand il en a un. Un
+// Section « Détails du produit » : les points forts en trois cartes, puis la
+// description, dont les arguments à titre sont des volets repliables. Un
 // template par sorte d'élément : un template n'a ni condition ni boucle.
 let DescriptionProduitView = {
   /**
@@ -15,10 +15,26 @@ let DescriptionProduitView = {
   dom: function (blocs, caracteristiques) {
     let fragment = htmlToFragment(template);
 
-    let elements = blocs.map((bloc) =>
-      htmlToFragment(genericRenderer(bloc.titre === null ? templateParagraphe : templateArgument, bloc))
-    );
-    fragment.querySelector('slot[name="blocs"]').replaceWith(...elements);
+    // Les blocs sans titre restent du texte ; ceux qui ont un titre sont
+    // repliables, le premier est ouvert.
+    let paragraphes = blocs.filter((bloc) => bloc.titre === null);
+    let argumentsTitres = blocs.filter((bloc) => bloc.titre !== null);
+
+    let elementsParagraphes = paragraphes.map((bloc) => htmlToFragment(genericRenderer(templateParagraphe, bloc)));
+    let elementsArguments = argumentsTitres.map((bloc) => htmlToFragment(genericRenderer(templateArgument, bloc)));
+    elementsArguments[0]?.querySelector("details").setAttribute("open", "");
+
+    if (elementsParagraphes.length === 0) {
+      fragment.querySelector("[data-paragraphes]").remove();
+    } else {
+      fragment.querySelector('slot[name="paragraphes"]').replaceWith(...elementsParagraphes);
+    }
+
+    if (elementsArguments.length === 0) {
+      fragment.querySelector("[data-arguments]").remove();
+    } else {
+      fragment.querySelector('slot[name="arguments"]').replaceWith(...elementsArguments);
+    }
 
     if (caracteristiques.length === 0) {
       fragment.querySelector("[data-caracteristiques]").remove();
