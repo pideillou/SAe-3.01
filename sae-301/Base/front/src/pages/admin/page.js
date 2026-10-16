@@ -1,8 +1,8 @@
-import { AuthData } from "../../data/auth.js";
+import { AdminAuthData } from "../../data/admin-auth.js";
 import { StatsData } from "../../data/stats.js";
+import { naviguer } from "../../lib/navigation.js";
 import { definirMetadonnees } from "../../lib/seo.js";
-import { htmlToFragment } from "../../lib/utils.js";
-import { FormulaireConnexionView } from "../../ui/formulaire-connexion/index.js";
+import { genericRenderer, htmlToFragment } from "../../lib/utils.js";
 import { MessageView } from "../../ui/message/index.js";
 import { StatistiquesView } from "../../ui/statistiques/index.js";
 import template from "./template.html?raw";
@@ -10,13 +10,14 @@ import template from "./template.html?raw";
 /**
  * Page « Administration ».
  *
- * La page ne protège rien : le formulaire et la zone de statistiques sont
- * toujours là. C'est le serveur qui décide de l'accès, et la page affiche sa
- * réponse : 200 avec les statistiques, 401 ou 403 sinon.
+ * La page ne protège rien : c'est le serveur qui décide de l'accès (session
+ * administrateur, séparée de celle des clients). La page demande l'état de la
+ * session, envoie vers /admin/connexion s'il n'y en a pas, et affiche la
+ * réponse du serveur : 200 avec les statistiques, 401 sinon.
  */
 
 let M = {
-  login: "", // dernier identifiant saisi, pour pré-remplir le formulaire
+  email: "", // adresse de l'administrateur connecté
   stats: null, // statistiques, si le serveur les a fournies
   message: null, // { type, texte }, ou null
 };
@@ -34,46 +35,43 @@ C.chargerStats = async function () {
 
     let texte = erreur.message;
     if (erreur.statut === 401) texte = "Vous n'êtes pas connecté.";
-    if (erreur.statut === 403) texte = "Accès réservé aux administrateurs.";
 
     M.message = { type: "erreur", texte };
   }
 };
 
-C.handler_connexion = async function (login, mdp) {
-  M.login = login;
+C.init = async function () {
+  definirMetadonnees({ titre: "Administration" });
+  M.message = null;
+  M.stats = null;
 
   try {
-    await AuthData.login(login, mdp);
-    M.message = { type: "succes", texte: `Connecté en tant que ${login}.` };
-    // La requête suivante transporte le cookie de session reçu à l'instant.
-    await C.chargerStats();
+    let etat = await AdminAuthData.moi();
+
+    if (!etat.connecte) {
+      naviguer("admin/connexion");
+      return "";
+    }
+
+    M.email = etat.email;
   } catch (erreur) {
-    M.message = { type: "erreur", texte: erreur.message };
+    M.email = "";
+    M.message = { type: "erreur", texte: `Impossible de vérifier votre connexion : ${erreur.message}` };
+    return V.init();
   }
 
-  V.rafraichir();
+  await C.chargerStats();
+  return V.init();
 };
 
 C.handler_deconnexion = async function () {
   try {
-    await AuthData.logout();
-    M.message = null;
-    // On redemande les statistiques : c'est la réponse du serveur, et non le
-    // clic, qui dit si la déconnexion a réellement eu lieu.
-    await C.chargerStats();
+    await AdminAuthData.logout();
+    naviguer("admin/connexion");
   } catch (erreur) {
-    M.message = { type: "erreur", texte: erreur.message };
+    M.message = { type: "erreur", texte: `Déconnexion impossible : ${erreur.message}` };
+    V.rafraichir();
   }
-
-  V.rafraichir();
-};
-
-C.init = async function () {
-  definirMetadonnees({ titre: "Administration" });
-  M.message = null;
-  await C.chargerStats();
-  return V.init();
 };
 
 let V = {};
@@ -86,8 +84,6 @@ V.init = function () {
   return fragment;
 };
 
-// Même principe que la page Catalogue : toute la page se reconstruit à partir
-// du modèle. L'identifiant saisi survit parce qu'il est dans le modèle.
 V.rafraichir = function () {
   let fragment = V.createPageFragment();
   let nouvelleRacine = fragment.firstElementChild;
@@ -96,14 +92,14 @@ V.rafraichir = function () {
 };
 
 V.createPageFragment = function () {
-  let pageFragment = htmlToFragment(template);
+  let pageFragment = htmlToFragment(genericRenderer(template, { email: M.email }));
 
-  pageFragment.querySelector('slot[name="connexion"]').replaceWith(
-    FormulaireConnexionView.dom(
-      { login: M.login },
-      { surConnexion: C.handler_connexion, surDeconnexion: C.handler_deconnexion }
-    )
-  );
+  pageFragment
+    .querySelector('[data-action="deconnexion"]')
+    .addEventListener("click", C.handler_deconnexion);
+  if (M.email === "") {
+    pageFragment.querySelector("[data-session]").remove();
+  }
 
   pageFragment.querySelector('slot[name="message"]').replaceWith(MessageView.dom(M.message));
 
