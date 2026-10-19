@@ -17,6 +17,7 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Core\Router;
 use App\Controller\AdminAuthController;
+use App\Controller\AdminCommandeController;
 use App\Controller\AuthController;
 use App\Controller\CatalogueController;
 use App\Controller\CategorieController;
@@ -79,10 +80,11 @@ try {
         CatalogueController::class => new CatalogueController($produits, $categories, $parametres),
         CategorieController::class => new CategorieController($categories),
         AuthController::class      => new AuthController($utilisateurs),
+        AdminCommandeController::class => new AdminCommandeController($commandes),
         AdminAuthController::class => new AdminAuthController($administrateurs),
         CommandeController::class  => new CommandeController($commandes),
         PanierController::class    => new PanierController($produits, $parametres),
-        StatsController::class     => new StatsController($produits),
+        StatsController::class     => new StatsController($produits, $commandes),
     ];
 
     $routes = require __DIR__ . '/src/routes.php';

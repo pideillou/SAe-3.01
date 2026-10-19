@@ -167,6 +167,51 @@ final class CommandeModel
     }
 
     /**
+     * Indicateurs du tableau de bord : nombre total de commandes, et celles dont
+     * le statut est « en cours ».
+     *
+     * @return array{total: int, enCours: int}
+     */
+    public function statistiques(): array
+    {
+        $ligne = $this->pdo->query(
+            "SELECT COUNT(*) AS total,
+                    COALESCE(SUM(statut = 'en cours'), 0) AS en_cours
+               FROM commande"
+        )->fetch();
+
+        // MySQL renvoie les nombres sous forme de chaînes.
+        return ['total' => (int) $ligne['total'], 'enCours' => (int) $ligne['en_cours']];
+    }
+
+    /**
+     * Les commandes de tous les clients, de la plus récente à la plus ancienne,
+     * pour le back-office. Limité aux plus récentes : la pagination et les filtres
+     * relèvent de la gestion des commandes.
+     *
+     * @return array<int, array{numero: string, statut: string, total: string,
+     *                          cree_le: string, email: string, articles: string}>
+     */
+    public function listerRecentes(int $limite): array
+    {
+        $requete = $this->pdo->prepare(
+            'SELECT commande.numero, commande.statut, commande.total, commande.cree_le,
+                    utilisateur.email,
+                    (SELECT COALESCE(SUM(ligne_commande.quantite), 0)
+                       FROM ligne_commande
+                      WHERE ligne_commande.commande_id = commande.id) AS articles
+               FROM commande
+         INNER JOIN utilisateur ON utilisateur.id = commande.utilisateur_id
+           ORDER BY commande.cree_le DESC, commande.id DESC
+              LIMIT :limite'
+        );
+        $requete->bindValue(':limite', $limite, PDO::PARAM_INT);
+        $requete->execute();
+
+        return $requete->fetchAll();
+    }
+
+    /**
      * Lit les variantes demandées en les verrouillant jusqu'à la fin de la
      * transaction (SELECT … FOR UPDATE) : personne d'autre ne peut modifier
      * leur stock pendant qu'on le contrôle puis qu'on le décrémente.

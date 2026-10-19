@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Controller\AdminAuthController;
+use App\Controller\AdminCommandeController;
 use App\Controller\AuthController;
 use App\Controller\CatalogueController;
 use App\Controller\CategorieController;
@@ -34,5 +35,6 @@ return [
     'POST /api/admin/login'  => [AdminAuthController::class, 'login'],
     'POST /api/admin/logout' => [AdminAuthController::class, 'logout'],
     'GET  /api/admin/moi'    => [AdminAuthController::class, 'moi'],
+    'GET  /api/admin/commandes' => [AdminCommandeController::class, 'index'],
     'GET  /api/admin/stats' => [StatsController::class,     'index'],
 ];
