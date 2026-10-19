@@ -327,14 +327,15 @@ CREATE TABLE ligne_commande (
 
 -- ---------------------------------------------------------------------------
 -- Journal des mouvements de stock. quantite est signée : négative à la
--- commande, positive à l'annulation. Chaque ligne dit quoi, combien, pourquoi
+-- commande, positive à l'annulation, positive ou négative pour un ajustement
+-- fait par l'administrateur depuis la fiche produit. Chaque ligne dit quoi, combien, pourquoi
 -- (motif), pour quelle commande et quand.
 -- ---------------------------------------------------------------------------
 CREATE TABLE mouvement_stock (
     id          INT UNSIGNED      NOT NULL AUTO_INCREMENT,
     variante_id SMALLINT UNSIGNED NULL,
     quantite    INT               NOT NULL,
-    motif       ENUM('commande', 'annulation') NOT NULL,
+    motif       ENUM('commande', 'annulation', 'ajustement') NOT NULL,
     commande_id INT UNSIGNED      NULL,
     cree_le     DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
