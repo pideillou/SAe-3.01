@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Core\Request;
 use App\Core\Response;
 use App\Model\CategorieModel;
+use App\Service\Slug;
 
 /**
  * Gestion des catégories par les administrateurs (GOF-c) : liste, création,
@@ -55,7 +56,7 @@ final class AdminCategorieController
 
         [$nom, $description, $ordre, $erreurs] = $this->lireFormulaire($requete->corps());
 
-        $slug = self::slugDe($nom);
+        $slug = Slug::de($nom);
 
         if ($slug === '' && !isset($erreurs['nom'])) {
             $erreurs['nom'] = 'Le nom doit contenir au moins une lettre ou un chiffre.';
@@ -92,7 +93,7 @@ final class AdminCategorieController
 
         [$nom, $description, $ordre, $erreurs] = $this->lireFormulaire($corps);
 
-        if ($nom !== '' && !isset($erreurs['nom']) && self::slugDe($nom) === '') {
+        if ($nom !== '' && !isset($erreurs['nom']) && Slug::de($nom) === '') {
             $erreurs['nom'] = 'Le nom doit contenir au moins une lettre ou un chiffre.';
         }
 
@@ -206,25 +207,6 @@ final class AdminCategorieController
         }
 
         return $id;
-    }
-
-    /**
-     * « Écrans & Moniteurs » -> « ecrans-moniteurs » : minuscules, sans accents,
-     * les autres caractères remplacés par des tirets.
-     */
-    private static function slugDe(string $nom): string
-    {
-        $slug = strtr(
-            mb_strtolower($nom),
-            [
-                'à' => 'a', 'â' => 'a', 'ä' => 'a', 'á' => 'a', 'ã' => 'a', 'å' => 'a', 'ç' => 'c',
-                'é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e', 'í' => 'i', 'ì' => 'i', 'î' => 'i',
-                'ï' => 'i', 'ñ' => 'n', 'ó' => 'o', 'ò' => 'o', 'ô' => 'o', 'ö' => 'o', 'õ' => 'o',
-                'ú' => 'u', 'ù' => 'u', 'û' => 'u', 'ü' => 'u', 'ý' => 'y', 'ÿ' => 'y', 'œ' => 'oe', 'æ' => 'ae',
-            ]
-        );
-
-        return trim((string) preg_replace('/[^a-z0-9]+/', '-', $slug), '-');
     }
 
     private static function formater(array $ligne, int $nombre): array

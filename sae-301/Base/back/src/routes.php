@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use App\Controller\AdminAuthController;
 use App\Controller\AdminCategorieController;
+use App\Controller\AdminImageController;
+use App\Controller\AdminProduitController;
 use App\Controller\AdminCommandeController;
 use App\Controller\AuthController;
 use App\Controller\CatalogueController;
@@ -40,6 +42,16 @@ return [
     'POST /api/admin/categories' => [AdminCategorieController::class, 'creer'],
     'POST /api/admin/categories/modifier' => [AdminCategorieController::class, 'modifier'],
     'POST /api/admin/categories/supprimer' => [AdminCategorieController::class, 'supprimer'],
+    'GET  /api/admin/produits' => [AdminProduitController::class, 'index'],
+    'GET  /api/admin/produit' => [AdminProduitController::class, 'detail'],
+    'POST /api/admin/produits' => [AdminProduitController::class, 'creer'],
+    'POST /api/admin/produits/modifier' => [AdminProduitController::class, 'modifier'],
+    'POST /api/admin/produits/supprimer' => [AdminProduitController::class, 'supprimer'],
+    'POST /api/admin/seuil' => [AdminProduitController::class, 'definirSeuil'],
+    'POST /api/admin/images' => [AdminImageController::class, 'ajouter'],
+    'POST /api/admin/images/principale' => [AdminImageController::class, 'definirPrincipale'],
+    'POST /api/admin/images/alt' => [AdminImageController::class, 'modifierAlt'],
+    'POST /api/admin/images/supprimer' => [AdminImageController::class, 'supprimer'],
     'GET  /api/admin/commandes' => [AdminCommandeController::class, 'index'],
     'GET  /api/admin/stats' => [StatsController::class,     'index'],
 ];

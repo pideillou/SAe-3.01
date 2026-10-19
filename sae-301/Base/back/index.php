@@ -18,6 +18,8 @@ use App\Core\Response;
 use App\Core\Router;
 use App\Controller\AdminAuthController;
 use App\Controller\AdminCategorieController;
+use App\Controller\AdminImageController;
+use App\Controller\AdminProduitController;
 use App\Controller\AdminCommandeController;
 use App\Controller\AuthController;
 use App\Controller\CatalogueController;
@@ -28,6 +30,10 @@ use App\Controller\StatsController;
 use App\Model\AdministrateurModel;
 use App\Model\CategorieModel;
 use App\Model\CommandeModel;
+use App\Model\ImageProduitModel;
+use App\Model\ProduitAdminModel;
+use App\Service\FichiersImages;
+use App\Service\RedimensionneurImage;
 use App\Model\ParametreModel;
 use App\Model\ProduitModel;
 use App\Model\UtilisateurModel;
@@ -76,11 +82,30 @@ try {
     $utilisateurs    = new UtilisateurModel($pdo);
     $administrateurs = new AdministrateurModel($pdo);
     $commandes       = new CommandeModel($pdo);
+    $produitsAdmin   = new ProduitAdminModel($pdo);
+    $imagesProduits  = new ImageProduitModel($pdo);
+
+    // Images téléversées par l'administration : dossier « uploads » à la racine
+    // du projet, hors de front/dist (que chaque dépôt du site remplace).
+    $fichiersImages = new FichiersImages(__DIR__ . '/../uploads');
 
     $controleurs = [
         CatalogueController::class => new CatalogueController($produits, $categories, $parametres),
         CategorieController::class => new CategorieController($categories),
         AuthController::class      => new AuthController($utilisateurs),
+        AdminProduitController::class => new AdminProduitController(
+            $produitsAdmin,
+            $categories,
+            $imagesProduits,
+            $parametres,
+            $fichiersImages,
+        ),
+        AdminImageController::class => new AdminImageController(
+            $imagesProduits,
+            $produitsAdmin,
+            $fichiersImages,
+            new RedimensionneurImage(),
+        ),
         AdminCategorieController::class => new AdminCategorieController($categories),
         AdminCommandeController::class => new AdminCommandeController($commandes),
         AdminAuthController::class => new AdminAuthController($administrateurs),
