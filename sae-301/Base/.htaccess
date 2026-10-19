@@ -16,6 +16,11 @@ RewriteEngine On
 #    QSA conserve la chaîne de requête (?page=2), END arrête la réécriture.
 RewriteRule ^api/ back/index.php [END,QSA]
 
+# 1 bis. Les images téléversées par l'administration (dossier uploads/ à la
+#    racine du projet) sont servies telles quelles. Elles ne sont pas dans
+#    front/dist/, que chaque dépôt du site remplace.
+RewriteRule ^uploads/ - [END]
+
 # 3. (second passage, voir la règle 2) La requête désigne désormais un chemin
 #    dans front/dist/. Si c'est un fichier du build (script, feuille de style,
 #    image), on le sert tel quel.

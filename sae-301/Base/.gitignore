@@ -2,6 +2,10 @@
 front/node_modules/
 front/dist/
 
+# Images téléversées par l'administration : des données, pas du code
+uploads/*
+!uploads/.gitkeep
+
 # Fichiers d'environnement des éditeurs et systèmes
 .DS_Store
 Thumbs.db
