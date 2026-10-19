@@ -54,6 +54,7 @@ En cas de conflit ou de doute entre ces sources, demander à PIDEILLOU.
 ## Rules (.claude/rules/)
 - mvc-javascript.md : architecture MVC, front et back
 - tailwind-css.md : style, charte Razer, responsive
+- themes-et-couleurs.md : palette par thème, @theme inline, ajout d'un thème
 - git-workflow.md : branches US-NNN, commits et push à la demande de PIDEILLOU
 - qualite-livrable.md : Definition of Done commune
 - securite.md : authentification, sessions, droits, validation, identifiants

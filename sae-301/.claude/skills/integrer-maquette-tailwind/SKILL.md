@@ -9,7 +9,7 @@ La première semaine de la SAé vise des prototypes Figma aboutis (variables, co
 
 ## Méthode
 1. Récupérer les valeurs réelles du Figma : couleurs, typographies, espacements, rayons, ombres. Si elles ne sont pas accessibles, demander un export ou les valeurs à PIDEILLOU. Ne jamais deviner.
-2. Déclarer ces variables dans @theme, dans front/src/global.css (Tailwind v4, pas de tailwind.config). Ensuite, utiliser uniquement les classes issues du thème.
+2. Déclarer ces variables dans front/src/global.css (Tailwind v4, pas de tailwind.config) : les couleurs dans la palette du thème et dans @theme inline (voir .claude/rules/themes-et-couleurs.md), les polices et tailles dans @theme. Ensuite, utiliser uniquement les classes issues du thème.
 3. Un composant Figma devient un dossier front/src/ui/nom/ avec template.html et index.js. Les données passent par des placeholders {{cle}}, sans boucle ni condition dans le template. Un variant devient un paramètre de index.js qui choisit les classes, pas un composant dupliqué. Les classes sont écrites en entier.
 4. Construire mobile first, puis les breakpoints tablette et desktop. Vérifier les trois formats.
 5. Couvrir les états : survol, focus, désactivé, erreur, et les trois états de stock (En stock, Bientôt épuisé, Épuisé).
