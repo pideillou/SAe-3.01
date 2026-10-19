@@ -26,6 +26,29 @@ final class CommandeModel
     /** Code d'erreur MySQL « entrée en double » (index UNIQUE). */
     private const ERREUR_DOUBLON = 1062;
 
+    /**
+     * Passages de statut permis : une commande avance de « en cours » à
+     * « disponible » puis « retirée », et peut être annulée tant qu'elle n'est pas
+     * retirée. « retirée » et « annulée » sont définitifs.
+     */
+    private const TRANSITIONS = [
+        'en cours'   => ['disponible', 'annulée'],
+        'disponible' => ['retirée', 'annulée'],
+        'retirée'    => [],
+        'annulée'    => [],
+    ];
+
+    /**
+     * Critères de tri du back-office : le nom demandé par le front et la colonne
+     * SQL qu'il désigne. Seules ces colonnes, écrites ici, entrent dans la requête.
+     */
+    private const TRIS = [
+        'date'    => 'commande.cree_le',
+        'statut'  => 'commande.statut',
+        'montant' => 'commande.total',
+        'numero'  => 'commande.numero',
+    ];
+
     /** Connexion à la base, fournie à la construction. */
     private PDO $pdo;
 
@@ -185,30 +208,189 @@ final class CommandeModel
     }
 
     /**
-     * Les commandes de tous les clients, de la plus récente à la plus ancienne,
-     * pour le back-office. Limité aux plus récentes : la pagination et les filtres
-     * relèvent de la gestion des commandes.
+     * Les commandes de tous les clients pour le back-office, triées et
+     * éventuellement filtrées par statut. Limité aux plus récentes selon le tri :
+     * la liste reste légère.
      *
+     * @param string      $tri     « date », « statut », « montant » ou « numero » (sinon « date »)
+     * @param string      $sens    « asc » ou « desc » (sinon « desc »)
+     * @param string|null $statut  ne garde que ce statut ; null pour tous
      * @return array<int, array{numero: string, statut: string, total: string,
      *                          cree_le: string, email: string, articles: string}>
      */
-    public function listerRecentes(int $limite): array
+    public function listerPourAdmin(string $tri, string $sens, ?string $statut, int $limite): array
     {
+        $colonne = self::TRIS[$tri] ?? self::TRIS['date'];
+        $sens    = strtolower($sens) === 'asc' ? 'ASC' : 'DESC';
+        $filtre  = $statut !== null && isset(self::TRANSITIONS[$statut]) ? 'WHERE commande.statut = :statut' : '';
+
         $requete = $this->pdo->prepare(
-            'SELECT commande.numero, commande.statut, commande.total, commande.cree_le,
+            "SELECT commande.numero, commande.statut, commande.total, commande.cree_le,
                     utilisateur.email,
                     (SELECT COALESCE(SUM(ligne_commande.quantite), 0)
                        FROM ligne_commande
                       WHERE ligne_commande.commande_id = commande.id) AS articles
                FROM commande
          INNER JOIN utilisateur ON utilisateur.id = commande.utilisateur_id
-           ORDER BY commande.cree_le DESC, commande.id DESC
-              LIMIT :limite'
+                {$filtre}
+           ORDER BY {$colonne} {$sens}, commande.id DESC
+              LIMIT :limite"
         );
+
+        if ($filtre !== '') {
+            $requete->bindValue(':statut', $statut);
+        }
+
         $requete->bindValue(':limite', $limite, PDO::PARAM_INT);
         $requete->execute();
 
         return $requete->fetchAll();
+    }
+
+    /**
+     * Le détail complet d'une commande pour le back-office : le client, les
+     * lignes et le journal des modifications faites par les administrateurs.
+     * Contrairement à trouverParNumero(), aucune limite au propriétaire : seul un
+     * administrateur appelle cette méthode.
+     */
+    public function trouverPourAdmin(string $numero): ?array
+    {
+        $requete = $this->pdo->prepare(
+            'SELECT commande.id, commande.numero, commande.statut, commande.total, commande.cree_le,
+                    utilisateur.email
+               FROM commande
+         INNER JOIN utilisateur ON utilisateur.id = commande.utilisateur_id
+              WHERE commande.numero = :numero'
+        );
+        $requete->execute([':numero' => $numero]);
+
+        $commande = $requete->fetch();
+
+        if ($commande === false) {
+            return null;
+        }
+
+        $lignes = $this->pdo->prepare(
+            'SELECT produit_nom, produit_slug, variante_nom, image, prix_unitaire, quantite
+               FROM ligne_commande WHERE commande_id = :commande ORDER BY id'
+        );
+        $lignes->execute([':commande' => $commande['id']]);
+        $commande['lignes'] = $lignes->fetchAll();
+
+        $journal = $this->pdo->prepare(
+            'SELECT administrateur_email, ancien_statut, nouveau_statut, cree_le
+               FROM journal_commande WHERE commande_id = :commande ORDER BY id DESC'
+        );
+        $journal->execute([':commande' => $commande['id']]);
+        $commande['journal'] = $journal->fetchAll();
+
+        return $commande;
+    }
+
+    /**
+     * Les statuts que peut prendre une commande depuis son statut actuel.
+     *
+     * @return string[]
+     */
+    public static function statutsSuivants(string $statut): array
+    {
+        return self::TRANSITIONS[$statut] ?? [];
+    }
+
+    /**
+     * Change le statut d'une commande, en une seule transaction : la commande est
+     * verrouillée, le passage est contrôlé, le stock est remis en rayon si la
+     * commande est annulée (et seulement dans ce cas), et la modification est
+     * écrite au journal avec l'administrateur qui l'a faite.
+     *
+     * Le contrôle se fait sur la commande verrouillée : deux annulations
+     * simultanées ne remettent donc jamais le stock deux fois.
+     *
+     * @throws StatutInterditException  commande inconnue, ou passage non permis
+     */
+    public function changerStatut(string $numero, string $nouveau, int $administrateurId, string $administrateurEmail): void
+    {
+        $this->pdo->beginTransaction();
+
+        try {
+            $requete = $this->pdo->prepare('SELECT id, statut FROM commande WHERE numero = :numero FOR UPDATE');
+            $requete->execute([':numero' => $numero]);
+            $commande = $requete->fetch();
+
+            if ($commande === false) {
+                throw new StatutInterditException('Commande introuvable.');
+            }
+
+            $ancien = $commande['statut'];
+
+            if (!in_array($nouveau, self::TRANSITIONS[$ancien] ?? [], true)) {
+                throw new StatutInterditException(
+                    $ancien === 'retirée' || $ancien === 'annulée'
+                        ? sprintf('La commande %s est déjà « %s » : son statut ne peut plus changer.', $numero, $ancien)
+                        : sprintf('La commande %s ne peut pas passer de « %s » à « %s ».', $numero, $ancien, $nouveau)
+                );
+            }
+
+            if ($nouveau === 'annulée') {
+                $this->remettreEnStock((int) $commande['id']);
+            }
+
+            $this->pdo->prepare('UPDATE commande SET statut = :statut WHERE id = :id')
+                ->execute([':statut' => $nouveau, ':id' => $commande['id']]);
+
+            $this->pdo->prepare(
+                'INSERT INTO journal_commande (commande_id, administrateur_id, administrateur_email, ancien_statut, nouveau_statut)
+                 VALUES (:commande, :administrateur, :email, :ancien, :nouveau)'
+            )->execute([
+                ':commande'       => $commande['id'],
+                ':administrateur' => $administrateurId,
+                ':email'          => $administrateurEmail,
+                ':ancien'         => $ancien,
+                ':nouveau'        => $nouveau,
+            ]);
+
+            $this->pdo->commit();
+        } catch (Throwable $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Recrédite le stock des variantes d'une commande annulée et l'écrit au
+     * journal des mouvements. Une ligne dont la variante a été supprimée depuis
+     * n'a plus de stock à recréditer : elle est ignorée.
+     *
+     * Les variantes sont traitées dans l'ordre de leur identifiant, comme à la
+     * validation d'une commande : deux traitements simultanés ne se bloquent pas.
+     */
+    private function remettreEnStock(int $commandeId): void
+    {
+        $lignes = $this->pdo->prepare(
+            'SELECT variante_id, SUM(quantite) AS quantite
+               FROM ligne_commande
+              WHERE commande_id = :commande AND variante_id IS NOT NULL
+           GROUP BY variante_id
+           ORDER BY variante_id'
+        );
+        $lignes->execute([':commande' => $commandeId]);
+
+        $maj      = $this->pdo->prepare('UPDATE variante SET stock = stock + :quantite WHERE id = :id');
+        $mouvement = $this->pdo->prepare(
+            "INSERT INTO mouvement_stock (variante_id, quantite, motif, commande_id)
+             VALUES (:variante, :quantite, 'annulation', :commande)"
+        );
+
+        foreach ($lignes->fetchAll() as $ligne) {
+            $maj->execute([':quantite' => $ligne['quantite'], ':id' => $ligne['variante_id']]);
+            $mouvement->execute([
+                ':variante' => $ligne['variante_id'],
+                ':quantite' => $ligne['quantite'],
+                ':commande' => $commandeId,
+            ]);
+        }
     }
 
     /**

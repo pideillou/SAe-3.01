@@ -53,5 +53,7 @@ return [
     'POST /api/admin/images/alt' => [AdminImageController::class, 'modifierAlt'],
     'POST /api/admin/images/supprimer' => [AdminImageController::class, 'supprimer'],
     'GET  /api/admin/commandes' => [AdminCommandeController::class, 'index'],
+    'GET  /api/admin/commande' => [AdminCommandeController::class, 'detail'],
+    'POST /api/admin/commandes/statut' => [AdminCommandeController::class, 'changerStatut'],
     'GET  /api/admin/stats' => [StatsController::class,     'index'],
 ];
