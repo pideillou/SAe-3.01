@@ -5,7 +5,7 @@ import fleche from "../../assets/fleche.svg";
 import template from "./template.html?raw";
 
 // Carte d'un produit, tel que le renvoie l'API :
-// { nom, slug, prix, etat, image: { moyen } } ; la carte est un lien vers la fiche.
+// { nom, slug, prix, etat, image: { moyen } | null } ; la carte est un lien vers la fiche.
 // « etat » est l'état de stock du produit (STK-b) : le badge le montre, et un
 // produit épuisé est grisé et ne peut plus être ajouté au panier.
 let CarteProduitView = {
@@ -15,8 +15,9 @@ let CarteProduitView = {
       nom: produit.nom,
       prix: formaterPrix(produit.prix),
       // L'image principale est un original carré de 500 px : assez net pour
-      // une carte, même sur un écran haute densité.
-      image: urlPublique(produit.image.moyen),
+      // une carte, même sur un écran haute densité. Un produit créé dans le
+      // back-office n'a pas forcément d'image : voir dom().
+      image: produit.image === null ? "" : urlPublique(produit.image.moyen),
       chemin: `/produit/${produit.slug}`,
       fleche: fleche,
     });
@@ -35,7 +36,17 @@ let CarteProduitView = {
     // Un template n'a pas de condition : le chargement différé se règle ici.
     // Les images hors de l'écran ne sont téléchargées qu'à l'approche du
     // défilement, ce qui garde le catalogue sous les 3 secondes.
-    fragment.querySelector("img").loading = prioritaire ? "eager" : "lazy";
+    let image = fragment.querySelector("img");
+    image.loading = prioritaire ? "eager" : "lazy";
+
+    // Produit sans image : un cadre neutre garde la grille alignée.
+    if (produit.image === null) {
+      let cadre = document.createElement("div");
+      cadre.className = "aspect-photo w-full bg-surface-haute";
+      cadre.setAttribute("aria-hidden", "true");
+      image.replaceWith(cadre);
+      image = cadre;
+    }
 
     fragment.querySelector('slot[name="stock"]').replaceWith(BadgeStockView.dom(produit.etat));
 
@@ -44,7 +55,7 @@ let CarteProduitView = {
     if (produit.etat === "epuise") {
       // Un template n'a pas de condition : l'état épuisé se règle ici. Les
       // classes sont écrites en entier pour que Tailwind les génère.
-      fragment.querySelector("img").classList.add("opacity-40", "grayscale");
+      image.classList.add("opacity-40", "grayscale");
       bouton.disabled = true;
       bouton.textContent = "Épuisé";
     }
