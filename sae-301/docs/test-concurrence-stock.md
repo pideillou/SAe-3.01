@@ -23,3 +23,18 @@ Dans tous les cas : une seule commande passe quand il n'y a qu'une unité, le st
 - Variante épuisée ou inconnue : commande refusée avec le détail.
 - Le prix enregistré dans la commande ne bouge pas quand le prix de la variante change ensuite.
 - Un client ne peut pas lire la commande d'un autre client.
+
+## Annulation et statuts (STK-a, 19 octobre 2026)
+Même méthode, sur la base de test, nettoyée après les essais (stocks remis à leur valeur de départ). Les méthodes testées sont CommandeModel::creer et CommandeModel::changerStatut.
+
+| Cas | Résultat |
+|---|---|
+| Commande de deux variantes (2 et 1 unités) | stock de chaque variante décrémenté, deux sorties négatives au journal (motif commande) |
+| en cours puis disponible puis retirée | stock et journal des mouvements inchangés |
+| Annulation d'une commande de deux variantes | stock de chaque variante recrédité de la quantité commandée, deux entrées positives au journal (motif annulation) |
+| Seconde annulation de la même commande | refusée, pas de second recrédit |
+| Annulation d'une commande retirée | refusée, stock inchangé |
+| 5 annulations simultanées de la même commande | 1 réussie, 4 refusées, stock recrédité une seule fois, une seule entrée d'annulation au journal |
+| Annulation qui échoue en cours de route (stock d'une variante au maximum de la colonne) | rollback complet : statut inchangé, première variante non recréditée, aucun mouvement ni entrée de statut écrits |
+
+La commande est verrouillée (SELECT ... FOR UPDATE) avant le contrôle du statut : c'est ce qui rend les annulations simultanées sûres.
