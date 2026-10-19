@@ -42,6 +42,11 @@ final class ProduitModel
                        produit.nom,
                        produit.slug,
                        produit.prix,
+                       -- Stock de la variante la mieux fournie : l'état du produit
+                       -- au catalogue (le détail par variante est sur la fiche).
+                       (SELECT COALESCE(MAX(variante.stock), 0)
+                          FROM variante
+                         WHERE variante.produit_id = produit.id) AS stock_max,
                        categorie.nom          AS categorie_nom,
                        categorie.slug         AS categorie_slug,
                        image_produit.chemin_moyen,

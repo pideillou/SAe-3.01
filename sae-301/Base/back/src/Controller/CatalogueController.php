@@ -159,6 +159,7 @@ final class CatalogueController
         }
 
         $produits = [];
+        $seuil    = (int) $this->parametres->valeur('seuil_bientot_epuise', '5');
 
         foreach ($this->produits->lister($categorie === null ? null : (int) $categorie['id']) as $ligne) {
             $produits[] = [
@@ -168,6 +169,9 @@ final class CatalogueController
                 // Le prix reste une chaîne (« 189.99 ») : un DECIMAL converti en
                 // nombre à virgule flottante pourrait perdre des centimes.
                 'prix'      => $ligne['prix'],
+                // État de stock du produit (STK-b) d'après sa variante la mieux
+                // fournie : « en-stock », « bientot-epuise » ou « epuise ».
+                'etat'      => $this->etatStock((int) $ligne['stock_max'], $seuil),
                 'categorie' => [
                     'nom'  => $ligne['categorie_nom'],
                     'slug' => $ligne['categorie_slug'],
