@@ -6,6 +6,7 @@ import { AdminPage } from "./pages/admin/page.js";
 import { AdminProduitNouveauPage, AdminProduitPage } from "./pages/admin-produit/page.js";
 import { AdminProduitsPage } from "./pages/admin-produits/page.js";
 import { AdminCategoriesPage } from "./pages/admin-categories/page.js";
+import { AdminCommandePage } from "./pages/admin-commande/page.js";
 import { AdminCommandesPage } from "./pages/admin-commandes/page.js";
 import { AdminConnexionPage } from "./pages/admin-connexion/page.js";
 import { CommandePage } from "./pages/commande/page.js";
@@ -39,6 +40,7 @@ router.addRoute("/admin/produits/nouveau", AdminProduitNouveauPage);
 router.addRoute("/admin/produits/:id", AdminProduitPage); // params.id
 router.addRoute("/admin/categories", AdminCategoriesPage);
 router.addRoute("/admin/commandes", AdminCommandesPage);
+router.addRoute("/admin/commandes/:numero", AdminCommandePage); // params.numero
 // Sans layout : le visiteur n'est pas encore connecté, il n'a donc ni navigation
 // d'administration ni l'en-tête du site à voir autour du formulaire.
 router.addRoute("/admin/connexion", AdminConnexionPage, { useLayout: false });

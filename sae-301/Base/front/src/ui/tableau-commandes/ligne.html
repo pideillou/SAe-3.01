@@ -1,5 +1,11 @@
 <tr>
-  <th scope="row" class="px-4 py-3 font-semibold whitespace-nowrap">{{numero}}</th>
+  <td class="px-4 py-3">
+    <label class="flex size-6 items-center justify-center">
+      <input type="checkbox" data-role="selection" data-numero="{{numero}}" class="size-4 accent-razer" />
+      <span class="sr-only">Sélectionner la commande {{numero}}</span>
+    </label>
+  </td>
+  <th scope="row" class="px-4 py-3 font-semibold whitespace-nowrap"><a href="{{chemin}}" data-link class="underline-offset-4 hover:text-razer hover:underline">{{numero}}</a></th>
   <td class="px-4 py-3 whitespace-nowrap text-texte-secondaire">{{date}}</td>
   <td class="px-4 py-3 wrap-anywhere">{{email}}</td>
   <td class="px-4 py-3">{{articles}}</td>

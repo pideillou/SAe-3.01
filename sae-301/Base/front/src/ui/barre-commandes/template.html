@@ -1,0 +1,19 @@
+<div class="flex flex-col gap-4 border border-bordure bg-surface p-4 md:flex-row md:flex-wrap md:items-end md:justify-between">
+  <div class="flex flex-col gap-2">
+    <label for="filtre-statut" class="text-mention font-medium">Filtrer par statut</label>
+    <select id="filtre-statut" class="h-11 w-52 border border-bordure bg-fond px-3 text-sm text-texte transition-colors hover:border-texte-secondaire">
+      <option value="">Tous les statuts</option>
+    </select>
+  </div>
+
+  <form novalidate class="flex flex-col gap-2 md:items-end">
+    <p data-compteur class="text-mention text-texte-secondaire" aria-live="polite">{{compteur}}</p>
+    <div class="flex flex-wrap items-end gap-3">
+      <div class="flex flex-col gap-2">
+        <label for="action-lot" class="text-mention font-medium">Action sur la sélection</label>
+        <select id="action-lot" class="h-11 w-60 border border-bordure bg-fond px-3 text-sm text-texte transition-colors hover:border-texte-secondaire"></select>
+      </div>
+      <button type="submit" class="min-h-11 border border-razer bg-razer px-5 font-titres text-sm font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:border-bordure disabled:bg-transparent disabled:text-texte-secondaire disabled:opacity-60 disabled:hover:opacity-60">Appliquer</button>
+    </div>
+  </form>
+</div>

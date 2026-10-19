@@ -1,14 +1,20 @@
 <div class="overflow-x-auto border border-bordure bg-surface">
-  <table class="w-full min-w-160 text-left text-sm">
-    <caption class="sr-only">Commandes, de la plus récente à la plus ancienne</caption>
+  <table class="w-full min-w-208 text-left text-sm">
+    <caption class="sr-only">Commandes, triées par {{tri}}</caption>
     <thead class="border-b border-bordure text-mention text-texte-secondaire">
       <tr>
+        <th scope="col" class="w-12 px-4 py-3">
+          <label class="flex size-6 items-center justify-center">
+            <input type="checkbox" data-role="tout" class="size-4 accent-razer" />
+            <span class="sr-only">Sélectionner toutes les commandes affichées</span>
+          </label>
+        </th>
         <th scope="col" class="px-4 py-3 font-medium">Numéro</th>
-        <th scope="col" class="px-4 py-3 font-medium">Date</th>
+        <th scope="col" data-tri="date" class="px-4 py-3 font-medium"><button type="button" data-action="trier" class="flex min-h-8 items-center gap-1 font-medium transition-colors hover:text-texte">Date <span data-fleche aria-hidden="true"></span></button></th>
         <th scope="col" class="px-4 py-3 font-medium">Client</th>
         <th scope="col" class="px-4 py-3 font-medium">Articles</th>
-        <th scope="col" class="px-4 py-3 font-medium">Statut</th>
-        <th scope="col" class="px-4 py-3 text-right font-medium">Total</th>
+        <th scope="col" data-tri="statut" class="px-4 py-3 font-medium"><button type="button" data-action="trier" class="flex min-h-8 items-center gap-1 font-medium transition-colors hover:text-texte">Statut <span data-fleche aria-hidden="true"></span></button></th>
+        <th scope="col" data-tri="montant" class="px-4 py-3 text-right font-medium"><button type="button" data-action="trier" class="ml-auto flex min-h-8 items-center gap-1 font-medium transition-colors hover:text-texte">Total <span data-fleche aria-hidden="true"></span></button></th>
       </tr>
     </thead>
     <!-- Rempli par index.js : un <slot> placé dans un tableau serait expulsé par le navigateur. -->

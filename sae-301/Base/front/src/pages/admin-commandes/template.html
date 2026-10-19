@@ -5,8 +5,10 @@
   </div>
 
   <slot name="message"></slot>
+  <slot name="confirmation"></slot>
+  <slot name="barre"></slot>
 
-  <p data-vide class="border border-bordure bg-surface p-6 text-sm text-texte-secondaire">Aucune commande pour le moment.</p>
+  <p data-vide class="border border-bordure bg-surface p-6 text-sm text-texte-secondaire">{{texteVide}}</p>
 
   <slot name="tableau"></slot>
 </section>
