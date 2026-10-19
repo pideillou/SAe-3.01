@@ -4,6 +4,8 @@
     <img src="{{image}}" width="500" height="500" alt="" decoding="async" class="aspect-photo w-full object-contain" />
 
     <div class="flex flex-1 flex-col gap-2 p-3 md:p-5">
+      <slot name="stock"></slot>
+
       <h3 class="font-titres text-base leading-tight font-semibold text-texte md:text-xl">{{nom}}</h3>
 
       <span class="mt-auto flex items-center justify-between gap-2">
@@ -14,7 +16,7 @@
   </a>
 
   <!-- Hors du lien : un bouton ne peut pas être placé dans un lien. -->
-  <button type="button" data-action="ajouter-panier" aria-label="Ajouter {{nom}} au panier" class="flex min-h-11 w-full items-center justify-center border-t border-bordure px-3 py-2 font-titres text-sm font-semibold text-razer uppercase transition-colors hover:bg-razer hover:text-sur-razer disabled:cursor-wait disabled:opacity-40">
+  <button type="button" data-action="ajouter-panier" aria-label="Ajouter {{nom}} au panier" class="flex min-h-11 w-full items-center justify-center border-t border-bordure px-3 py-2 font-titres text-sm font-semibold text-razer uppercase transition-colors hover:bg-razer hover:text-sur-razer disabled:cursor-not-allowed disabled:border-dashed disabled:text-erreur disabled:hover:bg-transparent disabled:hover:text-erreur">
     Ajouter au panier
   </button>
 </article>

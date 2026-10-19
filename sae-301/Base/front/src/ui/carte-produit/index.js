@@ -1,10 +1,13 @@
 import { genericRenderer, htmlToFragment, urlPublique } from "../../lib/utils.js";
 import { formaterPrix } from "../../lib/format.js";
+import { BadgeStockView } from "../badge-stock/index.js";
 import fleche from "../../assets/fleche.svg";
 import template from "./template.html?raw";
 
 // Carte d'un produit, tel que le renvoie l'API :
-// { nom, slug, prix, image: { moyen } } ; la carte est un lien vers la fiche.
+// { nom, slug, prix, etat, image: { moyen } } ; la carte est un lien vers la fiche.
+// « etat » est l'état de stock du produit (STK-b) : le badge le montre, et un
+// produit épuisé est grisé et ne peut plus être ajouté au panier.
 let CarteProduitView = {
   html: function (produit) {
     // Les valeurs sont mises en forme avant d'être passées au template.
@@ -33,6 +36,18 @@ let CarteProduitView = {
     // Les images hors de l'écran ne sont téléchargées qu'à l'approche du
     // défilement, ce qui garde le catalogue sous les 3 secondes.
     fragment.querySelector("img").loading = prioritaire ? "eager" : "lazy";
+
+    fragment.querySelector('slot[name="stock"]').replaceWith(BadgeStockView.dom(produit.etat));
+
+    let bouton = fragment.querySelector('[data-action="ajouter-panier"]');
+
+    if (produit.etat === "epuise") {
+      // Un template n'a pas de condition : l'état épuisé se règle ici. Les
+      // classes sont écrites en entier pour que Tailwind les génère.
+      fragment.querySelector("img").classList.add("opacity-40", "grayscale");
+      bouton.disabled = true;
+      bouton.textContent = "Épuisé";
+    }
 
     fragment
       .querySelector('[data-action="ajouter-panier"]')

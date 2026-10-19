@@ -9,6 +9,7 @@ let ProduitData = {};
  * { total: 4,
  *   categorie: { nom, slug } | null,   // la catégorie demandée
  *   produits: [ { id, nom, slug, prix: "189.99",
+ *                 etat: "en-stock" | "bientot-epuise" | "epuise",   // variante la mieux fournie
  *                 categorie: { nom, slug },
  *                 image: { moyen, grand, alt } | null }, ... ] }
  *
