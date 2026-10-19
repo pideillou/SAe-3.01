@@ -23,22 +23,36 @@
 }
 
 /*
-  Variables du prototype Figma (charte Razer). Chaque variable --color-x
-  produit les classes bg-x, text-x, border-x… ; --font-x produit font-x ;
-  --text-x produit text-x.
+  Charte Razer, en deux étages pour pouvoir ajouter des thèmes (voir
+  .claude/rules/themes-et-couleurs.md).
+
+  1. La palette : les valeurs des couleurs, dans un bloc par thème (plus bas, dans
+     @layer base). Un thème = un bloc [data-theme="nom"] qui définit toutes les
+     variables --couleur-*.
+  2. @theme inline : relie chaque nom de classe Tailwind à sa variable de palette.
+     Avec « inline », bg-fond devient background-color: var(--couleur-fond) : la
+     couleur suit le thème actif, sans rien changer dans les templates.
+
+  Chaque variable --color-x produit les classes bg-x, text-x, border-x…
+*/
+@theme inline {
+  --color-fond: var(--couleur-fond); /* main-bg */
+  --color-surface: var(--couleur-surface); /* main-surface */
+  --color-surface-haute: var(--couleur-surface-haute); /* other-surface */
+  --color-bordure: var(--couleur-bordure); /* border */
+  --color-texte: var(--couleur-texte); /* text-main */
+  --color-texte-secondaire: var(--couleur-texte-secondaire); /* text-secondaire */
+  --color-razer: var(--couleur-razer); /* razer : la touche verte de la marque */
+  --color-sur-razer: var(--couleur-sur-razer); /* txt-razer : texte posé sur le vert */
+  --color-alerte: var(--couleur-alerte); /* alerte : « Bientôt épuisé » */
+  --color-erreur: var(--couleur-erreur); /* error : « Épuisé », erreurs */
+}
+
+/*
+  Variables du prototype Figma qui ne dépendent pas du thème : polices, tailles
+  et proportions. --font-x produit font-x ; --text-x produit text-x.
 */
 @theme {
-  --color-fond: #0d0d0d; /* main-bg */
-  --color-surface: #1a1a1a; /* main-surface */
-  --color-surface-haute: #242424; /* other-surface */
-  --color-bordure: #353535; /* border */
-  --color-texte: #ffffff; /* text-main */
-  --color-texte-secondaire: #9a9a9a; /* text-secondaire */
-  --color-razer: #44d62c; /* razer : la touche verte de la marque */
-  --color-sur-razer: #000000; /* txt-razer : texte posé sur le vert */
-  --color-alerte: #f2a044; /* alerte : « Bientôt épuisé » */
-  --color-erreur: #f16c6c; /* error : « Épuisé », erreurs */
-
   --font-titres: "Chakra Petch", ui-sans-serif, system-ui, sans-serif;
   --font-corps: "Inter", ui-sans-serif, system-ui, sans-serif;
 
@@ -64,15 +78,32 @@
 }
 
 @layer base {
-  /* Le Figma ne prévoit qu'un thème sombre. */
-  :root {
+  /*
+    Thème « sombre » : le seul que prévoit le Figma. Il s'applique par défaut,
+    sans attribut. Un autre thème s'active avec <html data-theme="nom"> et se
+    déclare par un bloc [data-theme="nom"] qui redéfinit TOUTES ces variables.
+    Les valeurs viennent des variables du prototype Figma (noms entre crochets).
+  */
+  :root,
+  [data-theme="sombre"] {
     color-scheme: dark;
+
+    --couleur-fond: #0d0d0d; /* main-bg */
+    --couleur-surface: #1a1a1a; /* main-surface */
+    --couleur-surface-haute: #242424; /* other-surface */
+    --couleur-bordure: #353535; /* border */
+    --couleur-texte: #ffffff; /* text-main */
+    --couleur-texte-secondaire: #9a9a9a; /* text-secondaire */
+    --couleur-razer: #44d62c; /* razer */
+    --couleur-sur-razer: #000000; /* txt-razer */
+    --couleur-alerte: #f2a044; /* alerte */
+    --couleur-erreur: #f16c6c; /* error */
   }
 
   /* Un seul anneau de focus, vert Razer, visible uniquement au clavier :
      :focus-visible ne se déclenche pas sur un clic de souris. */
   :where(a, button, select, input, textarea):focus-visible {
-    outline: 2px solid var(--color-razer);
+    outline: 2px solid var(--couleur-razer);
     outline-offset: 2px;
   }
 
