@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Controller\AdminAuthController;
+use App\Controller\AdminCategorieController;
 use App\Controller\AdminCommandeController;
 use App\Controller\AuthController;
 use App\Controller\CatalogueController;
@@ -35,6 +36,10 @@ return [
     'POST /api/admin/login'  => [AdminAuthController::class, 'login'],
     'POST /api/admin/logout' => [AdminAuthController::class, 'logout'],
     'GET  /api/admin/moi'    => [AdminAuthController::class, 'moi'],
+    'GET  /api/admin/categories' => [AdminCategorieController::class, 'index'],
+    'POST /api/admin/categories' => [AdminCategorieController::class, 'creer'],
+    'POST /api/admin/categories/modifier' => [AdminCategorieController::class, 'modifier'],
+    'POST /api/admin/categories/supprimer' => [AdminCategorieController::class, 'supprimer'],
     'GET  /api/admin/commandes' => [AdminCommandeController::class, 'index'],
     'GET  /api/admin/stats' => [StatsController::class,     'index'],
 ];

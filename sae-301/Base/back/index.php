@@ -17,6 +17,7 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Core\Router;
 use App\Controller\AdminAuthController;
+use App\Controller\AdminCategorieController;
 use App\Controller\AdminCommandeController;
 use App\Controller\AuthController;
 use App\Controller\CatalogueController;
@@ -80,6 +81,7 @@ try {
         CatalogueController::class => new CatalogueController($produits, $categories, $parametres),
         CategorieController::class => new CategorieController($categories),
         AuthController::class      => new AuthController($utilisateurs),
+        AdminCategorieController::class => new AdminCategorieController($categories),
         AdminCommandeController::class => new AdminCommandeController($commandes),
         AdminAuthController::class => new AdminAuthController($administrateurs),
         CommandeController::class  => new CommandeController($commandes),
