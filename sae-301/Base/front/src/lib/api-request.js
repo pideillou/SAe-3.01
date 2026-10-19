@@ -69,4 +69,20 @@ let postRequest = function (uri, data = {}) {
   });
 };
 
-export { getRequest, postRequest, ErreurApi };
+/**
+ * Envoi d'un formulaire avec fichier (téléversement d'image). Le navigateur
+ * fixe lui-même l'en-tête Content-Type (multipart, avec sa frontière) : il ne
+ * faut surtout pas l'écrire ici.
+ *
+ * @param {string} uri
+ * @param {FormData} formData
+ */
+let postFormData = function (uri, formData) {
+  return request(uri, {
+    method: "POST",
+    headers: { Accept: "application/json" },
+    body: formData,
+  });
+};
+
+export { getRequest, postRequest, postFormData, ErreurApi };

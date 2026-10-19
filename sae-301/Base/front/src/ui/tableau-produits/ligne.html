@@ -1,0 +1,18 @@
+<tr>
+  <th scope="row" class="px-4 py-3 font-semibold">{{nom}}</th>
+  <td class="px-4 py-3 text-texte-secondaire">{{categorie}}</td>
+  <td class="px-4 py-3">{{variantes}}</td>
+  <td class="px-4 py-3 whitespace-nowrap">{{prix}}</td>
+  <td class="px-4 py-3">
+    <div class="flex flex-col items-start gap-1">
+      <span data-etat></span>
+      <span class="text-note text-texte-secondaire">{{stock}}</span>
+    </div>
+  </td>
+  <td class="px-4 py-3">
+    <div class="flex flex-wrap justify-end gap-2">
+      <a href="{{chemin}}" data-link aria-label="Modifier le produit {{nom}}" class="flex min-h-10 items-center border border-bordure px-4 text-sm transition-colors hover:border-razer hover:text-razer">Modifier</a>
+      <button type="button" data-action="supprimer" aria-label="Supprimer le produit {{nom}}" class="min-h-10 border border-bordure px-4 text-sm transition-colors hover:border-erreur hover:text-erreur">Supprimer</button>
+    </div>
+  </td>
+</tr>

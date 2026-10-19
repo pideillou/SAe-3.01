@@ -1,0 +1,39 @@
+<section data-images aria-labelledby="titre-images" class="flex flex-col gap-5 border border-bordure bg-surface p-5 md:p-6">
+  <div class="flex flex-col gap-1">
+    <h2 id="titre-images" class="font-titres text-xl font-semibold uppercase">Images</h2>
+    <p class="text-sm text-texte-secondaire">JPEG, PNG ou WebP, 2 Mo au maximum. Chaque image est redimensionnée et convertie en WebP (767 et 1199 px de large). L'image principale est celle du catalogue.</p>
+  </div>
+
+  <slot name="message"></slot>
+  <slot name="confirmation"></slot>
+
+  <p data-aucune-image class="text-sm text-texte-secondaire">Ce produit n'a pas encore d'image.</p>
+  <ul data-liste class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></ul>
+
+  <form novalidate data-ajout class="flex flex-col gap-4 border-t border-bordure pt-5">
+    <h3 class="font-titres text-lg font-semibold uppercase">Ajouter une image</h3>
+
+    <div class="flex flex-col gap-2">
+      <label for="image-fichier" class="text-sm font-medium">Fichier</label>
+      <input id="image-fichier" data-champ="image" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="erreur-image-fichier" class="border border-bordure bg-fond p-2 text-sm text-texte file:mr-3 file:border-0 file:bg-surface-haute file:px-3 file:py-2 file:text-texte aria-invalid:border-erreur" />
+      <p id="erreur-image-fichier" data-erreur="image" class="text-mention text-erreur"></p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="image-cible" class="text-sm font-medium">Destination</label>
+      <select id="image-cible" data-champ="varianteId" aria-describedby="erreur-image-cible" class="h-12 border border-bordure bg-fond px-3 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur">
+        <option value="">Galerie du produit</option>
+      </select>
+      <p id="erreur-image-cible" data-erreur="varianteId" class="text-mention text-erreur"></p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="image-alt" class="text-sm font-medium">Texte alternatif</label>
+      <input id="image-alt" data-champ="alt" type="text" maxlength="255" aria-describedby="aide-image-alt erreur-image-alt" class="h-12 border border-bordure bg-fond px-3 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+      <p id="aide-image-alt" class="text-mention text-texte-secondaire">Décrit l'image pour les lecteurs d'écran, par exemple « Razer Cobra noire, vue de dessus ».</p>
+      <p id="erreur-image-alt" data-erreur="alt" class="text-mention text-erreur"></p>
+    </div>
+
+    <button type="submit" class="flex min-h-12 items-center justify-center self-start border border-razer bg-razer px-6 py-3 font-titres text-[0.9375rem] font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90 disabled:cursor-wait disabled:opacity-40">Ajouter l'image</button>
+  </form>
+</section>

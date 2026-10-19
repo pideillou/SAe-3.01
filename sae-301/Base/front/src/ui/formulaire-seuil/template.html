@@ -1,0 +1,14 @@
+<form novalidate class="flex flex-col gap-3 border border-bordure bg-surface p-5">
+  <div class="flex flex-col gap-1">
+    <label for="seuil" class="font-titres text-lg font-semibold uppercase">Seuil « Bientôt épuisé »</label>
+    <p id="aide-seuil" class="text-sm text-texte-secondaire">Une variante dont le stock est inférieur ou égal à ce nombre est signalée « Bientôt épuisé » sur le site.</p>
+  </div>
+
+  <div class="flex flex-wrap items-start gap-3">
+    <div class="flex flex-col gap-2">
+      <input id="seuil" name="seuil" type="text" inputmode="numeric" value="{{seuil}}" aria-describedby="aide-seuil erreur-seuil" class="h-12 w-32 border border-bordure bg-fond px-3 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+      <p id="erreur-seuil" data-erreur="seuil" class="text-mention text-erreur"></p>
+    </div>
+    <button type="submit" class="flex min-h-12 items-center justify-center border border-razer bg-razer px-6 py-3 font-titres text-[0.9375rem] font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90 disabled:cursor-wait disabled:opacity-40">Enregistrer le seuil</button>
+  </div>
+</form>

@@ -1,0 +1,20 @@
+<li data-image class="flex flex-col gap-3 border border-bordure bg-fond p-3">
+  <img src="{{image}}" width="767" height="575" alt="{{alt}}" loading="lazy" decoding="async" class="aspect-photo w-full bg-surface object-contain" />
+
+  <p class="flex flex-wrap items-center gap-2 text-note">
+    <span data-badge-principale class="bg-razer px-2 py-1 font-semibold text-sur-razer uppercase">Principale</span>
+    <span data-badge-variante class="border border-bordure px-2 py-1 text-texte-secondaire">Image de la variante : {{variante}}</span>
+  </p>
+
+  <div class="flex flex-col gap-2">
+    <label for="alt-image-{{id}}" class="text-mention font-medium">Texte alternatif</label>
+    <input id="alt-image-{{id}}" data-role="alt" type="text" maxlength="255" value="{{alt}}" aria-describedby="erreur-alt-image-{{id}}" class="h-11 border border-bordure bg-surface px-3 text-sm text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+    <p id="erreur-alt-image-{{id}}" data-role="erreur-alt" class="text-note text-erreur"></p>
+  </div>
+
+  <div class="flex flex-wrap gap-2">
+    <button type="button" data-action="enregistrer-alt" aria-label="Enregistrer le texte alternatif de l'image {{numero}}" class="min-h-10 border border-bordure px-3 text-sm transition-colors hover:border-razer hover:text-razer">Enregistrer le texte</button>
+    <button type="button" data-action="principale" aria-label="Définir l'image {{numero}} comme principale" class="min-h-10 border border-bordure px-3 text-sm transition-colors hover:border-razer hover:text-razer">Définir comme principale</button>
+    <button type="button" data-action="supprimer" aria-label="Supprimer l'image {{numero}}" class="min-h-10 border border-bordure px-3 text-sm transition-colors hover:border-erreur hover:text-erreur">Supprimer</button>
+  </div>
+</li>

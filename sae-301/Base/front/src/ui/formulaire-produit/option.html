@@ -1,0 +1,17 @@
+<fieldset data-option class="flex flex-col gap-4 border border-bordure bg-fond p-4">
+  <legend class="px-2 text-sm font-semibold">Option {{numero}}</legend>
+
+  <div class="flex flex-col gap-2">
+    <label for="option-nom-{{indice}}" class="text-sm font-medium">Nom de l'option</label>
+    <input id="option-nom-{{indice}}" data-role="nom" type="text" maxlength="60" value="{{nom}}" aria-describedby="erreur-option-nom-{{indice}}" class="h-12 border border-bordure bg-surface px-3 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+    <p id="erreur-option-nom-{{indice}}" data-erreur="options.{{indice}}.nom" class="text-mention text-erreur"></p>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label for="option-valeurs-{{indice}}" class="text-sm font-medium">Valeurs <span class="font-normal text-texte-secondaire">(une par ligne)</span></label>
+    <textarea id="option-valeurs-{{indice}}" data-role="valeurs" rows="3" aria-describedby="erreur-option-valeurs-{{indice}}" class="border border-bordure bg-surface px-3 py-2 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur">{{valeurs}}</textarea>
+    <p id="erreur-option-valeurs-{{indice}}" data-erreur="options.{{indice}}.valeurs" class="text-mention text-erreur"></p>
+  </div>
+
+  <button type="button" data-action="supprimer-option" aria-label="Supprimer l'option {{numero}}" class="min-h-10 self-start border border-bordure px-4 text-sm transition-colors hover:border-erreur hover:text-erreur">Supprimer cette option</button>
+</fieldset>

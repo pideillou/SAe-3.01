@@ -1,0 +1,30 @@
+<tr data-variante>
+  <td class="px-2 py-3">
+    <label for="variante-reference-{{indice}}" class="sr-only">Référence de la variante {{numero}}</label>
+    <input id="variante-reference-{{indice}}" data-role="reference" type="text" maxlength="30" value="{{reference}}" aria-describedby="erreur-variante-reference-{{indice}}" class="h-11 w-44 border border-bordure bg-fond px-2 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+    <p id="erreur-variante-reference-{{indice}}" data-erreur="variantes.{{indice}}.reference" class="mt-1 max-w-44 text-note text-erreur"></p>
+  </td>
+  <td class="px-2 py-3">
+    <div data-valeurs class="flex flex-col gap-2"></div>
+    <p data-erreur="variantes.{{indice}}.valeurs" class="mt-1 max-w-64 text-note text-erreur"></p>
+  </td>
+  <td class="px-2 py-3">
+    <label for="variante-prix-{{indice}}" class="sr-only">Prix de la variante {{numero}}</label>
+    <input id="variante-prix-{{indice}}" data-role="prix" type="text" inputmode="decimal" value="{{prix}}" aria-describedby="erreur-variante-prix-{{indice}}" class="h-11 w-28 border border-bordure bg-fond px-2 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+    <p id="erreur-variante-prix-{{indice}}" data-erreur="variantes.{{indice}}.prix" class="mt-1 max-w-40 text-note text-erreur"></p>
+  </td>
+  <td class="px-2 py-3">
+    <label for="variante-stock-{{indice}}" class="sr-only">Stock de la variante {{numero}}</label>
+    <input id="variante-stock-{{indice}}" data-role="stock" type="text" inputmode="numeric" value="{{stock}}" aria-describedby="erreur-variante-stock-{{indice}}" class="h-11 w-24 border border-bordure bg-fond px-2 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+    <p id="erreur-variante-stock-{{indice}}" data-erreur="variantes.{{indice}}.stock" class="mt-1 max-w-40 text-note text-erreur"></p>
+  </td>
+  <td class="px-2 py-3">
+    <label class="flex min-h-11 items-center gap-2">
+      <input data-role="defaut" type="radio" name="variante-par-defaut" value="{{indice}}" class="size-4 accent-razer" />
+      <span class="sr-only">Variante {{numero}} affichée par défaut</span>
+    </label>
+  </td>
+  <td class="px-2 py-3 text-right">
+    <button type="button" data-action="supprimer-variante" aria-label="Supprimer la variante {{numero}}" class="min-h-11 border border-bordure px-3 text-sm transition-colors hover:border-erreur hover:text-erreur disabled:cursor-not-allowed disabled:opacity-40">Supprimer</button>
+  </td>
+</tr>

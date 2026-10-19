@@ -1,0 +1,90 @@
+<form novalidate class="flex flex-col gap-8">
+  <div data-resume-erreurs hidden role="alert" class="border border-erreur bg-surface p-4 text-sm text-erreur">
+    <p class="font-semibold">Le formulaire contient des erreurs. Corrigez les champs signalés en rouge.</p>
+    <ul data-erreurs-generales class="mt-2 list-disc pl-5"></ul>
+  </div>
+
+  <section aria-labelledby="titre-infos" class="flex flex-col gap-5 border border-bordure bg-surface p-5 md:p-6">
+    <h2 id="titre-infos" class="font-titres text-xl font-semibold uppercase">Informations</h2>
+
+    <div class="flex flex-col gap-2">
+      <label for="produit-nom" class="text-sm font-medium">Nom</label>
+      <input id="produit-nom" data-champ="nom" type="text" maxlength="120" value="{{nom}}" aria-describedby="erreur-nom" class="h-12 border border-bordure bg-fond px-3 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+      <p id="erreur-nom" data-erreur="nom" class="text-mention text-erreur"></p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="produit-categorie" class="text-sm font-medium">Catégorie</label>
+      <select id="produit-categorie" data-champ="categorieId" aria-describedby="erreur-categorieId" class="h-12 border border-bordure bg-fond px-3 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur">
+        <option value="">Choisir une catégorie</option>
+      </select>
+      <p id="erreur-categorieId" data-erreur="categorieId" class="text-mention text-erreur"></p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="produit-accroche" class="text-sm font-medium">Accroche <span class="font-normal text-texte-secondaire">(facultative)</span></label>
+      <input id="produit-accroche" data-champ="accroche" type="text" maxlength="255" value="{{accroche}}" aria-describedby="erreur-accroche" class="h-12 border border-bordure bg-fond px-3 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+      <p id="erreur-accroche" data-erreur="accroche" class="text-mention text-erreur"></p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="produit-description" class="text-sm font-medium">Description</label>
+      <textarea id="produit-description" data-champ="description" rows="8" aria-describedby="aide-description erreur-description" class="border border-bordure bg-fond px-3 py-2 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur">{{description}}</textarea>
+      <p id="aide-description" class="text-mention text-texte-secondaire">Le premier paragraphe est l'introduction. Séparez les suivants par une ligne vide ; une ligne de titre suivie d'une ligne de texte forme un argument repliable sur la fiche.</p>
+      <p id="erreur-description" data-erreur="description" class="text-mention text-erreur"></p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="produit-points" class="text-sm font-medium">Points forts <span class="font-normal text-texte-secondaire">(facultatifs)</span></label>
+      <textarea id="produit-points" data-champ="caracteristiques" rows="4" aria-describedby="aide-points erreur-caracteristiques" class="border border-bordure bg-fond px-3 py-2 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur">{{points}}</textarea>
+      <p id="aide-points" class="text-mention text-texte-secondaire">Un point fort par ligne, 6 au maximum.</p>
+      <p id="erreur-caracteristiques" data-erreur="caracteristiques" class="text-mention text-erreur"></p>
+    </div>
+  </section>
+
+  <section aria-labelledby="titre-options" class="flex flex-col gap-5 border border-bordure bg-surface p-5 md:p-6">
+    <div class="flex flex-col gap-1">
+      <h2 id="titre-options" class="font-titres text-xl font-semibold uppercase">Options</h2>
+      <p class="text-sm text-texte-secondaire">Couleur, disposition du clavier… Trois options au maximum. Sans option, le produit n'a qu'une variante.</p>
+    </div>
+
+    <p data-erreur="options" class="text-mention text-erreur"></p>
+    <div data-options class="flex flex-col gap-4"></div>
+
+    <button type="button" data-action="ajouter-option" class="min-h-11 self-start border border-bordure px-5 text-sm transition-colors hover:border-razer hover:text-razer disabled:cursor-not-allowed disabled:opacity-40">Ajouter une option</button>
+  </section>
+
+  <section aria-labelledby="titre-variantes" class="flex flex-col gap-5 border border-bordure bg-surface p-5 md:p-6">
+    <div class="flex flex-col gap-1">
+      <h2 id="titre-variantes" class="font-titres text-xl font-semibold uppercase">Variantes, prix et stocks</h2>
+      <p class="text-sm text-texte-secondaire">Une variante est une combinaison d'options vendue, avec sa référence, son prix et son stock. Le prix affiché au catalogue est celui de la moins chère.</p>
+    </div>
+
+    <p data-erreur="variantes" class="text-mention text-erreur"></p>
+
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-196 text-left text-sm">
+        <caption class="sr-only">Variantes du produit</caption>
+        <thead class="border-b border-bordure text-mention text-texte-secondaire">
+          <tr>
+            <th scope="col" class="px-2 py-3 font-medium">Référence</th>
+            <th scope="col" class="px-2 py-3 font-medium">Combinaison d'options</th>
+            <th scope="col" class="px-2 py-3 font-medium">Prix (€)</th>
+            <th scope="col" class="px-2 py-3 font-medium">Stock</th>
+            <th scope="col" class="px-2 py-3 font-medium">Par défaut</th>
+            <th scope="col" class="px-2 py-3 text-right font-medium">Action</th>
+          </tr>
+        </thead>
+        <!-- Rempli par index.js : un <slot> placé dans un tableau serait expulsé par le navigateur. -->
+        <tbody data-variantes class="divide-y divide-bordure align-top"></tbody>
+      </table>
+    </div>
+
+    <button type="button" data-action="ajouter-variante" class="min-h-11 self-start border border-bordure px-5 text-sm transition-colors hover:border-razer hover:text-razer disabled:cursor-not-allowed disabled:opacity-40">Ajouter une variante</button>
+  </section>
+
+  <div class="flex flex-wrap gap-3">
+    <button type="submit" class="flex min-h-12 items-center justify-center border border-razer bg-razer px-6 py-3 font-titres text-[0.9375rem] font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90 disabled:cursor-wait disabled:opacity-40">{{bouton}}</button>
+    <a href="{{cheminListe}}" data-link class="flex min-h-12 items-center justify-center border border-bordure px-6 py-3 font-titres text-[0.9375rem] font-semibold uppercase transition-colors hover:border-texte-secondaire">Retour aux produits</a>
+  </div>
+</form>
