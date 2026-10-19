@@ -1,0 +1,12 @@
+<section class="flex flex-col gap-6 px-5 py-8 md:px-8">
+  <div class="flex flex-col gap-2">
+    <h1 class="font-titres text-titre-page-mobile leading-tight font-semibold uppercase md:text-titre-categorie">Commandes</h1>
+    <p data-resume class="text-sm text-texte-secondaire">{{resume}}</p>
+  </div>
+
+  <slot name="message"></slot>
+
+  <p data-vide class="border border-bordure bg-surface p-6 text-sm text-texte-secondaire">Aucune commande pour le moment.</p>
+
+  <slot name="tableau"></slot>
+</section>

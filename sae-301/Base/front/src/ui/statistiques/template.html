@@ -1,7 +1,7 @@
-<section class="mb-6 border border-bordure bg-surface p-6">
-  <h2 class="mb-5 font-titres text-xl font-semibold uppercase">Statistiques du catalogue</h2>
+<section class="border border-bordure bg-surface p-6">
+  <h2 class="mb-5 font-titres text-xl font-semibold uppercase">Indicateurs</h2>
 
-  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+  <div class="grid grid-cols-2 gap-4 lg:grid-cols-5">
     <div class="border border-bordure bg-fond p-4">
       <div class="font-titres text-2xl font-semibold">{{produits}}</div>
       <div class="text-mention text-texte-secondaire">produits</div>
@@ -13,6 +13,14 @@
     <div class="border border-bordure bg-fond p-4">
       <div class="font-titres text-2xl font-semibold">{{unites}}</div>
       <div class="text-mention text-texte-secondaire">unités en stock</div>
+    </div>
+    <div class="border border-bordure bg-fond p-4">
+      <div class="font-titres text-2xl font-semibold">{{commandes}}</div>
+      <div class="text-mention text-texte-secondaire">commandes</div>
+    </div>
+    <div class="border border-bordure bg-fond p-4">
+      <div class="font-titres text-2xl font-semibold text-alerte">{{commandesEnCours}}</div>
+      <div class="text-mention text-texte-secondaire">commandes en cours</div>
     </div>
   </div>
 
