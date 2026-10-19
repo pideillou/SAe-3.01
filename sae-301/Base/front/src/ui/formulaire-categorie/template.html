@@ -1,0 +1,29 @@
+<section aria-labelledby="titre-formulaire-categorie" class="flex flex-col gap-5 border border-bordure bg-surface p-5 md:p-6">
+  <h2 id="titre-formulaire-categorie" class="font-titres text-xl font-semibold uppercase">{{titre}}</h2>
+
+  <form novalidate class="flex flex-col gap-5">
+    <div class="flex flex-col gap-2">
+      <label for="categorie-nom" class="text-sm font-medium">Nom</label>
+      <input id="categorie-nom" name="nom" type="text" maxlength="60" value="{{nom}}" aria-describedby="erreur-categorie-nom" class="h-12 border border-bordure bg-fond px-3 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+      <p id="erreur-categorie-nom" data-erreur="nom" class="text-mention text-erreur"></p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="categorie-description" class="text-sm font-medium">Description <span class="font-normal text-texte-secondaire">(facultative)</span></label>
+      <textarea id="categorie-description" name="description" rows="3" maxlength="1000" aria-describedby="erreur-categorie-description" class="border border-bordure bg-fond px-3 py-2 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur">{{description}}</textarea>
+      <p id="erreur-categorie-description" data-erreur="description" class="text-mention text-erreur"></p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="categorie-ordre" class="text-sm font-medium">Ordre d'affichage</label>
+      <input id="categorie-ordre" name="ordre" type="text" inputmode="numeric" value="{{ordre}}" aria-describedby="aide-categorie-ordre erreur-categorie-ordre" class="h-12 w-32 border border-bordure bg-fond px-3 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+      <p id="aide-categorie-ordre" class="text-mention text-texte-secondaire">Les catégories s'affichent par ordre croissant.</p>
+      <p id="erreur-categorie-ordre" data-erreur="ordre" class="text-mention text-erreur"></p>
+    </div>
+
+    <div class="flex flex-wrap gap-3">
+      <button type="submit" class="flex min-h-12 items-center justify-center border border-razer bg-razer px-6 py-3 font-titres text-[0.9375rem] font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90 disabled:cursor-wait disabled:opacity-40">{{bouton}}</button>
+      <button type="button" data-action="annuler" class="flex min-h-12 items-center justify-center border border-bordure px-6 py-3 font-titres text-[0.9375rem] font-semibold uppercase transition-colors hover:border-texte-secondaire">Annuler</button>
+    </div>
+  </form>
+</section>

@@ -8,6 +8,7 @@ import template from "./template.html?raw";
 // catégories, commandes…) ajoute une ligne ici, une fois sa page écrite.
 const SECTIONS = [
   { libelle: "Tableau de bord", chemin: "/admin" },
+  { libelle: "Catégories", chemin: "/admin/categories" },
   { libelle: "Commandes", chemin: "/admin/commandes" },
 ];
 

@@ -1,0 +1,8 @@
+<div role="alertdialog" aria-labelledby="titre-confirmation-suppression" aria-describedby="texte-confirmation-suppression" class="flex flex-col gap-4 border border-erreur bg-surface p-5">
+  <h2 id="titre-confirmation-suppression" class="font-titres text-lg font-semibold text-erreur uppercase">{{titre}}</h2>
+  <p id="texte-confirmation-suppression" class="text-sm text-texte-secondaire">{{texte}}</p>
+  <div class="flex flex-wrap gap-3">
+    <button type="button" data-action="confirmer" class="min-h-11 border border-erreur bg-erreur px-5 font-titres text-sm font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90 disabled:cursor-wait disabled:opacity-40">Oui, supprimer</button>
+    <button type="button" data-action="annuler" class="min-h-11 border border-bordure px-5 font-titres text-sm font-semibold uppercase transition-colors hover:border-texte-secondaire">Non, conserver</button>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+<tr>
+  <td class="px-4 py-3 text-texte-secondaire">{{ordre}}</td>
+  <th scope="row" class="px-4 py-3 font-semibold">
+    {{nom}}
+    <span data-description class="mt-1 block max-w-md text-mention font-normal text-texte-secondaire">{{description}}</span>
+  </th>
+  <td class="px-4 py-3 whitespace-nowrap text-texte-secondaire">/categorie/{{slug}}</td>
+  <td class="px-4 py-3">{{nombre}}</td>
+  <td class="px-4 py-3">
+    <div class="flex flex-wrap justify-end gap-2">
+      <button type="button" data-action="modifier" aria-label="Modifier la catégorie {{nom}}" class="min-h-10 border border-bordure px-4 text-sm transition-colors hover:border-razer hover:text-razer">Modifier</button>
+      <button type="button" data-action="supprimer" aria-label="Supprimer la catégorie {{nom}}" class="min-h-10 border border-bordure px-4 text-sm transition-colors hover:border-erreur hover:text-erreur disabled:cursor-not-allowed disabled:border-dashed disabled:text-texte-secondaire disabled:hover:border-bordure disabled:hover:text-texte-secondaire">Supprimer</button>
+    </div>
+    <p data-note-produits class="mt-1 text-right text-note text-texte-secondaire">Contient des produits : suppression impossible.</p>
+  </td>
+</tr>

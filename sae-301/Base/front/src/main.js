@@ -3,6 +3,7 @@ import { AdminLayout } from "./layouts/admin/layout.js";
 import { RootLayout } from "./layouts/root/layout.js";
 import { CataloguePage } from "./pages/catalogue/page.js";
 import { AdminPage } from "./pages/admin/page.js";
+import { AdminCategoriesPage } from "./pages/admin-categories/page.js";
 import { AdminCommandesPage } from "./pages/admin-commandes/page.js";
 import { AdminConnexionPage } from "./pages/admin-connexion/page.js";
 import { CommandePage } from "./pages/commande/page.js";
@@ -30,6 +31,7 @@ router.addRoute("/connexion", ConnexionPage);
 router.addRoute("/inscription", InscriptionPage);
 router.addRoute("/espace-personnel", EspacePersonnelPage);
 router.addRoute("/admin", AdminPage);
+router.addRoute("/admin/categories", AdminCategoriesPage);
 router.addRoute("/admin/commandes", AdminCommandesPage);
 // Sans layout : le visiteur n'est pas encore connecté, il n'a donc ni navigation
 // d'administration ni l'en-tête du site à voir autour du formulaire.
