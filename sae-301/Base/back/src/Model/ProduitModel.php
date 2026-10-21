@@ -33,9 +33,21 @@ final class ProduitModel
     /** Connexion à la base, fournie à la construction. */
     private PDO $pdo;
 
-    public function __construct(PDO $pdo)
+    /** La promotion automatique : les prix du produit au plus gros stock baissent (PRO-c). */
+    private PromotionModel $promotion;
+
+    public function __construct(PDO $pdo, PromotionModel $promotion)
     {
-        $this->pdo = $pdo;
+        $this->pdo       = $pdo;
+        $this->promotion = $promotion;
+    }
+
+    /**
+     * Le produit en promotion automatique (PRO-c), ou null.
+     */
+    public function produitEnPromotion(): ?int
+    {
+        return $this->promotion->produitEnPromotion();
     }
 
     /**
@@ -219,6 +231,7 @@ final class ProduitModel
                     variante.prix,
                     variante.stock,
                     " . self::SQL_OPTIONS_VARIANTE . " AS options,
+                    variante.produit_id,
                     produit.slug AS produit_slug,
                     produit.nom  AS produit_nom,
                     COALESCE(image_variante.chemin_moyen, image_produit.chemin_moyen) AS chemin_moyen,
@@ -241,7 +254,8 @@ final class ProduitModel
             $trouvees[(int) $ligne['id']] = $ligne;
         }
 
-        $resultat = [];
+        $resultat    = [];
+        $enPromotion = $this->promotion->produitEnPromotion();
 
         foreach ($demandes as $id => $quantite) {
             $ligne = $trouvees[$id] ?? null;
@@ -252,13 +266,15 @@ final class ProduitModel
             }
 
             $stock = (int) $ligne['stock'];
+            $tarif = PromotionModel::appliquer($ligne['prix'], (int) $ligne['produit_id'] === $enPromotion);
 
             $resultat[] = [
                 'id'                => $id,
                 'connue'            => true,
                 'nom'               => $ligne['nom'],
                 'options'           => $ligne['options'],
-                'prix'              => $ligne['prix'],
+                'prix'              => $tarif['prix'],
+                'prix_barre'        => $tarif['prixBarre'],
                 'stock'             => $stock,
                 'produit_slug'      => $ligne['produit_slug'],
                 'produit_nom'       => $ligne['produit_nom'],

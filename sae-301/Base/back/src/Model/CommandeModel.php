@@ -55,9 +55,13 @@ final class CommandeModel
     /** Connexion à la base, fournie à la construction. */
     private PDO $pdo;
 
-    public function __construct(PDO $pdo)
+    /** La promotion automatique : le prix payé est celui d'aujourd'hui, promotion comprise (PRO-c). */
+    private PromotionModel $promotion;
+
+    public function __construct(PDO $pdo, PromotionModel $promotion)
     {
-        $this->pdo = $pdo;
+        $this->pdo       = $pdo;
+        $this->promotion = $promotion;
     }
 
     /**
@@ -654,6 +658,7 @@ final class CommandeModel
                     variante.nom,
                     variante.prix,
                     variante.stock,
+                    variante.produit_id,
                     " . ProduitModel::SQL_OPTIONS_VARIANTE . " AS options,
                     produit.slug AS produit_slug,
                     produit.nom  AS produit_nom,
@@ -674,7 +679,13 @@ final class CommandeModel
 
         $variantes = [];
 
+        // Le prix enregistré dans la commande est celui que paie le client : avec
+        // la promotion automatique, si la variante est celle du produit en promotion.
+        $enPromotion = $this->promotion->produitEnPromotion();
+
         foreach ($requete->fetchAll() as $ligne) {
+            $ligne['prix'] = PromotionModel::appliquer($ligne['prix'], (int) $ligne['produit_id'] === $enPromotion)['prix'];
+
             $variantes[(int) $ligne['id']] = $ligne;
         }
 

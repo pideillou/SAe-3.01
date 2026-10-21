@@ -10,7 +10,10 @@ import { descriptionOptions } from "../lib/variantes.js";
  * ses options). Elle garde de quoi s'afficher sans appeler l'API :
  *
  * { varianteId, produitSlug, produitNom, nom, options: "Switch : Vert", prix: "189.99",
- *   stock, image: { moyen, alt } | null, quantite }
+ *   prixBarre: "239.99" | null, stock, image: { moyen, alt } | null, quantite }
+ *
+ * prix est le prix à payer ; prixBarre, l'ancien prix quand le produit est en
+ * promotion automatique (PRO-c), sinon null.
  *
  * options décrit les options choisies (chaîne vide pour une ligne ajoutée avant
  * OPT-a : le nom de la variante les contient alors).
@@ -124,6 +127,7 @@ PanierData.articleDepuis = function (produit, variante) {
     nom: variante.nom,
     options: descriptionOptions(produit, variante),
     prix: variante.prix,
+    prixBarre: variante.prixBarre ?? null,
     stock: variante.stock,
     image: image === null ? null : { moyen: image.moyen, alt: image.alt },
   };
@@ -275,6 +279,7 @@ PanierData.fusionner = function (articles) {
       existante.quantite += possible;
       existante.stock = article.stock;
       existante.prix = article.prix;
+      existante.prixBarre = article.prixBarre ?? null;
       existante.options = article.options;
     }
 
@@ -343,6 +348,7 @@ PanierData.appliquerVerification = function (reponses) {
       nom: reponse.nom,
       options: reponse.options ?? "",
       prix: reponse.prix,
+      prixBarre: reponse.prixBarre ?? null,
       stock: reponse.stock,
       quantite: Math.min(ligne.quantite, reponse.quantiteAcceptee),
       image: reponse.image ?? ligne.image,

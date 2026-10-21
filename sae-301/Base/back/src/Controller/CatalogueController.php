@@ -9,6 +9,7 @@ use App\Core\Response;
 use App\Model\CategorieModel;
 use App\Model\ParametreModel;
 use App\Model\ProduitModel;
+use App\Model\PromotionModel;
 
 /**
  * Catalogue de produits (DEC-b) : les produits, avec leur nom, leur prix, leur
@@ -24,12 +25,18 @@ final class CatalogueController
     private ProduitModel $produits;
     private CategorieModel $categories;
     private ParametreModel $parametres;
+    private PromotionModel $promotion;
 
-    public function __construct(ProduitModel $produits, CategorieModel $categories, ParametreModel $parametres)
-    {
+    public function __construct(
+        ProduitModel $produits,
+        CategorieModel $categories,
+        ParametreModel $parametres,
+        PromotionModel $promotion
+    ) {
         $this->produits   = $produits;
         $this->categories = $categories;
         $this->parametres = $parametres;
+        $this->promotion  = $promotion;
     }
 
     /**
@@ -92,14 +99,19 @@ final class CatalogueController
         $seuil     = (int) $this->parametres->valeur('seuil_bientot_epuise', '5');
         $variantes = [];
 
+        // Promotion automatique (PRO-c) : le produit au plus gros stock est à -20 %.
+        $enPromotion = $this->promotion->produitEnPromotion() === (int) $produit['id'];
+
         foreach ($this->produits->listerVariantes((int) $produit['id']) as $ligne) {
             $stock = (int) $ligne['stock'];
+            $tarif = PromotionModel::appliquer($ligne['prix'], $enPromotion);
 
             $variantes[] = [
                 'id'        => (int) $ligne['id'],
                 'reference' => $ligne['reference'],
                 'nom'       => $ligne['nom'],
-                'prix'      => $ligne['prix'],
+                'prix'      => $tarif['prix'],
+                'prixBarre' => $tarif['prixBarre'],
                 'stock'     => $stock,
                 'etat'      => $this->etatStock($stock, $seuil),
                 'defaut'    => (int) $ligne['est_defaut'] === 1,
@@ -121,9 +133,14 @@ final class CatalogueController
                 'slug'        => $produit['slug'],
                 'accroche'    => $produit['accroche'],
                 'description' => $produit['description'],
-                // Prix en chaînes (« 189.99 ») : voir index().
-                'prix'        => $produit['prix'],
-                'prixMax'     => $produit['prix_max'] ?? $produit['prix'],
+                // Prix en chaînes (« 189.99 ») : voir index(). Avec la promotion,
+                // « prix » et « prixMax » sont les prix réduits, « prixBarre » et
+                // « prixMaxBarre » les prix d'origine (null hors promotion).
+                'prix'        => PromotionModel::appliquer($produit['prix'], $enPromotion)['prix'],
+                'prixMax'     => PromotionModel::appliquer($produit['prix_max'] ?? $produit['prix'], $enPromotion)['prix'],
+                'prixBarre'   => PromotionModel::appliquer($produit['prix'], $enPromotion)['prixBarre'],
+                'prixMaxBarre' => PromotionModel::appliquer($produit['prix_max'] ?? $produit['prix'], $enPromotion)['prixBarre'],
+                'promotion'   => $enPromotion ? PromotionModel::POURCENTAGE : null,
                 'categorie'   => [
                     'nom'  => $produit['categorie_nom'],
                     'slug' => $produit['categorie_slug'],
@@ -158,17 +175,24 @@ final class CatalogueController
             }
         }
 
-        $produits = [];
-        $seuil    = (int) $this->parametres->valeur('seuil_bientot_epuise', '5');
+        $produits    = [];
+        $seuil       = (int) $this->parametres->valeur('seuil_bientot_epuise', '5');
+        $enPromotion = $this->promotion->produitEnPromotion();
 
         foreach ($this->produits->lister($categorie === null ? null : (int) $categorie['id']) as $ligne) {
+            $tarif = PromotionModel::appliquer($ligne['prix'], (int) $ligne['id'] === $enPromotion);
+
             $produits[] = [
                 'id'        => (int) $ligne['id'],
                 'nom'       => $ligne['nom'],
                 'slug'      => $ligne['slug'],
                 // Le prix reste une chaîne (« 189.99 ») : un DECIMAL converti en
                 // nombre à virgule flottante pourrait perdre des centimes.
-                'prix'      => $ligne['prix'],
+                'prix'      => $tarif['prix'],
+                // Promotion automatique (PRO-c) : prix d'origine à barrer et
+                // pourcentage de la réduction, ou null pour un produit normal.
+                'prixBarre' => $tarif['prixBarre'],
+                'promotion' => $tarif['prixBarre'] === null ? null : PromotionModel::POURCENTAGE,
                 // État de stock du produit (STK-b) d'après sa variante la mieux
                 // fournie : « en-stock », « bientot-epuise » ou « epuise ».
                 'etat'      => $this->etatStock((int) $ligne['stock_max'], $seuil),

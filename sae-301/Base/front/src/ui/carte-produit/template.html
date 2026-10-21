@@ -9,7 +9,7 @@
       <h3 class="font-titres text-base leading-tight font-semibold text-texte md:text-xl">{{nom}}</h3>
 
       <span class="mt-auto flex items-center justify-between gap-2">
-        <span class="text-prix-mobile font-semibold text-texte md:text-lg">{{prix}}</span>
+        <span class="text-prix-mobile font-semibold text-texte md:text-lg"><slot name="prix"></slot></span>
         <img src="{{fleche}}" width="18" height="18" alt="" class="size-4.5 shrink-0" />
       </span>
     </div>

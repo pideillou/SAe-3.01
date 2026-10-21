@@ -21,7 +21,7 @@
         </div>
 
         <div class="flex flex-wrap items-center justify-between gap-3 border-y border-bordure py-5">
-          <p class="font-titres text-prix-fiche font-semibold">{{prix}}</p>
+          <p class="font-titres text-prix-fiche font-semibold"><slot name="prix"></slot></p>
           <slot name="stock"></slot>
         </div>
 

@@ -304,6 +304,7 @@ final class CommandeController
                 'nom'         => $actuelle['nom'],
                 'options'     => $actuelle['options'] ?? '',
                 'prix'        => $actuelle['prix'],
+                'prixBarre'   => $actuelle['prix_barre'],
                 'stock'       => (int) $actuelle['stock'],
                 'image'       => $actuelle['image'] === null ? null : [
                     'moyen' => $actuelle['image'],

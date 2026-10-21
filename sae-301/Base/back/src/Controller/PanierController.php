@@ -92,6 +92,7 @@ final class PanierController
                 'stock'            => $ligne['stock'],
                 'etat'             => self::etatStock($ligne['stock'], $seuil),
                 'prix'             => $ligne['prix'],
+                'prixBarre'        => $ligne['prix_barre'],
                 'nom'              => $ligne['nom'],
                 'options'          => $ligne['options'] ?? '',
                 'produitSlug'      => $ligne['produit_slug'],

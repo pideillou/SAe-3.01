@@ -10,7 +10,7 @@
         <a href="{{chemin}}" data-link class="underline-offset-4 hover:text-razer hover:underline">{{titre}}</a>
       </h2>
       <p data-options class="text-mention text-texte">{{options}}</p>
-      <p class="text-mention text-texte-secondaire">{{prixUnitaire}} l'unité</p>
+      <p class="text-mention text-texte-secondaire"><slot name="prix"></slot> l'unité</p>
       <p class="text-mention text-texte-secondaire">{{mentionStock}}</p>
       <button type="button" data-action="modifier" data-variante="{{varianteId}}" aria-expanded="false" aria-label="Modifier les options de {{nom}}" class="self-start text-mention text-texte-secondaire underline underline-offset-4 transition-colors hover:text-razer">Modifier les options</button>
     </div>

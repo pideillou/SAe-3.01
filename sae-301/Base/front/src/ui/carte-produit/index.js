@@ -1,11 +1,13 @@
 import { genericRenderer, htmlToFragment, urlPublique } from "../../lib/utils.js";
-import { formaterPrix } from "../../lib/format.js";
 import { BadgeStockView } from "../badge-stock/index.js";
+import { PrixPromotionView } from "../prix-promotion/index.js";
 import fleche from "../../assets/fleche.svg";
 import template from "./template.html?raw";
 
 // Carte d'un produit, tel que le renvoie l'API :
-// { nom, slug, prix, etat, image: { moyen } | null } ; la carte est un lien vers la fiche.
+// { nom, slug, prix, prixBarre, promotion, etat, image: { moyen } | null } ; la carte
+// est un lien vers la fiche. Un produit en promotion automatique (PRO-c) montre son
+// prix réduit, l'ancien prix barré et le pourcentage.
 // « etat » est l'état de stock du produit (STK-b) : le badge le montre, et un
 // produit épuisé est grisé et ne peut plus être ajouté au panier.
 let CarteProduitView = {
@@ -13,7 +15,6 @@ let CarteProduitView = {
     // Les valeurs sont mises en forme avant d'être passées au template.
     return genericRenderer(template, {
       nom: produit.nom,
-      prix: formaterPrix(produit.prix),
       // L'image principale est un original carré de 500 px : assez net pour
       // une carte, même sur un écran haute densité. Un produit créé dans le
       // back-office n'a pas forcément d'image : voir dom().
@@ -49,6 +50,7 @@ let CarteProduitView = {
     }
 
     fragment.querySelector('slot[name="stock"]').replaceWith(BadgeStockView.dom(produit.etat));
+    fragment.querySelector('slot[name="prix"]').replaceWith(PrixPromotionView.dom(produit));
 
     let bouton = fragment.querySelector('[data-action="ajouter-panier"]');
 

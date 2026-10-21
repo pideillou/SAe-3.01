@@ -9,6 +9,7 @@ let ProduitData = {};
  * { total: 4,
  *   categorie: { nom, slug } | null,   // la catégorie demandée
  *   produits: [ { id, nom, slug, prix: "189.99",
+ *                 prixBarre: "239.99" | null, promotion: 20 | null,   // promotion automatique (PRO-c)
  *                 etat: "en-stock" | "bientot-epuise" | "epuise",   // variante la mieux fournie
  *                 categorie: { nom, slug },
  *                 image: { moyen, grand, alt } | null }, ... ] }
@@ -31,15 +32,18 @@ ProduitData.fetchAll = async function (categorie) {
  * { produit: { id, nom, slug, accroche, description,
  *              caracteristiques: [ "…", … ],        // points forts
  *              prix: "49.99", prixMax: "79.99",
+ *              prixBarre: null, prixMaxBarre: null, promotion: null,   // -20 % : prix d'origine et pourcentage
  *              categorie: { nom, slug },
  *              images: [ { moyen, grand, alt }, ... ],
  *              options: [ { nom, valeurs: [ { id, valeur }, … ] }, … ],
- *              variantes: [ { id, reference, nom, prix, stock,
+ *              variantes: [ { id, reference, nom, prix, prixBarre, stock,
  *                             etat: "en-stock" | "bientot-epuise" | "epuise",
  *                             defaut, valeurs: [ id, … ], image } , … ] } }
  *
  * « prix » est celui de la variante la moins chère, « prixMax » celui de la
- * plus chère. La première image est la principale. Un produit inconnu donne
+ * plus chère. Le produit au plus gros stock est en promotion automatique : tous
+ * les prix sont alors réduits de 20 %, « prixBarre » (et « prixMaxBarre ») portent
+ * les prix d'origine, et « promotion » le pourcentage (tous null hors promotion). La première image est la principale. Un produit inconnu donne
  * une ErreurApi de statut 404.
  */
 ProduitData.fetchOne = async function (slug) {

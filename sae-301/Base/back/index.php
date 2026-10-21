@@ -39,6 +39,7 @@ use App\Service\FichiersImages;
 use App\Service\RedimensionneurImage;
 use App\Model\ParametreModel;
 use App\Model\ProduitModel;
+use App\Model\PromotionModel;
 use App\Model\UtilisateurModel;
 
 // --- Chargement automatique des classes ------------------------------------
@@ -79,12 +80,13 @@ try {
     // --- Assemblage ---------------------------------------------------------
     // Les dépendances sont créées explicitement : le modèle reçoit la connexion,
     // le contrôleur reçoit le modèle. Aucune magie, tout est lisible ici.
-    $produits   = new ProduitModel($pdo);
+    $promotion  = new PromotionModel($pdo);
+    $produits   = new ProduitModel($pdo, $promotion);
     $categories = new CategorieModel($pdo);
     $parametres = new ParametreModel($pdo);
     $utilisateurs    = new UtilisateurModel($pdo);
     $administrateurs = new AdministrateurModel($pdo);
-    $commandes       = new CommandeModel($pdo);
+    $commandes       = new CommandeModel($pdo, $promotion);
     $codesPromo      = new CodePromoModel($pdo);
     $produitsAdmin   = new ProduitAdminModel($pdo);
     $imagesProduits  = new ImageProduitModel($pdo);
@@ -94,7 +96,7 @@ try {
     $fichiersImages = new FichiersImages(__DIR__ . '/../uploads');
 
     $controleurs = [
-        CatalogueController::class => new CatalogueController($produits, $categories, $parametres),
+        CatalogueController::class => new CatalogueController($produits, $categories, $parametres, $promotion),
         CategorieController::class => new CategorieController($categories),
         AuthController::class      => new AuthController($utilisateurs),
         AdminProduitController::class => new AdminProduitController(

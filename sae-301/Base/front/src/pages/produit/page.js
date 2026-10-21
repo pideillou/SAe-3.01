@@ -11,6 +11,7 @@ import { FilArianeView } from "../../ui/fil-ariane/index.js";
 import { GalerieProduitView } from "../../ui/galerie-produit/index.js";
 import { MessageView } from "../../ui/message/index.js";
 import { NotificationView } from "../../ui/notification/index.js";
+import { PrixPromotionView } from "../../ui/prix-promotion/index.js";
 import { SelecteurOptionsView } from "../../ui/selecteur-options/index.js";
 import { The404Page } from "../404/page.js";
 import template from "./template.html?raw";
@@ -190,7 +191,6 @@ V.createPageFragment = function () {
       accroche: fiche.accroche ?? "",
       nom: fiche.nom,
       introduction,
-      prix: produit === null || M.variante === null ? "" : formaterPrix(M.variante.prix),
       noteStock: produit === null || M.variante === null ? "" : V.noteStock(produit, M.variante),
     })
   );
@@ -225,6 +225,14 @@ V.createPageFragment = function () {
       )
     );
   }
+
+  // Prix de la variante choisie, avec la promotion automatique s'il y en a une
+  // (PRO-c : ancien prix barré et pourcentage).
+  pageFragment.querySelector('slot[name="prix"]').replaceWith(
+    M.variante === null
+      ? ""
+      : PrixPromotionView.dom({ prix: M.variante.prix, prixBarre: M.variante.prixBarre, promotion: produit.promotion })
+  );
 
   // Stock, options et bouton : ils dépendent de la variante choisie.
   let slotStock = pageFragment.querySelector('slot[name="stock"]');

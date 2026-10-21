@@ -1,5 +1,6 @@
 import { formaterPrix } from "../../lib/format.js";
 import { genericRenderer, htmlToFragment, urlPublique } from "../../lib/utils.js";
+import { PrixPromotionView } from "../prix-promotion/index.js";
 import template from "./template.html?raw";
 
 // Une ligne du panier : image, nom, options choisies, prix, quantité modifiable,
@@ -29,7 +30,6 @@ let LignePanierView = {
         titre: options === "" ? ligne.nom : ligne.produitNom,
         nom: ligne.nom,
         options,
-        prixUnitaire: formaterPrix(ligne.prix),
         mentionStock:
           ligne.quantite === ligne.stock
             ? "Quantité maximale atteinte"
@@ -38,6 +38,11 @@ let LignePanierView = {
         quantite: ligne.quantite,
         totalLigne: formaterPrix(totalLigne),
       })
+    );
+
+    // Prix à l'unité, avec la promotion automatique s'il y en a une (PRO-c).
+    fragment.querySelector('slot[name="prix"]').replaceWith(
+      PrixPromotionView.dom({ prix: ligne.prix, prixBarre: ligne.prixBarre ?? null })
     );
 
     // Un template n'a pas de condition : l'image absente et les boutons
