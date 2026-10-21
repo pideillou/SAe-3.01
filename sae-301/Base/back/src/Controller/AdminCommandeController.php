@@ -128,7 +128,7 @@ final class AdminCommandeController
                 'email'    => $commande['email'],
                 'lignes'   => $lignes,
                 'journal'  => $journal,
-            ],
+            ] + CommandeModel::detailReduction($commande),
         ]);
     }
 

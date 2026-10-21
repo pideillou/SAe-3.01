@@ -95,7 +95,11 @@ V.init = function () {
   }
 
   pageFragment.querySelector('slot[name="recapitulatif"]').replaceWith(
-    RecapitulatifCommandeView.dom(commande.lignes, commande.total)
+    RecapitulatifCommandeView.dom(
+      commande.lignes,
+      commande.total,
+      commande.reduction === null ? null : { ...commande.reduction, sousTotal: commande.sousTotal }
+    )
   );
 
   return pageFragment;

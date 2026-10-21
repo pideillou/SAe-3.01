@@ -68,10 +68,13 @@ final class CommandeModel
      * Les prix et les noms viennent de la base, jamais du panier du navigateur.
      *
      * @param array<int, int> $demandes  quantité commandée, indexée par id de variante
+     * @param array{code: string, pourcentage: int}|null $promo  code promotionnel
+     *        déjà vérifié : sa réduction est retirée du total, et la commande en
+     *        garde le code, le pourcentage et le montant
      * @return array la commande créée, au format de trouverParNumero()
      * @throws CommandeImpossibleException si le stock ne permet pas la commande
      */
-    public function creer(int $utilisateurId, array $demandes): array
+    public function creer(int $utilisateurId, array $demandes, ?array $promo = null): array
     {
         // Toujours verrouiller dans le même ordre : deux commandes simultanées
         // sur les mêmes variantes ne peuvent pas s'attendre l'une l'autre.
@@ -107,7 +110,11 @@ final class CommandeModel
                 $total += self::centimes($variantes[$id]['prix']) * $quantite;
             }
 
-            [$commandeId, $numero] = $this->insererCommande($utilisateurId, $total);
+            // Réduction en pourcentage, arrondie au centime le plus proche (les demis
+            // vers le haut) : le même calcul que celui du front, qui l'affiche.
+            $reduction = $promo === null ? 0 : self::reduction($total, $promo['pourcentage']);
+
+            [$commandeId, $numero] = $this->insererCommande($utilisateurId, $total - $reduction, $promo, $reduction);
 
             foreach ($demandes as $id => $quantite) {
                 $variante = $variantes[$id];
@@ -167,6 +174,7 @@ final class CommandeModel
     {
         $requete = $this->pdo->prepare(
             'SELECT commande.id, commande.numero, commande.statut, commande.total, commande.cree_le,
+                    commande.code_promo, commande.reduction_pourcentage, commande.reduction_montant,
                     utilisateur.email
                FROM commande
          INNER JOIN utilisateur ON utilisateur.id = commande.utilisateur_id
@@ -492,6 +500,7 @@ final class CommandeModel
     {
         $requete = $this->pdo->prepare(
             'SELECT commande.id, commande.numero, commande.statut, commande.total, commande.cree_le,
+                    commande.code_promo, commande.reduction_pourcentage, commande.reduction_montant,
                     utilisateur.email
                FROM commande
          INNER JOIN utilisateur ON utilisateur.id = commande.utilisateur_id
@@ -679,18 +688,22 @@ final class CommandeModel
      *
      * @return array{0: int, 1: string}  identifiant et numéro de la commande
      */
-    private function insererCommande(int $utilisateurId, int $totalCentimes): array
+    private function insererCommande(int $utilisateurId, int $totalCentimes, ?array $promo, int $reductionCentimes): array
     {
         for ($essai = 1; $essai <= self::ESSAIS_NUMERO; $essai++) {
             $numero = self::genererNumero();
 
             try {
                 $this->pdo->prepare(
-                    'INSERT INTO commande (numero, utilisateur_id, total) VALUES (:numero, :utilisateur, :total)'
+                    'INSERT INTO commande (numero, utilisateur_id, total, code_promo, reduction_pourcentage, reduction_montant)
+                     VALUES (:numero, :utilisateur, :total, :code, :pourcentage, :reduction)'
                 )->execute([
                     ':numero'      => $numero,
                     ':utilisateur' => $utilisateurId,
                     ':total'       => number_format($totalCentimes / 100, 2, '.', ''),
+                    ':code'        => $promo['code'] ?? null,
+                    ':pourcentage' => $promo['pourcentage'] ?? null,
+                    ':reduction'   => number_format($reductionCentimes / 100, 2, '.', ''),
                 ]);
 
                 return [(int) $this->pdo->lastInsertId(), $numero];
@@ -723,6 +736,37 @@ final class CommandeModel
     /**
      * « 189.99 » -> 18999. Les calculs d'argent se font en centimes entiers.
      */
+    /**
+     * La réduction d'un pourcentage sur un montant, en centimes, arrondie au
+     * centime le plus proche (les demis vers le haut).
+     */
+    public static function reduction(int $totalCentimes, int $pourcentage): int
+    {
+        return intdiv($totalCentimes * $pourcentage + 50, 100);
+    }
+
+    /**
+     * La réduction d'une commande lue en base, au format de l'API :
+     * { code, pourcentage, montant }, ou null si la commande n'en a pas. Avec le
+     * « sousTotal » (total des articles avant réduction).
+     *
+     * @return array{reduction: array|null, sousTotal: string}
+     */
+    public static function detailReduction(array $commande): array
+    {
+        $montant = self::centimes((string) ($commande['reduction_montant'] ?? '0'));
+        $total   = self::centimes((string) $commande['total']);
+
+        return [
+            'reduction' => ($commande['code_promo'] ?? null) === null ? null : [
+                'code'        => $commande['code_promo'],
+                'pourcentage' => (int) $commande['reduction_pourcentage'],
+                'montant'     => number_format($montant / 100, 2, '.', ''),
+            ],
+            'sousTotal' => number_format(($total + $montant) / 100, 2, '.', ''),
+        ];
+    }
+
     private static function centimes(string $prix): int
     {
         return (int) round(((float) $prix) * 100);

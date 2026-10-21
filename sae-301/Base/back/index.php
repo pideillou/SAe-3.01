@@ -30,6 +30,7 @@ use App\Controller\ProfilController;
 use App\Controller\StatsController;
 use App\Model\AdministrateurModel;
 use App\Model\CategorieModel;
+use App\Model\CodePromoModel;
 use App\Model\CommandeModel;
 use App\Model\ImageProduitModel;
 use App\Model\ProduitAdminModel;
@@ -83,6 +84,7 @@ try {
     $utilisateurs    = new UtilisateurModel($pdo);
     $administrateurs = new AdministrateurModel($pdo);
     $commandes       = new CommandeModel($pdo);
+    $codesPromo      = new CodePromoModel($pdo);
     $produitsAdmin   = new ProduitAdminModel($pdo);
     $imagesProduits  = new ImageProduitModel($pdo);
 
@@ -110,7 +112,7 @@ try {
         AdminCategorieController::class => new AdminCategorieController($categories),
         AdminCommandeController::class => new AdminCommandeController($commandes),
         AdminAuthController::class => new AdminAuthController($administrateurs),
-        CommandeController::class  => new CommandeController($commandes, $produits),
+        CommandeController::class  => new CommandeController($commandes, $produits, $codesPromo),
         PanierController::class    => new PanierController($produits, $parametres),
         ProfilController::class    => new ProfilController($utilisateurs, $commandes),
         StatsController::class     => new StatsController($produits, $commandes, $parametres),

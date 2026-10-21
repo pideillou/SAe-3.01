@@ -9,10 +9,27 @@ import template from "./template.html?raw";
 let RecapitulatifCommandeView = {
   /**
    * @param {Array<{nom, image, prixUnitaire, quantite}>} lignes
-   * @param {number|string} total
+   * @param {number|string} total  le total à payer (réduction déduite)
+   * @param {{code: string, pourcentage: number, montant: number|string,
+   *          sousTotal: number|string}|null} reduction  le code promotionnel
+   *        appliqué, ou null
    */
-  dom: function (lignes, total) {
-    let fragment = htmlToFragment(genericRenderer(template, { total: formaterPrix(total) }));
+  dom: function (lignes, total, reduction = null) {
+    let fragment = htmlToFragment(
+      genericRenderer(template, {
+        total: formaterPrix(total),
+        sousTotal: reduction === null ? "" : formaterPrix(reduction.sousTotal),
+        code: reduction === null ? "" : reduction.code,
+        pourcentage: reduction === null ? "" : reduction.pourcentage,
+        montant: reduction === null ? "" : formaterPrix(reduction.montant),
+      })
+    );
+
+    // Sans code promotionnel, le total est la seule ligne de montant.
+    if (reduction === null) {
+      fragment.querySelector("[data-sous-total]").remove();
+      fragment.querySelector("[data-reduction]").remove();
+    }
 
     fragment
       .querySelector('slot[name="lignes"]')

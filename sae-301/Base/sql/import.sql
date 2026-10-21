@@ -29,6 +29,7 @@ SET NAMES utf8mb4;
 -- Suppression dans l'ordre inverse des clés étrangères.
 -- ATTENTION : les commandes (commande, ligne_commande, mouvement_stock) sont
 -- elles aussi supprimées à chaque import.
+DROP TABLE IF EXISTS code_promo;
 DROP TABLE IF EXISTS journal_commande;
 DROP TABLE IF EXISTS mouvement_stock;
 DROP TABLE IF EXISTS ligne_commande;
@@ -278,12 +279,40 @@ CREATE TABLE image_produit (
 -- numero : numéro unique montré au client (ex. RZ-20261016-K7M2QX).
 -- Statuts : en cours (à la création), disponible, retirée, annulée.
 -- ---------------------------------------------------------------------------
+-- ---------------------------------------------------------------------------
+-- Codes promotionnels (PRO-a) : un code saisi à la commande donne une réduction
+-- en pourcentage sur le total. Le code est enregistré en MAJUSCULES. Un code
+-- désactivé (actif = 0) n'est plus accepté. Aucun code n'est fourni : ils sont
+-- ajoutés par le magasin, par exemple :
+--   INSERT INTO code_promo (code, pourcentage) VALUES ('BIENVENUE10', 10);
+-- La commande garde le code, le pourcentage et le montant de la réduction au
+-- moment où elle a été passée (colonnes code_promo, reduction_pourcentage et
+-- reduction_montant de la table commande) : total = articles - réduction.
+-- ---------------------------------------------------------------------------
+CREATE TABLE code_promo (
+    id          SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    code        VARCHAR(30)       NOT NULL,
+    pourcentage TINYINT UNSIGNED  NOT NULL,
+    actif       TINYINT(1)        NOT NULL DEFAULT 1,
+    cree_le     DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_code_promo (code),
+
+    CONSTRAINT chk_code_promo_pourcentage CHECK (pourcentage BETWEEN 1 AND 100)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
 CREATE TABLE commande (
     id             INT UNSIGNED  NOT NULL AUTO_INCREMENT,
     numero         VARCHAR(24)   NOT NULL,
     utilisateur_id INT UNSIGNED  NOT NULL,
     statut         ENUM('en cours', 'disponible', 'retirée', 'annulée') NOT NULL DEFAULT 'en cours',
     total          DECIMAL(10,2) NOT NULL,
+    code_promo            VARCHAR(30)      NULL,
+    reduction_pourcentage TINYINT UNSIGNED NULL,
+    reduction_montant     DECIMAL(10,2)    NOT NULL DEFAULT 0,
     cree_le        DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (id),

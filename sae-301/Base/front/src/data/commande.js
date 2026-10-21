@@ -5,16 +5,29 @@ let CommandeData = {};
 /**
  * Validation de la commande : POST /api/commande  (client connecté)
  *
- * Envoie [ { varianteId, quantite }, … ]. Seuls ces deux champs comptent : le
- * serveur relit prix, noms et stocks en base.
+ * Envoie [ { varianteId, quantite }, … ] et, facultatif, un code promotionnel.
+ * Seuls ces champs comptent : le serveur relit prix, noms et stocks en base,
+ * revérifie le code et recalcule la réduction.
  *
  * 201 : { commande } (voir fetchOne).
+ * 422 : code promotionnel invalide (champs.codePromo), rien n'est enregistré.
  * 409 : le stock ne permet pas la commande, rien n'est enregistré. L'ErreurApi
  * porte alors le message du serveur ; le panier doit être revérifié.
  * 401 : visiteur non connecté.
  */
-CommandeData.creer = async function (lignes) {
-  return postRequest("commande", { lignes });
+CommandeData.creer = async function (lignes, codePromo = null) {
+  return postRequest("commande", codePromo === null ? { lignes } : { lignes, codePromo });
+};
+
+/**
+ * Vérifie un code promotionnel : POST /api/commande/code-promo  { code }
+ *
+ * 200 : { code: "BIENVENUE10", pourcentage: 10 } (le code est mis en majuscules).
+ * 422 : code inconnu ou désactivé (champs.codePromo). 429 : trop d'essais refusés.
+ * 401 : visiteur non connecté.
+ */
+CommandeData.verifierCode = async function (code) {
+  return postRequest("commande/code-promo", { code });
 };
 
 /**
@@ -22,6 +35,8 @@ CommandeData.creer = async function (lignes) {
  *
  * { commande: { numero, statut: "en cours", total: "379.98",
  *               creeLe: "2026-10-16 14:30:00", email,
+ *               sousTotal: "379.98",   // articles avant réduction
+ *               reduction: { code, pourcentage, montant: "38.00" } | null,
  *               lignes: [ { produitNom, produitSlug, nom, options, image,
  *                           prixUnitaire, quantite }, … ] } }
  *

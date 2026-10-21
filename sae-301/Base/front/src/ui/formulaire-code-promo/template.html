@@ -1,0 +1,17 @@
+<section aria-labelledby="titre-code-promo" class="flex flex-col gap-3">
+  <h2 id="titre-code-promo" class="font-titres text-xl font-semibold uppercase">Code promo</h2>
+
+  <form novalidate class="flex flex-col gap-2">
+    <label for="champ-code-promo" class="text-sm font-medium">Vous avez un code ?</label>
+    <div class="flex gap-2">
+      <input id="champ-code-promo" name="code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="30" value="{{saisie}}" aria-describedby="erreur-code-promo" class="h-12 min-w-0 flex-1 border border-bordure bg-fond px-3 text-texte uppercase transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+      <button type="submit" class="min-h-12 border border-bordure px-5 font-titres text-sm font-semibold uppercase transition-colors hover:border-razer hover:text-razer disabled:cursor-wait disabled:opacity-40">Appliquer</button>
+    </div>
+    <p id="erreur-code-promo" data-erreur class="text-mention text-erreur"></p>
+  </form>
+
+  <div data-applique class="flex flex-wrap items-center justify-between gap-3 border border-razer bg-sur-razer p-3 text-sm">
+    <p role="status"><span class="font-semibold text-razer">{{code}}</span> appliqué : −{{pourcentage}} % sur le total.</p>
+    <button type="button" data-action="retirer" class="text-mention underline underline-offset-4 transition-colors hover:text-erreur">Retirer</button>
+  </div>
+</section>

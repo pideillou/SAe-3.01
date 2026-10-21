@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Core\Request;
 use App\Core\Response;
 use App\Model\CommandeImpossibleException;
+use App\Model\CodePromoModel;
 use App\Model\CommandeModel;
 use App\Model\ProduitModel;
 
@@ -26,23 +27,34 @@ final class CommandeController
     /** Nombre de commandes par page de l'historique. */
     private const PAR_PAGE = 10;
 
+    /** Codes promotionnels refusés qu'un client peut essayer, par fenêtre de temps. */
+    private const ESSAIS_CODE_MAX = 10;
+
+    /** Durée de cette fenêtre, en secondes. */
+    private const ESSAIS_CODE_FENETRE = 600;
+
     private const FORMAT_NUMERO = '/^RZ-\d{8}-[A-Z2-9]{6}$/';
 
     private CommandeModel $commandes;
     private ProduitModel $produits;
+    private CodePromoModel $codes;
 
-    public function __construct(CommandeModel $commandes, ProduitModel $produits)
+    public function __construct(CommandeModel $commandes, ProduitModel $produits, CodePromoModel $codes)
     {
         $this->commandes = $commandes;
         $this->produits  = $produits;
+        $this->codes     = $codes;
     }
 
     /**
-     * POST /api/commande : { lignes: [ { varianteId, quantite } ] }
+     * POST /api/commande : { lignes: [ { varianteId, quantite } ], codePromo? }
      *
      * Seuls les identifiants de variante et les quantités du panier sont
-     * utilisés : prix, noms et stocks sont relus en base.
-     * 201 avec la commande ; 409 si le stock ne permet pas de la valider.
+     * utilisés : prix, noms et stocks sont relus en base. Le code promotionnel,
+     * s'il y en a un, est revérifié ici et la réduction recalculée par le
+     * serveur : le montant affiché par le front ne fait pas foi.
+     * 201 avec la commande ; 409 si le stock ne permet pas de la valider ;
+     * 422 si le code n'est pas valide.
      */
     public function creer(Request $requete): void
     {
@@ -72,8 +84,15 @@ final class CommandeController
             $demandes[$id] = min(($demandes[$id] ?? 0) + $quantite, self::QUANTITE_MAX);
         }
 
+        $promo  = null;
+        $saisie = $requete->corps()['codePromo'] ?? null;
+
+        if ($saisie !== null && $saisie !== '') {
+            $promo = $this->codeValide($saisie);
+        }
+
         try {
-            $commande = $this->commandes->creer($utilisateurId, $demandes);
+            $commande = $this->commandes->creer($utilisateurId, $demandes, $promo);
         } catch (CommandeImpossibleException $e) {
             Response::json([
                 'erreur'    => 'Votre commande n\'a pas été enregistrée : le stock a changé. Vérifiez votre panier.',
@@ -82,6 +101,56 @@ final class CommandeController
         }
 
         Response::json(['commande' => self::formater($commande)], 201);
+    }
+
+    /**
+     * POST /api/commande/code-promo : { code }
+     * Vérifie un code promotionnel avant la commande (PRO-a) et renvoie son
+     * pourcentage : { code, pourcentage }. 422 si le code n'est pas valide.
+     * Ne modifie rien : la réduction est appliquée, et recalculée, à la commande.
+     */
+    public function verifierCode(Request $requete): void
+    {
+        $this->utilisateurConnecte();
+
+        $promo = $this->codeValide($requete->corps()['code'] ?? null);
+
+        Response::json(['code' => $promo['code'], 'pourcentage' => $promo['pourcentage']]);
+    }
+
+    /**
+     * Le code promotionnel actif correspondant à la saisie, ou une réponse 422.
+     * Les essais refusés sont comptés dans la session : après trop d'échecs, le
+     * client doit attendre (429), pour qu'on ne puisse pas deviner les codes.
+     *
+     * @return array{code: string, pourcentage: int}
+     */
+    private function codeValide(mixed $saisie): array
+    {
+        $maintenant = time();
+        $echecs     = array_filter(
+            $_SESSION['promo_echecs'] ?? [],
+            static fn (int $instant): bool => $instant > $maintenant - self::ESSAIS_CODE_FENETRE
+        );
+
+        if (count($echecs) >= self::ESSAIS_CODE_MAX) {
+            Response::erreur('Trop de codes essayés. Réessayez dans quelques minutes.', 429);
+        }
+
+        $code  = CodePromoModel::normaliser($saisie);
+        $promo = $code === null ? null : $this->codes->trouverActif($code);
+
+        if ($promo === null) {
+            $echecs[]                  = $maintenant;
+            $_SESSION['promo_echecs'] = array_values($echecs);
+
+            Response::json([
+                'erreur' => 'Ce code promo n\'est pas valide.',
+                'champs' => ['codePromo' => 'Ce code promo n\'est pas valide.'],
+            ], 422);
+        }
+
+        return $promo;
     }
 
     /**
@@ -336,6 +405,6 @@ final class CommandeController
             'creeLe'  => $commande['cree_le'],
             'email'   => $commande['email'],
             'lignes'  => $lignes,
-        ];
+        ] + CommandeModel::detailReduction($commande);
     }
 }

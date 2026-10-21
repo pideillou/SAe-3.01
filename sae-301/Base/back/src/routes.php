@@ -34,6 +34,7 @@ return [
     'GET  /api/commande'     => [CommandeController::class, 'detail'],
     'GET  /api/commandes'    => [CommandeController::class, 'historique'],
     'POST /api/commande/recommander' => [CommandeController::class, 'recommander'],
+    'POST /api/commande/code-promo' => [CommandeController::class, 'verifierCode'],
     'POST /api/inscription' => [AuthController::class,      'inscription'],
     'POST /api/login'       => [AuthController::class,      'login'],
     'GET  /api/moi'         => [AuthController::class,      'moi'],
