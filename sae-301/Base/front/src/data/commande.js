@@ -22,7 +22,7 @@ CommandeData.creer = async function (lignes) {
  *
  * { commande: { numero, statut: "en cours", total: "379.98",
  *               creeLe: "2026-10-16 14:30:00", email,
- *               lignes: [ { produitNom, produitSlug, nom, image,
+ *               lignes: [ { produitNom, produitSlug, nom, options, image,
  *                           prixUnitaire, quantite }, … ] } }
  *
  * Une commande inconnue (ou celle d'un autre client) donne une ErreurApi 404,

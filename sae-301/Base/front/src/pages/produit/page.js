@@ -4,7 +4,7 @@ import { decouperDescription, formaterPrix, pluriel } from "../../lib/format.js"
 import { ajouterAuPanier } from "../../lib/panier-stock.js";
 import { definirMetadonnees } from "../../lib/seo.js";
 import { genericRenderer, htmlToFragment, urlPublique } from "../../lib/utils.js";
-import { valeurDisponible, varianteApresChoix, varianteInitiale } from "../../lib/variantes.js";
+import { cartesOption, varianteApresChoix, varianteInitiale } from "../../lib/variantes.js";
 import { BadgeStockView } from "../../ui/badge-stock/index.js";
 import { DescriptionProduitView } from "../../ui/description-produit/index.js";
 import { FilArianeView } from "../../ui/fil-ariane/index.js";
@@ -171,33 +171,6 @@ V.noteStock = function (produit, variante) {
   return phrases.join(" ");
 };
 
-/**
- * Les cartes d'une option : pour chaque valeur, la variante qu'on obtiendrait
- * en la choisissant (avec ses autres choix conservés autant que possible).
- */
-V.cartes = function (produit, option) {
-  return option.valeurs.map((valeur) => {
-    let selectionnee = M.variante.valeurs.includes(valeur.id);
-    let variante = selectionnee
-      ? M.variante
-      : varianteApresChoix(produit.variantes, valeur.id, M.variante.valeurs);
-
-    let etat = "disponible";
-    if (selectionnee) {
-      etat = "selectionne";
-    } else if (!valeurDisponible(produit.variantes, valeur.id)) {
-      etat = "indisponible";
-    }
-
-    return {
-      valeurId: valeur.id,
-      libelle: valeur.valeur,
-      prix: variante === null ? "" : formaterPrix(variante.prix),
-      etat,
-    };
-  });
-};
-
 V.createPageFragment = function () {
   let produit = M.produit;
 
@@ -272,7 +245,7 @@ V.createPageFragment = function () {
       .filter((option) => option.valeurs.length > 1)
       .map((option) =>
         SelecteurOptionsView.dom(
-          { titre: option.nom, cartes: V.cartes(produit, option) },
+          { titre: option.nom, cartes: cartesOption(produit, option, M.variante) },
           { surChoix: C.handler_choisirValeur }
         )
       );

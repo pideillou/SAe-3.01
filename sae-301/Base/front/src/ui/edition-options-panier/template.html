@@ -1,0 +1,12 @@
+<section aria-labelledby="titre-edition-{{varianteId}}" class="flex basis-full flex-col gap-5 border border-bordure bg-surface-haute p-4 md:p-5">
+  <h3 id="titre-edition-{{varianteId}}" class="font-titres text-base font-semibold uppercase">Modifier les options</h3>
+
+  <slot name="options"></slot>
+
+  <p data-note class="text-mention text-texte-secondaire">{{note}}</p>
+
+  <div class="flex flex-col gap-3 sm:flex-row">
+    <button type="button" data-action="valider" class="flex min-h-12 items-center justify-center border border-razer bg-razer px-6 py-3 font-titres text-[0.9375rem] font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:border-dashed disabled:border-erreur disabled:bg-surface disabled:text-erreur disabled:hover:opacity-100">Valider</button>
+    <button type="button" data-action="annuler" class="flex min-h-12 items-center justify-center border border-bordure px-6 py-3 font-titres text-[0.9375rem] font-semibold uppercase transition-colors hover:border-razer hover:text-razer">Annuler</button>
+  </div>
+</section>

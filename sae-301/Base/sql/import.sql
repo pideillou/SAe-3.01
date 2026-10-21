@@ -305,6 +305,7 @@ CREATE TABLE ligne_commande (
     produit_nom   VARCHAR(120)      NOT NULL,
     produit_slug  VARCHAR(140)      NOT NULL,
     variante_nom  VARCHAR(160)      NOT NULL,
+    options       VARCHAR(500)      NULL,
     image         VARCHAR(255)      NULL,
     prix_unitaire DECIMAL(8,2)      NOT NULL,
     quantite      SMALLINT UNSIGNED NOT NULL,

@@ -100,6 +100,7 @@ final class AdminCommandeController
                 'produitNom'   => $ligne['produit_nom'],
                 'produitSlug'  => $ligne['produit_slug'],
                 'nom'          => $ligne['variante_nom'],
+                'options'      => $ligne['options'] ?? '',
                 'image'        => $ligne['image'],
                 'prixUnitaire' => $ligne['prix_unitaire'],
                 'quantite'     => (int) $ligne['quantite'],

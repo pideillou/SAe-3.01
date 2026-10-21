@@ -125,14 +125,15 @@ final class CommandeModel
 
                 $this->pdo->prepare(
                     'INSERT INTO ligne_commande
-                            (commande_id, variante_id, produit_nom, produit_slug, variante_nom, image, prix_unitaire, quantite)
-                     VALUES (:commande, :variante, :produit_nom, :produit_slug, :variante_nom, :image, :prix, :quantite)'
+                            (commande_id, variante_id, produit_nom, produit_slug, variante_nom, options, image, prix_unitaire, quantite)
+                     VALUES (:commande, :variante, :produit_nom, :produit_slug, :variante_nom, :options, :image, :prix, :quantite)'
                 )->execute([
                     ':commande'     => $commandeId,
                     ':variante'     => $id,
                     ':produit_nom'  => $variante['produit_nom'],
                     ':produit_slug' => $variante['produit_slug'],
                     ':variante_nom' => $variante['nom'],
+                    ':options'      => $variante['options'],
                     ':image'        => $variante['image'],
                     ':prix'         => $variante['prix'],
                     ':quantite'     => $quantite,
@@ -177,7 +178,7 @@ final class CommandeModel
         }
 
         $lignes = $this->pdo->prepare(
-            'SELECT produit_nom, produit_slug, variante_nom, image, prix_unitaire, quantite
+            'SELECT produit_nom, produit_slug, variante_nom, options, image, prix_unitaire, quantite
                FROM ligne_commande
               WHERE commande_id = :commande
            ORDER BY id'
@@ -271,7 +272,7 @@ final class CommandeModel
         }
 
         $lignes = $this->pdo->prepare(
-            'SELECT produit_nom, produit_slug, variante_nom, image, prix_unitaire, quantite
+            'SELECT produit_nom, produit_slug, variante_nom, options, image, prix_unitaire, quantite
                FROM ligne_commande WHERE commande_id = :commande ORDER BY id'
         );
         $lignes->execute([':commande' => $commande['id']]);
@@ -410,6 +411,7 @@ final class CommandeModel
                     variante.nom,
                     variante.prix,
                     variante.stock,
+                    " . ProduitModel::SQL_OPTIONS_VARIANTE . " AS options,
                     produit.slug AS produit_slug,
                     produit.nom  AS produit_nom,
                     (SELECT COALESCE(

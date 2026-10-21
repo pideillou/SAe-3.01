@@ -1,3 +1,5 @@
+import { formaterPrix } from "./format.js";
+
 /**
  * Choix d'une variante parmi celles d'un produit.
  *
@@ -55,4 +57,52 @@ export function varianteApresChoix(variantes, valeurId, selection) {
  */
 export function valeurDisponible(variantes, valeurId) {
   return variantes.some((variante) => variante.valeurs.includes(valeurId) && variante.stock > 0);
+}
+
+/**
+ * Les cartes d'une option : pour chaque valeur, la variante qu'on obtiendrait
+ * en la choisissant (avec les autres choix conservés autant que possible), son
+ * prix et son état. Sert à la fiche produit et à la modification des options
+ * d'un article du panier.
+ *
+ * @param {object} produit   la fiche renvoyée par l'API
+ * @param {object} option    une option du produit ({ nom, valeurs })
+ * @param {object} variante  la variante actuellement choisie
+ */
+export function cartesOption(produit, option, variante) {
+  return option.valeurs.map((valeur) => {
+    let selectionnee = variante.valeurs.includes(valeur.id);
+    let obtenue = selectionnee ? variante : varianteApresChoix(produit.variantes, valeur.id, variante.valeurs);
+
+    let etat = "disponible";
+    if (selectionnee) {
+      etat = "selectionne";
+    } else if (!valeurDisponible(produit.variantes, valeur.id)) {
+      etat = "indisponible";
+    }
+
+    return {
+      valeurId: valeur.id,
+      libelle: valeur.valeur,
+      prix: obtenue === null ? "" : formaterPrix(obtenue.prix),
+      etat,
+    };
+  });
+}
+
+/**
+ * Les options choisies d'une variante, en toutes lettres (« Switch : Vert,
+ * Disposition : FR »). Seules les options à plusieurs valeurs sont décrites :
+ * ce sont celles que le client choisit. Même format que celui enregistré par
+ * le serveur avec la commande.
+ */
+export function descriptionOptions(produit, variante) {
+  return produit.options
+    .filter((option) => option.valeurs.length > 1)
+    .map((option) => {
+      let valeur = option.valeurs.find((v) => variante.valeurs.includes(v.id));
+      return valeur === undefined ? null : `${option.nom} : ${valeur.valeur}`;
+    })
+    .filter((texte) => texte !== null)
+    .join(", ");
 }

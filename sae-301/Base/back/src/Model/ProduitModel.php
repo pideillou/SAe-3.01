@@ -14,6 +14,22 @@ use PDO;
  */
 final class ProduitModel
 {
+    /**
+     * Sous-requête qui décrit les options d'une variante (« Switch : Vert,
+     * Disposition : FR »), à placer dans un SELECT où la table variante porte
+     * son nom. Seules les options à plusieurs valeurs y figurent : ce sont
+     * celles que le client choisit sur la fiche produit.
+     */
+    public const SQL_OPTIONS_VARIANTE =
+        "(SELECT GROUP_CONCAT(CONCAT(option_produit.nom, ' : ', valeur_option.valeur)
+                              ORDER BY option_produit.ordre, option_produit.id SEPARATOR ', ')
+            FROM variante_valeur
+      INNER JOIN valeur_option ON valeur_option.id = variante_valeur.valeur_id
+      INNER JOIN option_produit ON option_produit.id = valeur_option.option_id
+           WHERE variante_valeur.variante_id = variante.id
+             AND (SELECT COUNT(*) FROM valeur_option AS autres
+                   WHERE autres.option_id = option_produit.id) > 1)";
+
     /** Connexion à la base, fournie à la construction. */
     private PDO $pdo;
 
@@ -202,6 +218,7 @@ final class ProduitModel
                     variante.nom,
                     variante.prix,
                     variante.stock,
+                    " . self::SQL_OPTIONS_VARIANTE . " AS options,
                     produit.slug AS produit_slug,
                     produit.nom  AS produit_nom,
                     COALESCE(image_variante.chemin_moyen, image_produit.chemin_moyen) AS chemin_moyen,
@@ -240,6 +257,7 @@ final class ProduitModel
                 'id'                => $id,
                 'connue'            => true,
                 'nom'               => $ligne['nom'],
+                'options'           => $ligne['options'],
                 'prix'              => $ligne['prix'],
                 'stock'             => $stock,
                 'produit_slug'      => $ligne['produit_slug'],

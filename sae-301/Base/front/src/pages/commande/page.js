@@ -160,6 +160,8 @@ V.createPageFragment = function () {
     RecapitulatifCommandeView.dom(
       M.lignes.map((ligne) => ({
         nom: ligne.nom,
+        produitNom: ligne.produitNom,
+        options: ligne.options,
         image: ligne.image === null ? null : ligne.image.moyen,
         prixUnitaire: ligne.prix,
         quantite: ligne.quantite,

@@ -1,4 +1,5 @@
 import { pluriel } from "../lib/format.js";
+import { descriptionOptions } from "../lib/variantes.js";
 
 /**
  * Le panier du visiteur (CMD-b), conservé dans le stockage local du navigateur
@@ -8,8 +9,11 @@ import { pluriel } from "../lib/format.js";
  * Une ligne du panier correspond à une variante du catalogue (un produit avec
  * ses options). Elle garde de quoi s'afficher sans appeler l'API :
  *
- * { varianteId, produitSlug, produitNom, nom, prix: "189.99", stock,
- *   image: { moyen, alt } | null, quantite }
+ * { varianteId, produitSlug, produitNom, nom, options: "Switch : Vert", prix: "189.99",
+ *   stock, image: { moyen, alt } | null, quantite }
+ *
+ * options décrit les options choisies (chaîne vide pour une ligne ajoutée avant
+ * OPT-a : le nom de la variante les contient alors).
  *
  * Ces valeurs sont celles vues par le visiteur au moment de l'ajout. Elles ne
  * font pas foi : à la validation de la commande (CMD-a), le serveur recalcule
@@ -118,6 +122,7 @@ PanierData.articleDepuis = function (produit, variante) {
     produitSlug: produit.slug,
     produitNom: produit.nom,
     nom: variante.nom,
+    options: descriptionOptions(produit, variante),
     prix: variante.prix,
     stock: variante.stock,
     image: image === null ? null : { moyen: image.moyen, alt: image.alt },
@@ -192,6 +197,50 @@ PanierData.changerQuantite = function (varianteId, quantite) {
   return { ok: true, quantite };
 };
 
+/**
+ * Remplace la variante d'une ligne par une autre du même produit (modification
+ * des options d'un article, OPT-a). La quantité est ramenée au stock de la
+ * nouvelle variante. Si le panier contient déjà cette variante, les deux lignes
+ * n'en font qu'une (quantités additionnées, dans la limite du stock).
+ *
+ * @param {number} ancienId  variante actuelle de la ligne
+ * @param {object} article   la nouvelle variante, au format de articleDepuis
+ * @returns {{ok: boolean, quantite?: number, reduite?: boolean, raison?: string}}
+ *          reduite : la quantité a dû être ramenée au stock de la nouvelle variante
+ */
+PanierData.changerVariante = function (ancienId, article) {
+  let courantes = lignes();
+  let ligne = courantes.find((l) => l.varianteId === ancienId);
+
+  if (ligne === undefined) {
+    return { ok: false, raison: "Cet article n'est plus dans votre panier." };
+  }
+
+  if (article.stock <= 0) {
+    return { ok: false, raison: `${article.nom} est épuisé.` };
+  }
+
+  if (article.varianteId === ancienId) {
+    return { ok: true, quantite: ligne.quantite };
+  }
+
+  let autre = courantes.find((l) => l.varianteId === article.varianteId);
+  let quantite = ligne.quantite + (autre === undefined ? 0 : autre.quantite);
+  let acceptee = Math.min(quantite, article.stock);
+  let resultat = [];
+
+  for (let l of courantes) {
+    if (l === autre) {
+      continue; // fusionnée dans la ligne modifiée
+    }
+
+    resultat.push(l === ligne ? { ...article, quantite: acceptee } : l);
+  }
+
+  enregistrer(resultat);
+  return { ok: true, quantite: acceptee, reduite: acceptee < quantite };
+};
+
 PanierData.supprimer = function (varianteId) {
   enregistrer(lignes().filter((ligne) => ligne.varianteId !== varianteId));
 };
@@ -245,6 +294,7 @@ PanierData.appliquerVerification = function (reponses) {
     gardees.push({
       ...ligne,
       nom: reponse.nom,
+      options: reponse.options ?? "",
       prix: reponse.prix,
       stock: reponse.stock,
       quantite: Math.min(ligne.quantite, reponse.quantiteAcceptee),

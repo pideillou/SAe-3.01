@@ -6,14 +6,20 @@ import template from "./template.html?raw";
 // de la ligne. Aucune action : on ne modifie plus une commande validée.
 let LigneCommandeView = {
   /**
-   * @param {{nom: string, image: string|null, prixUnitaire: string, quantite: number}} ligne
+   * @param {{nom: string, produitNom?: string, options?: string, image: string|null,
+   *          prixUnitaire: string, quantite: number}} ligne
    */
   dom: function (ligne) {
     let totalLigne = (Math.round(Number(ligne.prixUnitaire) * 100) * ligne.quantite) / 100;
 
+    // Les options à part sous le nom du produit ; sans elles (commande passée
+    // avant OPT-a), le nom de la variante les contient.
+    let options = ligne.options ?? "";
+
     let fragment = htmlToFragment(
       genericRenderer(template, {
-        nom: ligne.nom,
+        titre: options === "" ? ligne.nom : ligne.produitNom,
+        options,
         image: ligne.image === null ? "" : urlPublique(ligne.image),
         quantite: ligne.quantite,
         prixUnitaire: formaterPrix(ligne.prixUnitaire),
@@ -24,6 +30,10 @@ let LigneCommandeView = {
     // Un template n'a pas de condition : l'image absente se retire ici.
     if (ligne.image === null) {
       fragment.querySelector("[data-image]").remove();
+    }
+
+    if (options === "") {
+      fragment.querySelector("[data-options]").remove();
     }
 
     return fragment;

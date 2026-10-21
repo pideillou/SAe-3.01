@@ -1,4 +1,4 @@
-<li class="flex gap-4 border-b border-bordure py-5 md:gap-6">
+<li class="flex flex-wrap gap-4 border-b border-bordure py-5 md:gap-6">
   <a href="{{chemin}}" data-link class="block w-24 shrink-0 self-start border border-bordure bg-surface md:w-32">
     <!-- alt vide : le nom du produit, à côté, est déjà un lien vers la même fiche. -->
     <img data-image src="{{image}}" width="500" height="500" alt="" decoding="async" loading="lazy" class="aspect-photo w-full object-contain" />
@@ -7,10 +7,12 @@
   <div class="flex min-w-0 flex-1 flex-col gap-3 md:flex-row md:items-start md:gap-6">
     <div class="flex min-w-0 flex-1 flex-col gap-1.5">
       <h2 class="font-titres text-base leading-tight font-semibold md:text-lg">
-        <a href="{{chemin}}" data-link class="underline-offset-4 hover:text-razer hover:underline">{{nom}}</a>
+        <a href="{{chemin}}" data-link class="underline-offset-4 hover:text-razer hover:underline">{{titre}}</a>
       </h2>
+      <p data-options class="text-mention text-texte">{{options}}</p>
       <p class="text-mention text-texte-secondaire">{{prixUnitaire}} l'unité</p>
       <p class="text-mention text-texte-secondaire">{{mentionStock}}</p>
+      <button type="button" data-action="modifier" data-variante="{{varianteId}}" aria-expanded="false" aria-label="Modifier les options de {{nom}}" class="self-start text-mention text-texte-secondaire underline underline-offset-4 transition-colors hover:text-razer">Modifier les options</button>
     </div>
 
     <div class="flex flex-wrap items-center justify-between gap-3 md:flex-col md:items-end md:gap-4">
@@ -26,4 +28,6 @@
       <button type="button" data-action="supprimer" aria-label="Supprimer {{nom}} du panier" class="text-mention text-texte-secondaire underline underline-offset-4 transition-colors hover:text-erreur">Supprimer</button>
     </div>
   </div>
+
+  <slot name="edition"></slot>
 </li>

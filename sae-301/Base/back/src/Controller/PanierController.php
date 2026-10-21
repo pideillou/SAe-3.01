@@ -93,6 +93,7 @@ final class PanierController
                 'etat'             => self::etatStock($ligne['stock'], $seuil),
                 'prix'             => $ligne['prix'],
                 'nom'              => $ligne['nom'],
+                'options'          => $ligne['options'] ?? '',
                 'produitSlug'      => $ligne['produit_slug'],
                 'produitNom'       => $ligne['produit_nom'],
                 'image'            => $ligne['image'] === null ? null : [
