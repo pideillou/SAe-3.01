@@ -152,12 +152,12 @@ final class AuthController
         $_SESSION['email']          = $email;
     }
 
-    private static function normaliserEmail(mixed $valeur): string
+    public static function normaliserEmail(mixed $valeur): string
     {
         return is_string($valeur) ? mb_strtolower(trim($valeur)) : '';
     }
 
-    private static function erreurEmail(string $email): ?string
+    public static function erreurEmail(string $email): ?string
     {
         if ($email === '') {
             return 'Saisissez votre adresse e-mail.';
@@ -170,7 +170,7 @@ final class AuthController
         return null;
     }
 
-    private static function erreurMotDePasse(string $mdp): ?string
+    public static function erreurMotDePasse(string $mdp): ?string
     {
         if ($mdp === '') {
             return 'Choisissez un mot de passe.';

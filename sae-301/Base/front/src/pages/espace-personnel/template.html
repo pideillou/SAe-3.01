@@ -1,18 +1,55 @@
-<section class="mx-auto flex max-w-lg flex-col gap-6 px-5 pt-8 pb-14 md:px-8 md:pt-12">
-  <h1 class="font-titres text-titre-page-mobile leading-tight font-semibold uppercase md:text-titre-page">Espace personnel</h1>
+<div class="mx-auto flex max-w-3xl flex-col gap-6 px-5 pt-6 pb-14 md:gap-8 md:px-8 md:pt-8">
+  <slot name="navigation"></slot>
 
   <slot name="message"></slot>
 
-  <div class="flex flex-col gap-5 border border-bordure bg-surface p-6">
-    <div class="flex flex-col gap-1">
-      <p class="text-mention text-texte-secondaire">Connecté avec l'adresse</p>
-      <p class="font-semibold wrap-anywhere">{{email}}</p>
-    </div>
+  <div data-contenu class="flex flex-col gap-6 md:gap-8">
+    <header class="flex flex-col gap-2">
+      <h1 class="font-titres text-titre-page-mobile leading-tight font-semibold uppercase wrap-anywhere md:text-titre-page">{{salutation}}</h1>
+      <p class="text-sm text-texte-secondaire">Bienvenue dans votre espace personnel.</p>
+    </header>
 
-    <a href="{{cheminCommandes}}" data-link class="flex min-h-12 w-full items-center justify-center border border-razer bg-razer px-6 py-3 font-titres text-[0.9375rem] font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90">Mes commandes</a>
+    <section aria-labelledby="titre-informations" class="flex flex-col gap-4 border border-bordure bg-surface p-6">
+      <h2 id="titre-informations" class="font-titres text-xl font-semibold uppercase">Mes informations</h2>
 
-    <button type="button" data-action="deconnexion" class="flex min-h-12 w-full items-center justify-center border border-bordure px-6 py-3 font-titres text-[0.9375rem] font-semibold uppercase transition-colors hover:border-razer hover:text-razer disabled:cursor-wait disabled:opacity-40">
+      <dl class="grid grid-cols-1 gap-4 text-sm sm:grid-cols-3">
+        <div class="flex flex-col gap-1">
+          <dt class="text-mention text-texte-secondaire">Nom</dt>
+          <dd class="font-semibold wrap-anywhere">{{nom}}</dd>
+        </div>
+        <div class="flex flex-col gap-1">
+          <dt class="text-mention text-texte-secondaire">Adresse e-mail</dt>
+          <dd class="font-semibold wrap-anywhere">{{email}}</dd>
+        </div>
+        <div class="flex flex-col gap-1">
+          <dt class="text-mention text-texte-secondaire">Client depuis le</dt>
+          <dd class="font-semibold">{{depuis}}</dd>
+        </div>
+      </dl>
+
+      <a href="{{cheminProfil}}" data-link class="self-start text-sm font-semibold text-razer underline-offset-4 hover:underline">Modifier mes informations ou mon mot de passe</a>
+    </section>
+
+    <section aria-labelledby="titre-recentes" class="flex flex-col gap-4">
+      <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+        <h2 id="titre-recentes" class="font-titres text-xl font-semibold uppercase">Mes dernières commandes</h2>
+        <p data-compteur class="text-mention text-texte-secondaire">{{compteur}}</p>
+      </div>
+
+      <div data-vide class="flex flex-col items-start gap-5 border border-bordure bg-surface p-6">
+        <p class="text-sm text-texte-secondaire">Vous n'avez pas encore passé de commande.</p>
+        <a href="{{cheminCatalogue}}" data-link class="flex min-h-12 items-center justify-center border border-razer bg-razer px-6 py-3 font-titres text-[0.9375rem] font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90">Voir le catalogue</a>
+      </div>
+
+      <ul data-liste class="flex flex-col gap-4">
+        <slot name="commandes"></slot>
+      </ul>
+
+      <a data-lien-commandes href="{{cheminCommandes}}" data-link class="flex min-h-12 items-center justify-center border border-bordure px-6 py-3 font-titres text-[0.9375rem] font-semibold uppercase transition-colors hover:border-razer hover:text-razer sm:self-start">Voir toutes mes commandes</a>
+    </section>
+
+    <button type="button" data-action="deconnexion" class="flex min-h-12 w-full items-center justify-center border border-bordure px-6 py-3 font-titres text-[0.9375rem] font-semibold uppercase transition-colors hover:border-razer hover:text-razer disabled:cursor-wait disabled:opacity-40 sm:w-auto sm:self-start">
       Se déconnecter
     </button>
   </div>
-</section>
+</div>

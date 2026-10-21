@@ -4,9 +4,9 @@ import { naviguer } from "../../lib/navigation.js";
 import { definirMetadonnees } from "../../lib/seo.js";
 import { genericRenderer, htmlToFragment, urlPublique } from "../../lib/utils.js";
 import { CarteCommandeView } from "../../ui/carte-commande/index.js";
-import { FilArianeView } from "../../ui/fil-ariane/index.js";
 import { FiltreHistoriqueView } from "../../ui/filtre-historique/index.js";
 import { MessageView } from "../../ui/message/index.js";
+import { NavigationEspaceView } from "../../ui/navigation-espace/index.js";
 import { PaginationView } from "../../ui/pagination/index.js";
 import template from "./template.html?raw";
 
@@ -137,12 +137,7 @@ V.createPageFragment = function () {
     })
   );
 
-  pageFragment.querySelector('slot[name="fil-ariane"]').replaceWith(
-    FilArianeView.dom([
-      { libelle: "Espace personnel", chemin: urlPublique("espace-personnel") },
-      { libelle: "Mes commandes" },
-    ])
-  );
+  pageFragment.querySelector('slot[name="navigation"]').replaceWith(NavigationEspaceView.dom("commandes"));
   pageFragment.querySelector('slot[name="message"]').replaceWith(MessageView.dom(M.message));
 
   // Le filtre reste affiché tant qu'il y a un filtre ou des commandes : sinon

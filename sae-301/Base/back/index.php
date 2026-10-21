@@ -26,6 +26,7 @@ use App\Controller\CatalogueController;
 use App\Controller\CategorieController;
 use App\Controller\CommandeController;
 use App\Controller\PanierController;
+use App\Controller\ProfilController;
 use App\Controller\StatsController;
 use App\Model\AdministrateurModel;
 use App\Model\CategorieModel;
@@ -111,6 +112,7 @@ try {
         AdminAuthController::class => new AdminAuthController($administrateurs),
         CommandeController::class  => new CommandeController($commandes),
         PanierController::class    => new PanierController($produits, $parametres),
+        ProfilController::class    => new ProfilController($utilisateurs, $commandes),
         StatsController::class     => new StatsController($produits, $commandes),
     ];
 

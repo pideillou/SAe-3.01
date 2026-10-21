@@ -70,6 +70,7 @@ CREATE TABLE utilisateur (
     id           INT UNSIGNED NOT NULL AUTO_INCREMENT,
     email        VARCHAR(190) NOT NULL,
     mot_de_passe VARCHAR(255) NOT NULL,
+    nom          VARCHAR(80)  NULL,
     cree_le      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (id),

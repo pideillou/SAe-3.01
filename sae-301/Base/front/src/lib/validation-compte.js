@@ -62,3 +62,35 @@ export function erreursConnexion({ email, mdp }) {
 
   return Object.fromEntries(Object.entries(erreurs).filter(([, message]) => message !== null));
 }
+
+const NOM_MAX = 80;
+
+/**
+ * Les erreurs du formulaire de profil (nom facultatif, e-mail obligatoire).
+ */
+export function erreursProfil({ nom, email }) {
+  let erreurs = {
+    nom: nom.length > NOM_MAX ? `Le nom ne doit pas dépasser ${NOM_MAX} caractères.` : null,
+    email: erreurEmail(email),
+  };
+
+  return Object.fromEntries(Object.entries(erreurs).filter(([, message]) => message !== null));
+}
+
+/**
+ * Les erreurs du changement de mot de passe. L'exactitude du mot de passe
+ * actuel est l'affaire du serveur.
+ */
+export function erreursChangementMotDePasse({ actuel, nouveau, confirmation }) {
+  let erreurs = {
+    actuel: actuel === "" ? "Saisissez votre mot de passe actuel." : null,
+    nouveau: erreurMotDePasse(nouveau),
+  };
+  erreurs.confirmation = erreurs.nouveau === null ? erreurConfirmation(nouveau, confirmation) : null;
+
+  if (erreurs.nouveau === null && actuel !== "" && nouveau === actuel) {
+    erreurs.nouveau = "Le nouveau mot de passe doit être différent de l'actuel.";
+  }
+
+  return Object.fromEntries(Object.entries(erreurs).filter(([, message]) => message !== null));
+}

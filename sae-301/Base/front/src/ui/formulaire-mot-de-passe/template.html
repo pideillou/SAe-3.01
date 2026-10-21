@@ -1,0 +1,28 @@
+<section aria-labelledby="titre-mdp" class="flex flex-col gap-5 border border-bordure bg-surface p-6 md:p-8">
+  <h2 id="titre-mdp" class="font-titres text-xl font-semibold uppercase">Mot de passe</h2>
+
+  <slot name="message"></slot>
+
+  <form novalidate class="flex flex-col gap-5">
+    <div class="flex flex-col gap-2">
+      <label for="champ-mdp-actuel" class="text-sm font-medium">Mot de passe actuel</label>
+      <input id="champ-mdp-actuel" name="actuel" type="password" autocomplete="current-password" aria-describedby="erreur-mdp-actuel" class="h-12 border border-bordure bg-fond px-3 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+      <p id="erreur-mdp-actuel" data-erreur="actuel" class="text-mention text-erreur"></p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="champ-mdp-nouveau" class="text-sm font-medium">Nouveau mot de passe</label>
+      <input id="champ-mdp-nouveau" name="nouveau" type="password" autocomplete="new-password" aria-describedby="aide-mdp-nouveau erreur-mdp-nouveau" class="h-12 border border-bordure bg-fond px-3 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+      <p id="aide-mdp-nouveau" class="text-mention text-texte-secondaire">8 caractères minimum.</p>
+      <p id="erreur-mdp-nouveau" data-erreur="nouveau" class="text-mention text-erreur"></p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="champ-mdp-confirmation" class="text-sm font-medium">Confirmer le nouveau mot de passe</label>
+      <input id="champ-mdp-confirmation" name="confirmation" type="password" autocomplete="new-password" aria-describedby="erreur-mdp-confirmation" class="h-12 border border-bordure bg-fond px-3 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+      <p id="erreur-mdp-confirmation" data-erreur="confirmation" class="text-mention text-erreur"></p>
+    </div>
+
+    <button type="submit" class="flex min-h-12 w-full items-center justify-center border border-razer bg-razer px-6 py-3 font-titres text-[0.9375rem] font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90 disabled:cursor-wait disabled:opacity-40 sm:w-auto sm:self-start">Changer le mot de passe</button>
+  </form>
+</section>

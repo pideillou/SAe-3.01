@@ -140,29 +140,7 @@ final class CommandeController
             $resultat = $this->commandes->listerPourClient($utilisateurId, $statut, $du, $au, self::PAR_PAGE, ($page - 1) * self::PAR_PAGE);
         }
 
-        $commandes = [];
-
-        foreach ($resultat['commandes'] as $commande) {
-            $lignes = [];
-
-            foreach ($commande['lignes'] as $ligne) {
-                $lignes[] = [
-                    'produitNom' => $ligne['produit_nom'],
-                    'nom'        => $ligne['variante_nom'],
-                    'options'    => $ligne['options'] ?? '',
-                    'quantite'   => (int) $ligne['quantite'],
-                ];
-            }
-
-            $commandes[] = [
-                'numero'   => $commande['numero'],
-                'statut'   => $commande['statut'],
-                'total'    => $commande['total'],
-                'creeLe'   => $commande['cree_le'],
-                'articles' => array_sum(array_column($lignes, 'quantite')),
-                'lignes'   => $lignes,
-            ];
-        }
+        $commandes = array_map([self::class, 'resumer'], $resultat['commandes']);
 
         Response::json([
             'commandes' => $commandes,
@@ -171,6 +149,35 @@ final class CommandeController
             'pages'     => $pages,
             'parPage'   => self::PAR_PAGE,
         ]);
+    }
+
+    /**
+     * Une commande de l'historique, au format de l'API : ses lignes (produit,
+     * options, quantité) et le nombre d'articles.
+     *
+     * @param array $commande  une entrée de CommandeModel::listerPourClient()
+     */
+    public static function resumer(array $commande): array
+    {
+        $lignes = [];
+
+        foreach ($commande['lignes'] as $ligne) {
+            $lignes[] = [
+                'produitNom' => $ligne['produit_nom'],
+                'nom'        => $ligne['variante_nom'],
+                'options'    => $ligne['options'] ?? '',
+                'quantite'   => (int) $ligne['quantite'],
+            ];
+        }
+
+        return [
+            'numero'   => $commande['numero'],
+            'statut'   => $commande['statut'],
+            'total'    => $commande['total'],
+            'creeLe'   => $commande['cree_le'],
+            'articles' => array_sum(array_column($lignes, 'quantite')),
+            'lignes'   => $lignes,
+        ];
     }
 
     /**

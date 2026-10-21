@@ -1,0 +1,21 @@
+<section aria-labelledby="titre-profil" class="flex flex-col gap-5 border border-bordure bg-surface p-6 md:p-8">
+  <h2 id="titre-profil" class="font-titres text-xl font-semibold uppercase">Mes informations</h2>
+
+  <slot name="message"></slot>
+
+  <form novalidate class="flex flex-col gap-5">
+    <div class="flex flex-col gap-2">
+      <label for="champ-profil-nom" class="text-sm font-medium">Nom <span class="text-texte-secondaire">(facultatif)</span></label>
+      <input id="champ-profil-nom" name="nom" type="text" autocomplete="name" maxlength="80" value="{{nom}}" aria-describedby="erreur-profil-nom" class="h-12 border border-bordure bg-fond px-3 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+      <p id="erreur-profil-nom" data-erreur="nom" class="text-mention text-erreur"></p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="champ-profil-email" class="text-sm font-medium">Adresse e-mail</label>
+      <input id="champ-profil-email" name="email" type="email" autocomplete="email" value="{{email}}" aria-describedby="erreur-profil-email" class="h-12 border border-bordure bg-fond px-3 text-texte transition-colors hover:border-texte-secondaire aria-invalid:border-erreur" />
+      <p id="erreur-profil-email" data-erreur="email" class="text-mention text-erreur"></p>
+    </div>
+
+    <button type="submit" class="flex min-h-12 w-full items-center justify-center border border-razer bg-razer px-6 py-3 font-titres text-[0.9375rem] font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90 disabled:cursor-wait disabled:opacity-40 sm:w-auto sm:self-start">Enregistrer</button>
+  </form>
+</section>

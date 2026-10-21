@@ -12,6 +12,7 @@ use App\Controller\CatalogueController;
 use App\Controller\CategorieController;
 use App\Controller\CommandeController;
 use App\Controller\PanierController;
+use App\Controller\ProfilController;
 use App\Controller\StatsController;
 
 /**
@@ -36,6 +37,9 @@ return [
     'POST /api/login'       => [AuthController::class,      'login'],
     'GET  /api/moi'         => [AuthController::class,      'moi'],
     'POST /api/logout'      => [AuthController::class,      'logout'],
+    'GET  /api/profil'      => [ProfilController::class,    'voir'],
+    'POST /api/profil'      => [ProfilController::class,    'modifier'],
+    'POST /api/profil/mot-de-passe' => [ProfilController::class, 'changerMotDePasse'],
     'POST /api/admin/login'  => [AdminAuthController::class, 'login'],
     'POST /api/admin/logout' => [AdminAuthController::class, 'logout'],
     'GET  /api/admin/moi'    => [AdminAuthController::class, 'moi'],

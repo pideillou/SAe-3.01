@@ -14,6 +14,7 @@ import { ConfirmationCommandePage } from "./pages/confirmation-commande/page.js"
 import { ConnexionPage } from "./pages/connexion/page.js";
 import { EspacePersonnelPage } from "./pages/espace-personnel/page.js";
 import { HistoriqueCommandesPage } from "./pages/historique-commandes/page.js";
+import { ProfilPage } from "./pages/profil/page.js";
 import { InscriptionPage } from "./pages/inscription/page.js";
 import { PanierPage } from "./pages/panier/page.js";
 import { ProduitPage } from "./pages/produit/page.js";
@@ -35,6 +36,7 @@ router.addRoute("/connexion", ConnexionPage);
 router.addRoute("/inscription", InscriptionPage);
 router.addRoute("/espace-personnel", EspacePersonnelPage);
 router.addRoute("/espace-personnel/commandes", HistoriqueCommandesPage);
+router.addRoute("/espace-personnel/profil", ProfilPage);
 router.addRoute("/admin", AdminPage);
 router.addRoute("/admin/produits", AdminProduitsPage);
 // « nouveau » avant « :id » : la première route qui correspond l'emporte.
