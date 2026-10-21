@@ -5,6 +5,11 @@
 
   <slot name="message"></slot>
 
+  <div data-recommande class="flex flex-col gap-3">
+    <slot name="recommande"></slot>
+    <a data-lien-panier href="{{cheminPanier}}" data-link class="flex min-h-12 items-center justify-center border border-razer bg-razer px-6 py-3 font-titres text-[0.9375rem] font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90 sm:self-start">Voir mon panier</a>
+  </div>
+
   <div data-contenu class="flex flex-col gap-6">
     <slot name="filtre"></slot>
 

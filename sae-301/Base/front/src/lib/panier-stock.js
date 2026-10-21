@@ -87,6 +87,68 @@ export async function synchroniserPanier() {
   return PanierData.appliquerVerification(reponse.lignes).map(messageDeChangement);
 }
 
+/**
+ * Met dans le panier les articles d'une ancienne commande (SUI-a) d'après la
+ * réponse du serveur, qui a déjà vérifié la disponibilité, et décrit au client
+ * ce qui a été fait.
+ *
+ * @param {object} reponse  la réponse de CommandeData.recommander
+ * @returns {Array<{type: "succes"|"erreur", texte: string}>}  le résultat d'abord,
+ *          puis ce qui n'a pas pu être ajouté tel quel
+ */
+export function transfererDansLePanier(reponse) {
+  let { ajoutes, limites } = PanierData.fusionner(reponse.articles);
+  let messages = [];
+
+  if (ajoutes > 0) {
+    messages.push({
+      type: "succes",
+      texte: `${pluriel(ajoutes, "article")} de la commande ${reponse.numero} ${ajoutes > 1 ? "ont été ajoutés" : "a été ajouté"} à votre panier.`,
+    });
+  } else {
+    messages.push({
+      type: "erreur",
+      texte: `Aucun article de la commande ${reponse.numero} n'a pu être ajouté à votre panier.`,
+    });
+  }
+
+  for (let ligne of reponse.indisponibles) {
+    messages.push({
+      type: "erreur",
+      texte:
+        ligne.raison === "epuise"
+          ? `${ligne.nom} est épuisé : il n'a pas été ajouté.`
+          : `${ligne.nom} n'est plus vendu : il n'a pas été ajouté.`,
+    });
+  }
+
+  for (let ligne of reponse.ajustes) {
+    messages.push({
+      type: "erreur",
+      texte: `Il ne reste que ${pluriel(ligne.acceptee, "exemplaire")} de ${ligne.nom} : ${ligne.acceptee} ajouté(s) au lieu de ${ligne.demandee}.`,
+    });
+  }
+
+  for (let ligne of reponse.prix) {
+    messages.push({
+      type: "erreur",
+      texte: `Le prix de ${ligne.nom} est passé de ${formaterPrix(ligne.ancien)} à ${formaterPrix(ligne.nouveau)} depuis votre commande.`,
+    });
+  }
+
+  // Le stock du panier a pu empêcher d'ajouter la quantité entière alors que le
+  // serveur l'acceptait (articles déjà dans le panier).
+  let dejaDit = new Set(reponse.ajustes.map((ligne) => ligne.nom));
+  for (let nom of limites.filter((nom) => !dejaDit.has(nom))) {
+    messages.push({
+      type: "erreur",
+      texte: `Votre panier contient déjà le maximum disponible de ${nom} : la quantité n'a pas été augmentée en entier.`,
+    });
+  }
+
+  return messages;
+}
+
 function messageDeChangement(changement) {
   switch (changement.type) {
     case "retiree":

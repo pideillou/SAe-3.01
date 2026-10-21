@@ -281,6 +281,57 @@ final class CommandeModel
     }
 
     /**
+     * Les lignes d'une commande du client, telles qu'elles ont été enregistrées,
+     * pour la commander à nouveau (SUI-a) : variante (null si elle a été
+     * supprimée depuis), nom, options, prix et quantité de l'époque. Une
+     * commande qui n'est pas celle du client est une commande inconnue (null).
+     *
+     * @return array<int, array>|null  une entrée par variante : les lignes d'une
+     *         même variante sont additionnées
+     */
+    public function lignesPourRecommander(string $numero, int $utilisateurId): ?array
+    {
+        $requete = $this->pdo->prepare('SELECT id FROM commande WHERE numero = :numero AND utilisateur_id = :utilisateur');
+        $requete->execute([':numero' => $numero, ':utilisateur' => $utilisateurId]);
+
+        $commandeId = $requete->fetchColumn();
+
+        if ($commandeId === false) {
+            return null;
+        }
+
+        $lignes = $this->pdo->prepare(
+            'SELECT variante_id, produit_nom, variante_nom, prix_unitaire, quantite
+               FROM ligne_commande
+              WHERE commande_id = :commande
+           ORDER BY id'
+        );
+        $lignes->execute([':commande' => $commandeId]);
+
+        $resultat = [];
+
+        foreach ($lignes->fetchAll() as $ligne) {
+            // Une variante supprimée (id NULL) n'a pas de clé commune : une entrée chacune.
+            $cle = $ligne['variante_id'] === null ? 'x' . count($resultat) : (int) $ligne['variante_id'];
+
+            if (isset($resultat[$cle])) {
+                $resultat[$cle]['quantite'] += (int) $ligne['quantite'];
+                continue;
+            }
+
+            $resultat[$cle] = [
+                'variante_id'   => $ligne['variante_id'] === null ? null : (int) $ligne['variante_id'],
+                'produit_nom'   => $ligne['produit_nom'],
+                'variante_nom'  => $ligne['variante_nom'],
+                'prix_unitaire' => $ligne['prix_unitaire'],
+                'quantite'      => (int) $ligne['quantite'],
+            ];
+        }
+
+        return array_values($resultat);
+    }
+
+    /**
      * Indicateurs du tableau de bord : nombre total de commandes, et celles dont
      * le statut est « en cours ».
      *

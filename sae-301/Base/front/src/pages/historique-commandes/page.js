@@ -1,4 +1,5 @@
 import { CommandeData } from "../../data/commande.js";
+import { transfererDansLePanier } from "../../lib/panier-stock.js";
 import { pluriel } from "../../lib/format.js";
 import { naviguer } from "../../lib/navigation.js";
 import { definirMetadonnees } from "../../lib/seo.js";
@@ -16,6 +17,10 @@ import template from "./template.html?raw";
  * ancienne, par pages de 10, avec un filtre par statut et par période. Le
  * filtre et la pagination sont appliqués par le serveur.
  *
+ * « Commander à nouveau » (SUI-a) remet dans le panier les articles d'une
+ * commande passée, avec les options choisies à l'époque, après que le serveur a
+ * vérifié ce qui est encore disponible.
+ *
  * Réservée aux clients connectés : sans session, le serveur répond 401 et la
  * page envoie vers la connexion.
  */
@@ -29,6 +34,8 @@ let M = {
   pages: 1,
   filtre: { ...FILTRE_VIDE },
   message: null, // { type, texte }, ou null
+  recommande: { messages: [], versPanier: false }, // résultat du dernier « Commander à nouveau »
+  numeroEnCours: null, // commande en cours de transfert vers le panier, ou null
 };
 
 let C = {};
@@ -44,6 +51,9 @@ C.filtreActif = function () {
  * @returns {Promise<boolean>}  faux si le visiteur a été envoyé vers la connexion
  */
 C.charger = async function (page) {
+  // Une nouvelle liste (page, filtre) efface le résultat du dernier transfert.
+  M.recommande = { messages: [], versPanier: false };
+
   try {
     let reponse = await CommandeData.fetchAll(M.filtre, page);
 
@@ -72,6 +82,8 @@ C.init = async function () {
   M.page = 1;
   M.pages = 1;
   M.message = null;
+  M.recommande = { messages: [], versPanier: false };
+  M.numeroEnCours = null;
 
   if (!(await C.charger(1))) {
     return "";
@@ -107,6 +119,44 @@ C.handler_page = async function (page) {
   V.racine.querySelector("h1").focus();
 };
 
+/**
+ * Remet dans le panier les articles d'une commande passée. Le serveur vérifie la
+ * disponibilité d'aujourd'hui ; le résultat est expliqué au client : ce qui a
+ * été ajouté, ce qui ne l'a pas pu (épuisé, supprimé), les quantités et les
+ * prix qui ont changé.
+ */
+C.handler_recommander = async function (numero) {
+  if (M.numeroEnCours !== null) {
+    return;
+  }
+
+  M.numeroEnCours = numero;
+  V.rafraichir();
+
+  try {
+    let reponse = await CommandeData.recommander(numero);
+    let messages = transfererDansLePanier(reponse);
+
+    M.recommande = { messages, versPanier: messages[0].type === "succes" };
+  } catch (erreur) {
+    if (erreur.statut === 401) {
+      naviguer("connexion?retour=espace-personnel/commandes");
+      return;
+    }
+
+    M.recommande = {
+      messages: [{ type: "erreur", texte: `Impossible de commander à nouveau : ${erreur.message}` }],
+      versPanier: false,
+    };
+  }
+
+  M.numeroEnCours = null;
+  V.rafraichir();
+
+  // Le résultat s'affiche en haut de page : le focus l'y amène.
+  V.racine.querySelector("h1").focus();
+};
+
 let V = {};
 
 V.racine = null; // élément racine de la page affichée
@@ -134,11 +184,26 @@ V.createPageFragment = function () {
         ? "Aucune commande ne correspond à ces critères."
         : "Vous n'avez pas encore passé de commande.",
       cheminCatalogue: urlPublique(""),
+      cheminPanier: urlPublique("panier"),
     })
   );
 
   pageFragment.querySelector('slot[name="navigation"]').replaceWith(NavigationEspaceView.dom("commandes"));
   pageFragment.querySelector('slot[name="message"]').replaceWith(MessageView.dom(M.message));
+
+  // Résultat de « Commander à nouveau » (le lien vers le panier seulement si
+  // quelque chose y a été ajouté).
+  if (M.recommande.messages.length === 0) {
+    pageFragment.querySelector("[data-recommande]").remove();
+  } else {
+    pageFragment
+      .querySelector('slot[name="recommande"]')
+      .replaceWith(...M.recommande.messages.map((message) => MessageView.dom(message)));
+
+    if (!M.recommande.versPanier) {
+      pageFragment.querySelector("[data-lien-panier]").remove();
+    }
+  }
 
   // Le filtre reste affiché tant qu'il y a un filtre ou des commandes : sinon
   // il n'a rien à filtrer.
@@ -169,7 +234,16 @@ V.createPageFragment = function () {
   pageFragment.querySelector("[data-vide]").remove();
   pageFragment
     .querySelector('slot[name="commandes"]')
-    .replaceWith(...M.commandes.map((commande) => CarteCommandeView.dom(commande)));
+    .replaceWith(
+      ...M.commandes.map((commande) => {
+        let carte = CarteCommandeView.dom(commande, { surRecommander: C.handler_recommander });
+        // Pendant le transfert, les boutons sont bloqués : pas de double clic.
+        if (M.numeroEnCours !== null) {
+          carte.querySelector('[data-action="recommander"]').disabled = true;
+        }
+        return carte;
+      })
+    );
 
   let slotPagination = pageFragment.querySelector('slot[name="pagination"]');
   if (M.pages <= 1) {

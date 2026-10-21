@@ -15,6 +15,9 @@
 
   <div class="flex flex-wrap items-center justify-between gap-3 border-t border-bordure pt-4">
     <p class="text-sm"><span class="text-texte-secondaire">{{articles}} · Total</span> <span class="font-titres text-lg font-semibold">{{total}}</span></p>
-    <a href="{{chemin}}" data-link class="flex min-h-11 items-center justify-center border border-bordure px-5 font-titres text-sm font-semibold uppercase transition-colors hover:border-razer hover:text-razer" aria-label="Voir le détail de la commande {{numero}}">Voir le détail</a>
+    <div class="flex flex-col gap-3 sm:flex-row">
+      <a href="{{chemin}}" data-link class="flex min-h-11 items-center justify-center border border-bordure px-5 font-titres text-sm font-semibold uppercase transition-colors hover:border-razer hover:text-razer" aria-label="Voir le détail de la commande {{numero}}">Voir le détail</a>
+      <button type="button" data-action="recommander" aria-label="Commander à nouveau les articles de la commande {{numero}}" class="flex min-h-11 items-center justify-center border border-razer bg-razer px-5 font-titres text-sm font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90 disabled:cursor-wait disabled:opacity-40">Commander à nouveau</button>
+    </div>
   </div>
 </li>

@@ -241,6 +241,53 @@ PanierData.changerVariante = function (ancienId, article) {
   return { ok: true, quantite: acceptee, reduite: acceptee < quantite };
 };
 
+/**
+ * Ajoute plusieurs articles d'un coup (commande passée à nouveau, SUI-a). Une
+ * variante déjà dans le panier voit sa quantité augmenter, dans la limite du
+ * stock : ce qui dépasse n'est pas ajouté.
+ *
+ * @param {Array<object>} articles  au format de articleDepuis, avec « quantite »
+ * @returns {{ajoutes: number, limites: string[]}}  ajoutes : nombre d'unités
+ *          mises au panier ; limites : noms des articles que le stock a empêché
+ *          d'ajouter en entier
+ */
+PanierData.fusionner = function (articles) {
+  let courantes = lignes();
+  let ajoutes = 0;
+  let limites = [];
+
+  for (let { quantite, ...article } of articles) {
+    let existante = courantes.find((ligne) => ligne.varianteId === article.varianteId);
+    let dejaLa = existante === undefined ? 0 : existante.quantite;
+    let possible = Math.max(0, Math.min(quantite, article.stock - dejaLa));
+
+    if (possible < quantite) {
+      limites.push(article.nom);
+    }
+
+    if (possible === 0) {
+      continue;
+    }
+
+    if (existante === undefined) {
+      courantes.push({ ...article, quantite: possible });
+    } else {
+      existante.quantite += possible;
+      existante.stock = article.stock;
+      existante.prix = article.prix;
+      existante.options = article.options;
+    }
+
+    ajoutes += possible;
+  }
+
+  if (ajoutes > 0) {
+    enregistrer(courantes);
+  }
+
+  return { ajoutes, limites };
+};
+
 PanierData.supprimer = function (varianteId) {
   enregistrer(lignes().filter((ligne) => ligne.varianteId !== varianteId));
 };

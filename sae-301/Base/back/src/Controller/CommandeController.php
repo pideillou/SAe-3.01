@@ -8,6 +8,7 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Model\CommandeImpossibleException;
 use App\Model\CommandeModel;
+use App\Model\ProduitModel;
 
 /**
  * Commandes des clients (CMD-a) : validation du panier et consultation d'une
@@ -28,10 +29,12 @@ final class CommandeController
     private const FORMAT_NUMERO = '/^RZ-\d{8}-[A-Z2-9]{6}$/';
 
     private CommandeModel $commandes;
+    private ProduitModel $produits;
 
-    public function __construct(CommandeModel $commandes)
+    public function __construct(CommandeModel $commandes, ProduitModel $produits)
     {
         $this->commandes = $commandes;
+        $this->produits  = $produits;
     }
 
     /**
@@ -148,6 +151,104 @@ final class CommandeController
             'page'      => $page,
             'pages'     => $pages,
             'parPage'   => self::PAR_PAGE,
+        ]);
+    }
+
+    /**
+     * POST /api/commande/recommander : { numero }
+     *
+     * Prépare le transfert d'une ancienne commande du client dans son panier
+     * (SUI-a). La disponibilité est vérifiée ici, côté serveur, avec les stocks,
+     * les prix et les noms d'aujourd'hui. Rien n'est modifié en base : le front
+     * met ensuite les articles dans le panier.
+     *
+     * Répond :
+     *   articles      ce qui peut être ajouté, avec la quantité acceptée (ramenée
+     *                 au stock) et les options choisies à l'époque ;
+     *   indisponibles les lignes qui ne le peuvent pas (variante épuisée ou
+     *                 supprimée depuis) ;
+     *   ajustes       les quantités ramenées au stock ;
+     *   prix          les prix qui ont changé depuis la commande.
+     */
+    public function recommander(Request $requete): void
+    {
+        $utilisateurId = $this->utilisateurConnecte();
+        $numero        = $requete->corps()['numero'] ?? null;
+
+        if (!is_string($numero) || preg_match(self::FORMAT_NUMERO, $numero) !== 1) {
+            Response::erreur('Commande introuvable', 404);
+        }
+
+        $lignes = $this->commandes->lignesPourRecommander($numero, $utilisateurId);
+
+        if ($lignes === null) {
+            Response::erreur('Commande introuvable', 404);
+        }
+
+        $demandes = [];
+
+        foreach ($lignes as $ligne) {
+            if ($ligne['variante_id'] !== null) {
+                $demandes[$ligne['variante_id']] = $ligne['quantite'];
+            }
+        }
+
+        $actuelles = [];
+
+        if ($demandes !== []) {
+            foreach ($this->produits->verifierDisponibilite($demandes) as $verification) {
+                $actuelles[$verification['id']] = $verification;
+            }
+        }
+
+        $articles = $indisponibles = $ajustes = $prix = [];
+
+        foreach ($lignes as $ligne) {
+            $actuelle = $ligne['variante_id'] === null ? null : ($actuelles[$ligne['variante_id']] ?? null);
+
+            // Variante supprimée depuis la commande (ou produit supprimé).
+            if ($actuelle === null || !$actuelle['connue']) {
+                $indisponibles[] = ['nom' => $ligne['variante_nom'], 'raison' => 'supprime'];
+                continue;
+            }
+
+            if ((int) $actuelle['stock'] <= 0) {
+                $indisponibles[] = ['nom' => $actuelle['nom'], 'raison' => 'epuise'];
+                continue;
+            }
+
+            $acceptee = (int) $actuelle['quantite_acceptee'];
+
+            if ($acceptee < $ligne['quantite']) {
+                $ajustes[] = ['nom' => $actuelle['nom'], 'demandee' => $ligne['quantite'], 'acceptee' => $acceptee];
+            }
+
+            if ((float) $actuelle['prix'] !== (float) $ligne['prix_unitaire']) {
+                $prix[] = ['nom' => $actuelle['nom'], 'ancien' => $ligne['prix_unitaire'], 'nouveau' => $actuelle['prix']];
+            }
+
+            $articles[] = [
+                'varianteId'  => $actuelle['id'],
+                'quantite'    => $acceptee,
+                'produitSlug' => $actuelle['produit_slug'],
+                'produitNom'  => $actuelle['produit_nom'],
+                'nom'         => $actuelle['nom'],
+                'options'     => $actuelle['options'] ?? '',
+                'prix'        => $actuelle['prix'],
+                'stock'       => (int) $actuelle['stock'],
+                'image'       => $actuelle['image'] === null ? null : [
+                    'moyen' => $actuelle['image'],
+                    'alt'   => $actuelle['image_alt'],
+                ],
+            ];
+        }
+
+        Response::json([
+            'numero'        => $numero,
+            'articles'      => $articles,
+            'indisponibles' => $indisponibles,
+            'ajustes'       => $ajustes,
+            'prix'          => $prix,
         ]);
     }
 

@@ -33,6 +33,7 @@ return [
     'POST /api/commande'     => [CommandeController::class, 'creer'],
     'GET  /api/commande'     => [CommandeController::class, 'detail'],
     'GET  /api/commandes'    => [CommandeController::class, 'historique'],
+    'POST /api/commande/recommander' => [CommandeController::class, 'recommander'],
     'POST /api/inscription' => [AuthController::class,      'inscription'],
     'POST /api/login'       => [AuthController::class,      'login'],
     'GET  /api/moi'         => [AuthController::class,      'moi'],

@@ -110,7 +110,7 @@ try {
         AdminCategorieController::class => new AdminCategorieController($categories),
         AdminCommandeController::class => new AdminCommandeController($commandes),
         AdminAuthController::class => new AdminAuthController($administrateurs),
-        CommandeController::class  => new CommandeController($commandes),
+        CommandeController::class  => new CommandeController($commandes, $produits),
         PanierController::class    => new PanierController($produits, $parametres),
         ProfilController::class    => new ProfilController($utilisateurs, $commandes),
         StatsController::class     => new StatsController($produits, $commandes),

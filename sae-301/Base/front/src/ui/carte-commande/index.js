@@ -5,15 +5,18 @@ import template from "./template.html?raw";
 import templateLigne from "./ligne.html?raw";
 
 // Une commande de l'historique : numéro, date, statut, articles avec leurs
-// options, total et lien vers le détail. En lecture seule, sans action.
+// options, total, lien vers le détail et, si la page le permet, « Commander à
+// nouveau ». Le composant ne modifie rien : il signale le clic par actions.
 let CarteCommandeView = {
   /**
    * @param {{numero: string, statut: string, total: string, creeLe: string,
    *          articles: number,
    *          lignes: Array<{produitNom: string, nom: string, options: string,
    *                         quantite: number}>}} commande
+   * @param {{surRecommander?: (numero: string) => void}} actions  sans
+   *          surRecommander, le bouton « Commander à nouveau » n'est pas affiché
    */
-  dom: function (commande) {
+  dom: function (commande, actions = {}) {
     let statut = statutDe(commande.statut);
 
     let fragment = htmlToFragment(
@@ -48,6 +51,14 @@ let CarteCommandeView = {
     });
 
     fragment.querySelector('slot[name="lignes"]').replaceWith(...lignes);
+
+    let bouton = fragment.querySelector('[data-action="recommander"]');
+    if (actions.surRecommander === undefined) {
+      bouton.remove();
+    } else {
+      bouton.addEventListener("click", () => actions.surRecommander(commande.numero));
+    }
+
     return fragment;
   },
 };

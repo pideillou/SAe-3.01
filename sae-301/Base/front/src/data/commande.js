@@ -60,4 +60,23 @@ CommandeData.fetchAll = async function (filtre, page = 1) {
   return getRequest(`commandes?${parametres.toString()}`);
 };
 
+/**
+ * Prépare le transfert d'une ancienne commande dans le panier :
+ * POST /api/commande/recommander  { numero }
+ *
+ * Le serveur vérifie la disponibilité d'aujourd'hui et ne modifie rien.
+ *
+ * { numero,
+ *   articles: [ { varianteId, quantite, produitSlug, produitNom, nom, options,
+ *                 prix, stock, image: { moyen, alt } | null }, … ],   // à ajouter
+ *   indisponibles: [ { nom, raison: "epuise" | "supprime" }, … ],
+ *   ajustes: [ { nom, demandee, acceptee }, … ],       // quantité ramenée au stock
+ *   prix: [ { nom, ancien, nouveau }, … ] }            // prix changé depuis
+ *
+ * 404 : commande inconnue ou d'un autre client. 401 : visiteur non connecté.
+ */
+CommandeData.recommander = async function (numero) {
+  return postRequest("commande/recommander", { numero });
+};
+
 export { CommandeData };
