@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Core\Request;
 use App\Core\Response;
+use App\Model\TentativeConnexionModel;
 use App\Model\UtilisateurModel;
 
 /**
@@ -30,10 +31,12 @@ final class AuthController
     private const EMAIL_MAX = 190;
 
     private UtilisateurModel $utilisateurs;
+    private TentativeConnexionModel $tentatives;
 
-    public function __construct(UtilisateurModel $utilisateurs)
+    public function __construct(UtilisateurModel $utilisateurs, TentativeConnexionModel $tentatives)
     {
         $this->utilisateurs = $utilisateurs;
+        $this->tentatives   = $tentatives;
     }
 
     /**
@@ -93,6 +96,14 @@ final class AuthController
             self::refuser($champs);
         }
 
+        // Anti force brute : après trop d'échecs pour cette adresse depuis cette
+        // IP, la connexion est refusée un moment, même avec le bon mot de passe.
+        $cle = TentativeConnexionModel::cle('client', $email, $_SERVER['REMOTE_ADDR'] ?? '');
+
+        if ($this->tentatives->bloquee($cle)) {
+            Response::erreur('Trop de tentatives de connexion. Réessayez dans 15 minutes.', 429);
+        }
+
         $compte = $this->utilisateurs->trouverParEmail($email);
 
         // Le mot de passe est toujours vérifié, même quand le compte n'existe
@@ -102,9 +113,11 @@ final class AuthController
         $valide    = password_verify($mdp, $empreinte);
 
         if ($compte === null || !$valide) {
+            $this->tentatives->enregistrerEchec($cle);
             Response::erreur('Adresse e-mail ou mot de passe incorrect.', 401);
         }
 
+        $this->tentatives->oublier($cle);
         $this->ouvrirSession((int) $compte['id'], $compte['email']);
 
         Response::json(['connecte' => true, 'email' => $compte['email']]);

@@ -71,6 +71,7 @@ final class StatsController
 
         $stats = $this->collecter();
 
+        Response::entetesDeSecurite();
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Disposition: attachment; filename="statistiques-razer-' . preg_replace('/\D/', '', substr($stats['genereLe'], 0, 10)) . '-' . preg_replace('/\D/', '', substr($stats['genereLe'], 11)) . '.csv"');
         header('Cache-Control: no-store');

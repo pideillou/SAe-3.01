@@ -39,3 +39,18 @@ RewriteRule ^front/dist/ front/dist/index.html [END]
 #    jamais servies : /front/src/main.js devient front/dist/front/src/main.js,
 #    qui n'existe pas.
 RewriteRule ^(.*)$ front/dist/$1 [L]
+
+# ---------------------------------------------------------------------------
+# En-têtes de sécurité, ajoutés à toutes les réponses (pages, fichiers et API).
+# Sans effet si le module mod_headers n'est pas activé sur le serveur.
+#  - nosniff : le navigateur ne devine pas le type d'un fichier ;
+#  - X-Frame-Options : le site ne s'affiche pas dans le cadre d'un autre site ;
+#  - Referrer-Policy : l'adresse complète n'est pas transmise aux autres sites ;
+#  - Permissions-Policy : le site n'a pas besoin de caméra, de micro ni de position.
+# ---------------------------------------------------------------------------
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+</IfModule>

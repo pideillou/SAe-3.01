@@ -29,6 +29,7 @@ SET NAMES utf8mb4;
 -- Suppression dans l'ordre inverse des clés étrangères.
 -- ATTENTION : les commandes (commande, ligne_commande, mouvement_stock) sont
 -- elles aussi supprimées à chaque import.
+DROP TABLE IF EXISTS tentative_connexion;
 DROP TABLE IF EXISTS code_promo;
 DROP TABLE IF EXISTS journal_commande;
 DROP TABLE IF EXISTS mouvement_stock;
@@ -279,6 +280,21 @@ CREATE TABLE image_produit (
 -- numero : numéro unique montré au client (ex. RZ-20261016-K7M2QX).
 -- Statuts : en cours (à la création), disponible, retirée, annulée.
 -- ---------------------------------------------------------------------------
+-- ---------------------------------------------------------------------------
+-- Tentatives de connexion échouées : limitent la force brute (8 échecs en 15
+-- minutes pour la même clé, empreinte de l'adresse e-mail et de l'adresse IP).
+-- ---------------------------------------------------------------------------
+CREATE TABLE tentative_connexion (
+    id      INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    cle     CHAR(64)     NOT NULL,
+    cree_le DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (id),
+    KEY idx_tentative_cle (cle, cree_le)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
 -- ---------------------------------------------------------------------------
 -- Codes promotionnels (PRO-a) : un code saisi à la commande donne une réduction
 -- en pourcentage sur le total. Le code est enregistré en MAJUSCULES. Un code

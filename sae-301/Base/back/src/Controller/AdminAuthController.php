@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Core\Request;
 use App\Core\Response;
 use App\Model\AdministrateurModel;
+use App\Model\TentativeConnexionModel;
 
 /**
  * Connexion et déconnexion des administrateurs.
@@ -18,10 +19,12 @@ use App\Model\AdministrateurModel;
 final class AdminAuthController
 {
     private AdministrateurModel $administrateurs;
+    private TentativeConnexionModel $tentatives;
 
-    public function __construct(AdministrateurModel $administrateurs)
+    public function __construct(AdministrateurModel $administrateurs, TentativeConnexionModel $tentatives)
     {
         $this->administrateurs = $administrateurs;
+        $this->tentatives      = $tentatives;
     }
 
     /**
@@ -42,6 +45,14 @@ final class AdminAuthController
             Response::json(['erreur' => 'Le formulaire contient des erreurs.', 'champs' => $champs], 422);
         }
 
+        // Anti force brute : trop d'échecs pour cette adresse depuis cette IP, et la
+        // connexion est refusée un moment, même avec le bon mot de passe.
+        $cle = TentativeConnexionModel::cle('admin', $email, $_SERVER['REMOTE_ADDR'] ?? '');
+
+        if ($this->tentatives->bloquee($cle)) {
+            Response::erreur('Trop de tentatives de connexion. Réessayez dans 15 minutes.', 429);
+        }
+
         $compte = $this->administrateurs->trouverParEmail($email);
 
         // Même précaution que pour les clients : le mot de passe est vérifié
@@ -50,8 +61,11 @@ final class AdminAuthController
         $valide    = password_verify($mdp, $empreinte);
 
         if ($compte === null || !$valide) {
+            $this->tentatives->enregistrerEchec($cle);
             Response::erreur('Adresse e-mail ou mot de passe incorrect.', 401);
         }
+
+        $this->tentatives->oublier($cle);
 
         // Identifiant de session neuf à la connexion (voir securite.md).
         session_regenerate_id(true);

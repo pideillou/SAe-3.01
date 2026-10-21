@@ -39,6 +39,7 @@ use App\Service\FichiersImages;
 use App\Service\RedimensionneurImage;
 use App\Model\ParametreModel;
 use App\Model\ProduitModel;
+use App\Model\TentativeConnexionModel;
 use App\Model\PromotionModel;
 use App\Model\UtilisateurModel;
 
@@ -81,6 +82,7 @@ try {
     // Les dépendances sont créées explicitement : le modèle reçoit la connexion,
     // le contrôleur reçoit le modèle. Aucune magie, tout est lisible ici.
     $promotion  = new PromotionModel($pdo);
+    $tentatives = new TentativeConnexionModel($pdo);
     $produits   = new ProduitModel($pdo, $promotion);
     $categories = new CategorieModel($pdo);
     $parametres = new ParametreModel($pdo);
@@ -98,7 +100,7 @@ try {
     $controleurs = [
         CatalogueController::class => new CatalogueController($produits, $categories, $parametres, $promotion),
         CategorieController::class => new CategorieController($categories),
-        AuthController::class      => new AuthController($utilisateurs),
+        AuthController::class      => new AuthController($utilisateurs, $tentatives),
         AdminProduitController::class => new AdminProduitController(
             $produitsAdmin,
             $categories,
@@ -115,20 +117,40 @@ try {
         AdminCategorieController::class => new AdminCategorieController($categories),
         AdminCodePromoController::class => new AdminCodePromoController($codesPromo),
         AdminCommandeController::class => new AdminCommandeController($commandes),
-        AdminAuthController::class => new AdminAuthController($administrateurs),
+        AdminAuthController::class => new AdminAuthController($administrateurs, $tentatives),
         CommandeController::class  => new CommandeController($commandes, $produits, $codesPromo),
         PanierController::class    => new PanierController($produits, $parametres),
-        ProfilController::class    => new ProfilController($utilisateurs, $commandes),
+        ProfilController::class    => new ProfilController($utilisateurs, $commandes, $tentatives),
         StatsController::class     => new StatsController($produits, $commandes, $parametres),
     ];
 
     $routes = require __DIR__ . '/src/routes.php';
 
     // --- Session : réglage unique, avant tout contrôleur --------------------
-    // PHP n'envoie le cookie PHPSESSID qu'au moment où il crée la session : ses
+    // PHP n'envoie le cookie de session qu'au moment où il crée la session : ses
     // paramètres doivent donc être fixés ici, avant session_start(), et nulle
     // part ailleurs.
     ini_set('session.use_strict_mode', '1');
+
+    // Indépendance vis-à-vis des autres sites du même hébergement (mmi.unilim.fr
+    // héberge tous les espaces ~login sur le même domaine) :
+    //  - un nom de cookie propre au projet, tiré de son chemin, au lieu du
+    //    PHPSESSID que tous les sites PHP partagent : deux projets ne se
+    //    prennent pas le cookie de l'autre, même si l'un fixe le sien sur « / » ;
+    //  - un dossier de sessions propre au projet (back/sessions/), quand il est
+    //    utilisable, au lieu du dossier commun du serveur où les fichiers de
+    //    session de tous les sites sont mélangés. Sinon, le dossier du serveur.
+    session_name('razer_' . substr(md5($config['chemin']), 0, 10));
+
+    $dossierSessions = __DIR__ . '/sessions';
+
+    if (is_dir($dossierSessions) && is_writable($dossierSessions)) {
+        session_save_path($dossierSessions);
+        // Sans cron pour nettoyer ce dossier, PHP efface lui-même les sessions
+        // périmées (1 chance sur 100 à chaque ouverture de session).
+        ini_set('session.gc_probability', '1');
+        ini_set('session.gc_divisor', '100');
+    }
 
     session_set_cookie_params([
         'path'     => $config['chemin'],

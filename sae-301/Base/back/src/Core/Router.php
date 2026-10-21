@@ -59,6 +59,21 @@ final class Router
             return;
         }
 
+        // Le chemin existe, mais pas avec cette méthode : 405 et les méthodes permises.
+        $permises = [];
+        foreach (array_keys($this->routes) as $declaration) {
+            [$methode, $chemin] = explode(' ', self::normaliser($declaration), 2);
+
+            if ($chemin === $requete->chemin()) {
+                $permises[] = $methode;
+            }
+        }
+
+        if ($permises !== []) {
+            header('Allow: ' . implode(', ', $permises));
+            Response::erreur('Méthode non autorisée : ' . $requete->methode() . ' ' . $requete->chemin(), 405);
+        }
+
         Response::erreur('Route inconnue : ' . $requete->signature(), 404);
     }
 

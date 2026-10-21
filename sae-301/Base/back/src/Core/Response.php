@@ -29,6 +29,7 @@ final class Response
     {
         http_response_code($statut);
         header('Content-Type: application/json; charset=utf-8');
+        self::entetesDeSecurite();
 
         echo json_encode(
             $donnees,
@@ -36,6 +37,18 @@ final class Response
         );
 
         exit;
+    }
+
+    /**
+     * En-têtes de sécurité des réponses de l'API : le navigateur ne doit pas
+     * deviner le type d'un contenu (nosniff), ni envoyer l'adresse complète de la
+     * page appelante à un autre site, ni afficher l'API dans un cadre.
+     */
+    public static function entetesDeSecurite(): void
+    {
+        header('X-Content-Type-Options: nosniff');
+        header('X-Frame-Options: DENY');
+        header('Referrer-Policy: same-origin');
     }
 
     /**

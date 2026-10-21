@@ -6,6 +6,11 @@ front/dist/
 uploads/*
 !uploads/.gitkeep
 
+# Fichiers de session de PHP : des données de visiteurs, pas du code
+back/sessions/*
+!back/sessions/.gitkeep
+!back/sessions/.htaccess
+
 # Fichiers d'environnement des éditeurs et systèmes
 .DS_Store
 Thumbs.db

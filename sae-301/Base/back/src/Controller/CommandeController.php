@@ -200,7 +200,9 @@ final class CommandeController
         }
 
         $page = $requete->parametre('page', '1');
-        $page = ctype_digit((string) $page) && (int) $page >= 1 ? (int) $page : 1;
+        // Au-delà de 100 000 pages, la valeur ne correspond à rien : on la ramène à 1
+        // plutôt que de laisser un très grand nombre déborder en calcul à virgule.
+        $page = ctype_digit((string) $page) && (int) $page >= 1 && strlen((string) $page) <= 5 ? (int) $page : 1;
 
         $resultat = $this->commandes->listerPourClient($utilisateurId, $statut, $du, $au, self::PAR_PAGE, ($page - 1) * self::PAR_PAGE);
 

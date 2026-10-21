@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Core\Request;
 use App\Core\Response;
 use App\Model\CommandeModel;
+use App\Model\TentativeConnexionModel;
 use App\Model\UtilisateurModel;
 
 /**
@@ -25,11 +26,13 @@ final class ProfilController
 
     private UtilisateurModel $utilisateurs;
     private CommandeModel $commandes;
+    private TentativeConnexionModel $tentatives;
 
-    public function __construct(UtilisateurModel $utilisateurs, CommandeModel $commandes)
+    public function __construct(UtilisateurModel $utilisateurs, CommandeModel $commandes, TentativeConnexionModel $tentatives)
     {
         $this->utilisateurs = $utilisateurs;
         $this->commandes    = $commandes;
+        $this->tentatives   = $tentatives;
     }
 
     /**
@@ -113,11 +116,22 @@ final class ProfilController
             self::refuser($champs);
         }
 
+        // Le mot de passe actuel ne peut pas être deviné par essais répétés depuis
+        // une session volée : même limite que pour la connexion.
+        $cle = TentativeConnexionModel::cle('mdp', (string) $id, $_SERVER['REMOTE_ADDR'] ?? '');
+
+        if ($this->tentatives->bloquee($cle)) {
+            Response::erreur('Trop d\'essais de mot de passe. Réessayez dans 15 minutes.', 429);
+        }
+
         $empreinte = $this->utilisateurs->trouverEmpreinte($id);
 
         if ($empreinte === null || !password_verify($actuel, $empreinte)) {
+            $this->tentatives->enregistrerEchec($cle);
             self::refuser(['actuel' => 'Le mot de passe actuel est incorrect.']);
         }
+
+        $this->tentatives->oublier($cle);
 
         if ($nouveau === $actuel) {
             self::refuser(['nouveau' => 'Le nouveau mot de passe doit être différent de l\'actuel.']);
