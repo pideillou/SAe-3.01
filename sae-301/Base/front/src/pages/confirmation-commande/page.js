@@ -1,6 +1,6 @@
 import { CommandeData } from "../../data/commande.js";
 import { formaterDateHeure } from "../../lib/format.js";
-import { naviguer } from "../../lib/navigation.js";
+import { remplacer } from "../../lib/navigation.js";
 import { definirMetadonnees } from "../../lib/seo.js";
 import { genericRenderer, htmlToFragment, urlPublique } from "../../lib/utils.js";
 import { MessageView } from "../../ui/message/index.js";
@@ -38,7 +38,7 @@ C.init = async function (params) {
     M.commande = (await CommandeData.fetchOne(params.numero)).commande;
   } catch (erreur) {
     if (erreur.statut === 401) {
-      naviguer("connexion");
+      remplacer("connexion");
       return "";
     }
 

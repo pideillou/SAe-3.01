@@ -1,7 +1,7 @@
 import { AuthData } from "../../data/auth.js";
 import { ProfilData } from "../../data/profil.js";
 import { formaterDateHeure, pluriel } from "../../lib/format.js";
-import { naviguer } from "../../lib/navigation.js";
+import { remplacer } from "../../lib/navigation.js";
 import { definirMetadonnees } from "../../lib/seo.js";
 import { genericRenderer, htmlToFragment, urlPublique } from "../../lib/utils.js";
 import { CarteCommandeView } from "../../ui/carte-commande/index.js";
@@ -44,7 +44,7 @@ C.init = async function () {
     M.commandes = reponse.commandesRecentes;
   } catch (erreur) {
     if (erreur.statut === 401) {
-      naviguer("connexion?retour=espace-personnel");
+      remplacer("connexion?retour=espace-personnel");
       return "";
     }
 
@@ -57,7 +57,7 @@ C.init = async function () {
 C.handler_deconnexion = async function () {
   try {
     await AuthData.logout();
-    naviguer("");
+    remplacer("");
   } catch (erreur) {
     M.message = { type: "erreur", texte: `Déconnexion impossible : ${erreur.message}` };
     V.rafraichir();

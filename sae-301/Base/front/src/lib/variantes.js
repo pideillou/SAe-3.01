@@ -68,12 +68,24 @@ export function varianteApresChoix(variantes, valeurId, selection) {
  * @param {object} option    une option du produit ({ nom, valeurs })
  * @param {object} variante  la variante actuellement choisie
  * @returns {Array<{valeurId: number, libelle: string, prix: string,
- *          etat: "selectionne"|"disponible"|"indisponible", mention?: string}>}
+ *          etat: "selectionne"|"disponible"|"indisponible", selectionne?: boolean,
+ *          mention?: string}>}  selectionne : la valeur fait partie du choix actuel
+ *          (même si la variante obtenue est épuisée : etat vaut alors « indisponible »)
  */
 export function cartesOption(produit, option, variante) {
   return option.valeurs.map((valeur) => {
     if (variante.valeurs.includes(valeur.id)) {
-      return { valeurId: valeur.id, libelle: valeur.valeur, prix: formaterPrix(variante.prix), etat: "selectionne" };
+      // Choisie, mais la variante peut être épuisée : la carte l'est alors aussi
+      // (« Indisponible »), pour qu'un choix en vert ne laisse pas croire qu'on peut
+      // la commander.
+      return {
+        valeurId: valeur.id,
+        libelle: valeur.valeur,
+        prix: formaterPrix(variante.prix),
+        etat: variante.stock > 0 ? "selectionne" : "indisponible",
+        selectionne: true,
+        ...(variante.stock > 0 ? {} : { mention: "Sélectionné, épuisé" }),
+      };
     }
 
     let obtenue = varianteApresChoix(produit.variantes, valeur.id, variante.valeurs);

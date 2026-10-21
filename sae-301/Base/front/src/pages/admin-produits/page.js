@@ -1,7 +1,7 @@
 import { AdminAuthData } from "../../data/admin-auth.js";
 import { AdminProduitData } from "../../data/admin-produit.js";
 import { pluriel } from "../../lib/format.js";
-import { naviguer } from "../../lib/navigation.js";
+import { remplacer } from "../../lib/navigation.js";
 import { definirMetadonnees } from "../../lib/seo.js";
 import { genericRenderer, htmlToFragment, urlPublique } from "../../lib/utils.js";
 import { ConfirmationSuppressionView } from "../../ui/confirmation-suppression/index.js";
@@ -45,7 +45,7 @@ C.charger = async function () {
  */
 C.traiterErreur = function (erreur, prefixe) {
   if (erreur.statut === 401) {
-    naviguer("admin/connexion");
+    remplacer("admin/connexion");
     return true;
   }
 
@@ -62,7 +62,7 @@ C.init = async function () {
 
   try {
     if (!(await AdminAuthData.moi()).connecte) {
-      naviguer("admin/connexion");
+      remplacer("admin/connexion");
       return "";
     }
 

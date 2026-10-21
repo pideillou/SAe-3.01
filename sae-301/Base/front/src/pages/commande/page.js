@@ -1,7 +1,7 @@
 import { AuthData } from "../../data/auth.js";
 import { CommandeData } from "../../data/commande.js";
 import { PanierData } from "../../data/panier.js";
-import { naviguer } from "../../lib/navigation.js";
+import { naviguer, remplacer } from "../../lib/navigation.js";
 import { synchroniserPanier } from "../../lib/panier-stock.js";
 import { appliquerReduction } from "../../lib/promo.js";
 import { definirMetadonnees } from "../../lib/seo.js";
@@ -54,7 +54,7 @@ C.init = async function () {
     let etat = await AuthData.moi();
 
     if (!etat.connecte) {
-      naviguer("connexion?retour=commande");
+      remplacer("connexion?retour=commande");
       return "";
     }
 
@@ -110,7 +110,7 @@ C.handler_appliquerCode = async function (code) {
     M.saisieCode = "";
   } catch (erreur) {
     if (erreur.statut === 401) {
-      naviguer("connexion?retour=commande");
+      remplacer("connexion?retour=commande");
       return;
     }
 
@@ -146,7 +146,7 @@ C.handler_confirmer = async function () {
     return;
   } catch (erreur) {
     if (erreur.statut === 401) {
-      naviguer("connexion?retour=commande");
+      remplacer("connexion?retour=commande");
       return;
     }
 

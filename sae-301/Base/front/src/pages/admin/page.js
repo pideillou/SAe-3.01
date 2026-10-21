@@ -1,6 +1,6 @@
 import { AdminAuthData } from "../../data/admin-auth.js";
 import { StatsData } from "../../data/stats.js";
-import { naviguer } from "../../lib/navigation.js";
+import { remplacer } from "../../lib/navigation.js";
 import { definirMetadonnees } from "../../lib/seo.js";
 import { htmlToFragment } from "../../lib/utils.js";
 import { MessageView } from "../../ui/message/index.js";
@@ -31,14 +31,14 @@ C.init = async function () {
 
   try {
     if (!(await AdminAuthData.moi()).connecte) {
-      naviguer("admin/connexion");
+      remplacer("admin/connexion");
       return "";
     }
 
     M.stats = await StatsData.fetch();
   } catch (erreur) {
     if (erreur.statut === 401) {
-      naviguer("admin/connexion");
+      remplacer("admin/connexion");
       return "";
     }
 

@@ -1,7 +1,7 @@
 import { AdminAuthData } from "../../data/admin-auth.js";
 import { StatsData } from "../../data/stats.js";
 import { formaterDateHeure } from "../../lib/format.js";
-import { naviguer } from "../../lib/navigation.js";
+import { remplacer } from "../../lib/navigation.js";
 import { definirMetadonnees } from "../../lib/seo.js";
 import { genericRenderer, htmlToFragment } from "../../lib/utils.js";
 import { AlerteStocksView } from "../../ui/alerte-stocks/index.js";
@@ -44,7 +44,7 @@ C.charger = async function () {
     M.stats = await StatsData.fetchStatistiques();
   } catch (erreur) {
     if (erreur.statut === 401) {
-      naviguer("admin/connexion");
+      remplacer("admin/connexion");
       return false;
     }
 
@@ -62,7 +62,7 @@ C.init = async function () {
 
   try {
     if (!(await AdminAuthData.moi()).connecte) {
-      naviguer("admin/connexion");
+      remplacer("admin/connexion");
       return "";
     }
   } catch (erreur) {
@@ -111,7 +111,7 @@ C.handler_exporter = async function () {
     M.message = { type: "succes", texte: "Les statistiques ont été exportées au format CSV." };
   } catch (erreur) {
     if (erreur.statut === 401) {
-      naviguer("admin/connexion");
+      remplacer("admin/connexion");
       return;
     }
 

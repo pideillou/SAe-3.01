@@ -1,7 +1,7 @@
 import { AdminAuthData } from "../../data/admin-auth.js";
 import { AdminCategorieData } from "../../data/admin-categorie.js";
 import { pluriel } from "../../lib/format.js";
-import { naviguer } from "../../lib/navigation.js";
+import { remplacer } from "../../lib/navigation.js";
 import { definirMetadonnees } from "../../lib/seo.js";
 import { genericRenderer, htmlToFragment } from "../../lib/utils.js";
 import { erreursCategorie } from "../../lib/validation-categorie.js";
@@ -50,7 +50,7 @@ C.charger = async function () {
  */
 C.traiterErreur = function (erreur, prefixe) {
   if (erreur.statut === 401) {
-    naviguer("admin/connexion");
+    remplacer("admin/connexion");
     return true;
   }
 
@@ -69,7 +69,7 @@ C.init = async function () {
 
   try {
     if (!(await AdminAuthData.moi()).connecte) {
-      naviguer("admin/connexion");
+      remplacer("admin/connexion");
       return "";
     }
 

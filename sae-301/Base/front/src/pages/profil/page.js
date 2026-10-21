@@ -1,5 +1,5 @@
 import { ProfilData } from "../../data/profil.js";
-import { naviguer } from "../../lib/navigation.js";
+import { remplacer } from "../../lib/navigation.js";
 import { definirMetadonnees } from "../../lib/seo.js";
 import { htmlToFragment } from "../../lib/utils.js";
 import { erreursChangementMotDePasse, erreursProfil } from "../../lib/validation-compte.js";
@@ -46,7 +46,7 @@ C.init = async function () {
     M.charge = true;
   } catch (erreur) {
     if (erreur.statut === 401) {
-      naviguer("connexion?retour=espace-personnel/profil");
+      remplacer("connexion?retour=espace-personnel/profil");
       return "";
     }
 

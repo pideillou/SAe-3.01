@@ -1,7 +1,7 @@
 import { AdminAuthData } from "../../data/admin-auth.js";
 import { AdminCommandeData } from "../../data/admin-commande.js";
 import { formaterDateHeure } from "../../lib/format.js";
-import { naviguer } from "../../lib/navigation.js";
+import { remplacer } from "../../lib/navigation.js";
 import { definirMetadonnees } from "../../lib/seo.js";
 import { statutDe } from "../../lib/statuts-commande.js";
 import { genericRenderer, htmlToFragment, urlPublique } from "../../lib/utils.js";
@@ -42,14 +42,14 @@ C.init = async function (params) {
 
   try {
     if (!(await AdminAuthData.moi()).connecte) {
-      naviguer("admin/connexion");
+      remplacer("admin/connexion");
       return "";
     }
 
     M.commande = (await AdminCommandeData.fetchOne(M.numero)).commande;
   } catch (erreur) {
     if (erreur.statut === 401) {
-      naviguer("admin/connexion");
+      remplacer("admin/connexion");
       return "";
     }
 
@@ -102,7 +102,7 @@ C.appliquer = async function (statut) {
     M.commande = (await AdminCommandeData.fetchOne(M.numero)).commande;
   } catch (erreur) {
     if (erreur.statut === 401) {
-      naviguer("admin/connexion");
+      remplacer("admin/connexion");
       return;
     }
 

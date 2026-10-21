@@ -33,9 +33,10 @@ let SelecteurOptionsView = {
           mention: carte.mention ?? MENTIONS[carte.etat],
           // « indisponible » reste un choix possible : on peut voir la variante
           // épuisée. Seul le style la distingue ; « selectionne » est exprimé
-          // par aria-pressed, que Tailwind sait cibler.
+          // par aria-pressed, que Tailwind sait cibler. Une carte choisie mais
+          // indisponible garde le style « indisponible » (jamais le vert du choix).
           etat: carte.etat === "indisponible" ? "indisponible" : "normal",
-          selectionne: String(carte.etat === "selectionne"),
+          selectionne: String(carte.selectionne === true || carte.etat === "selectionne"),
         })
       );
 

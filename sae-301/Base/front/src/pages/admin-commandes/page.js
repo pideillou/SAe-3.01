@@ -1,7 +1,7 @@
 import { AdminAuthData } from "../../data/admin-auth.js";
 import { AdminCommandeData } from "../../data/admin-commande.js";
 import { pluriel } from "../../lib/format.js";
-import { naviguer } from "../../lib/navigation.js";
+import { remplacer } from "../../lib/navigation.js";
 import { definirMetadonnees } from "../../lib/seo.js";
 import { ACTIONS_COMMANDE, statutDe } from "../../lib/statuts-commande.js";
 import { genericRenderer, htmlToFragment } from "../../lib/utils.js";
@@ -58,7 +58,7 @@ C.charger = async function () {
  */
 C.traiterErreur = function (erreur, prefixe) {
   if (erreur.statut === 401) {
-    naviguer("admin/connexion");
+    remplacer("admin/connexion");
     return true;
   }
 
@@ -79,7 +79,7 @@ C.init = async function () {
 
   try {
     if (!(await AdminAuthData.moi()).connecte) {
-      naviguer("admin/connexion");
+      remplacer("admin/connexion");
       return "";
     }
 

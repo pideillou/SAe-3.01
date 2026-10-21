@@ -1,5 +1,5 @@
 import { AdminAuthData } from "../../data/admin-auth.js";
-import { naviguer } from "../../lib/navigation.js";
+import { remplacer } from "../../lib/navigation.js";
 import { definirMetadonnees } from "../../lib/seo.js";
 import { htmlToFragment } from "../../lib/utils.js";
 import { erreursConnexion } from "../../lib/validation-compte.js";
@@ -39,7 +39,7 @@ C.handler_envoi = async function ({ email, mdp }) {
   try {
     await AdminAuthData.login(email, mdp);
     M.envoiEnCours = false;
-    naviguer("admin");
+    remplacer("admin");
     return;
   } catch (erreur) {
     M.erreurs = erreur.champs ?? {};
@@ -62,7 +62,7 @@ C.init = async function () {
   // remplace celle de cette page, qui n'est jamais affichée.
   try {
     if ((await AdminAuthData.moi()).connecte) {
-      naviguer("admin");
+      remplacer("admin");
       return "";
     }
   } catch (erreur) {

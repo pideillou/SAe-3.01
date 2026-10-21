@@ -1,7 +1,7 @@
 import { AdminAuthData } from "../../data/admin-auth.js";
 import { AdminCategorieData } from "../../data/admin-categorie.js";
 import { AdminProduitData } from "../../data/admin-produit.js";
-import { naviguer } from "../../lib/navigation.js";
+import { naviguer, remplacer } from "../../lib/navigation.js";
 import { definirMetadonnees } from "../../lib/seo.js";
 import { genericRenderer, htmlToFragment, urlPublique } from "../../lib/utils.js";
 import { brouillonDepuis, brouillonVide, preparerProduit, varianteVide } from "../../lib/validation-produit.js";
@@ -68,7 +68,7 @@ C.init = async function (params) {
 
   try {
     if (!(await AdminAuthData.moi()).connecte) {
-      naviguer("admin/connexion");
+      remplacer("admin/connexion");
       return "";
     }
 
@@ -79,7 +79,7 @@ C.init = async function (params) {
     }
   } catch (erreur) {
     if (erreur.statut === 401) {
-      naviguer("admin/connexion");
+      remplacer("admin/connexion");
       return "";
     }
 
@@ -103,7 +103,7 @@ C.init = async function (params) {
  */
 C.traiterErreur = function (erreur, prefixe) {
   if (erreur.statut === 401) {
-    naviguer("admin/connexion");
+    remplacer("admin/connexion");
     return true;
   }
 
@@ -220,7 +220,7 @@ C.rechargerImages = async function () {
  */
 C.traiterErreurImage = function (erreur, prefixe) {
   if (erreur.statut === 401) {
-    naviguer("admin/connexion");
+    remplacer("admin/connexion");
     return true;
   }
 

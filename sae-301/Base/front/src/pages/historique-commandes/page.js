@@ -1,7 +1,7 @@
 import { CommandeData } from "../../data/commande.js";
 import { transfererDansLePanier } from "../../lib/panier-stock.js";
 import { pluriel } from "../../lib/format.js";
-import { naviguer } from "../../lib/navigation.js";
+import { remplacer } from "../../lib/navigation.js";
 import { definirMetadonnees } from "../../lib/seo.js";
 import { genericRenderer, htmlToFragment, urlPublique } from "../../lib/utils.js";
 import { CarteCommandeView } from "../../ui/carte-commande/index.js";
@@ -64,7 +64,7 @@ C.charger = async function (page) {
     M.message = null;
   } catch (erreur) {
     if (erreur.statut === 401) {
-      naviguer("connexion?retour=espace-personnel/commandes");
+      remplacer("connexion?retour=espace-personnel/commandes");
       return false;
     }
 
@@ -140,7 +140,7 @@ C.handler_recommander = async function (numero) {
     M.recommande = { messages, versPanier: messages[0].type === "succes" };
   } catch (erreur) {
     if (erreur.statut === 401) {
-      naviguer("connexion?retour=espace-personnel/commandes");
+      remplacer("connexion?retour=espace-personnel/commandes");
       return;
     }
 

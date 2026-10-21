@@ -1,5 +1,5 @@
 import { AuthData } from "../../data/auth.js";
-import { destinationApresConnexion, naviguer } from "../../lib/navigation.js";
+import { destinationApresConnexion, remplacer } from "../../lib/navigation.js";
 import { definirMetadonnees } from "../../lib/seo.js";
 import { htmlToFragment } from "../../lib/utils.js";
 import { erreursInscription } from "../../lib/validation-compte.js";
@@ -39,7 +39,7 @@ C.handler_envoi = async function ({ email, mdp, confirmation }) {
   try {
     await AuthData.inscription(email, mdp, confirmation);
     M.envoiEnCours = false;
-    naviguer(destinationApresConnexion().chemin);
+    remplacer(destinationApresConnexion().chemin);
     return;
   } catch (erreur) {
     M.erreurs = erreur.champs ?? {};
@@ -62,7 +62,7 @@ C.init = async function () {
   // remplace celle de cette page, qui n'est jamais affichée.
   try {
     if ((await AuthData.moi()).connecte) {
-      naviguer(destinationApresConnexion().chemin);
+      remplacer(destinationApresConnexion().chemin);
       return "";
     }
   } catch (erreur) {
