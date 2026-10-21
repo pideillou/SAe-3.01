@@ -17,7 +17,8 @@ let SelecteurOptionsView = {
   /**
    * @param {{titre: string,
    *          cartes: Array<{valeurId: number, libelle: string, prix: string,
-   *                         etat: "selectionne"|"disponible"|"indisponible"}>}} data
+   *                         etat: "selectionne"|"disponible"|"indisponible",
+   *                         mention?: string}>}} data
    * @param {{surChoix: (valeurId: number) => void}} actions
    */
   dom: function (data, actions) {
@@ -29,7 +30,7 @@ let SelecteurOptionsView = {
           valeurId: carte.valeurId,
           libelle: carte.libelle,
           prix: carte.prix,
-          mention: MENTIONS[carte.etat],
+          mention: carte.mention ?? MENTIONS[carte.etat],
           // « indisponible » reste un choix possible : on peut voir la variante
           // épuisée. Seul le style la distingue ; « selectionne » est exprimé
           // par aria-pressed, que Tailwind sait cibler.

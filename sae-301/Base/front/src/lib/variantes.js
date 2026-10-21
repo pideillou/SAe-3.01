@@ -53,41 +53,64 @@ export function varianteApresChoix(variantes, valeurId, selection) {
 }
 
 /**
- * Vrai si au moins une variante portant cette valeur est en stock.
- */
-export function valeurDisponible(variantes, valeurId) {
-  return variantes.some((variante) => variante.valeurs.includes(valeurId) && variante.stock > 0);
-}
-
-/**
  * Les cartes d'une option : pour chaque valeur, la variante qu'on obtiendrait
  * en la choisissant (avec les autres choix conservés autant que possible), son
  * prix et son état. Sert à la fiche produit et à la modification des options
  * d'un article du panier.
  *
+ * Trois cas sont signalés au client sur la carte :
+ * - la combinaison obtenue est épuisée (« Indisponible ») ;
+ * - la combinaison avec ses autres choix n'existe pas : une autre option change
+ *   aussi, et la carte le dit (« Change aussi : Disposition du clavier ») ;
+ * - sinon, « Disponible ».
+ *
  * @param {object} produit   la fiche renvoyée par l'API
  * @param {object} option    une option du produit ({ nom, valeurs })
  * @param {object} variante  la variante actuellement choisie
+ * @returns {Array<{valeurId: number, libelle: string, prix: string,
+ *          etat: "selectionne"|"disponible"|"indisponible", mention?: string}>}
  */
 export function cartesOption(produit, option, variante) {
   return option.valeurs.map((valeur) => {
-    let selectionnee = variante.valeurs.includes(valeur.id);
-    let obtenue = selectionnee ? variante : varianteApresChoix(produit.variantes, valeur.id, variante.valeurs);
-
-    let etat = "disponible";
-    if (selectionnee) {
-      etat = "selectionne";
-    } else if (!valeurDisponible(produit.variantes, valeur.id)) {
-      etat = "indisponible";
+    if (variante.valeurs.includes(valeur.id)) {
+      return { valeurId: valeur.id, libelle: valeur.valeur, prix: formaterPrix(variante.prix), etat: "selectionne" };
     }
 
-    return {
+    let obtenue = varianteApresChoix(produit.variantes, valeur.id, variante.valeurs);
+
+    if (obtenue === null) {
+      return { valeurId: valeur.id, libelle: valeur.valeur, prix: "", etat: "indisponible" };
+    }
+
+    let carte = {
       valeurId: valeur.id,
       libelle: valeur.valeur,
-      prix: obtenue === null ? "" : formaterPrix(obtenue.prix),
-      etat,
+      prix: formaterPrix(obtenue.prix),
+      etat: obtenue.stock > 0 ? "disponible" : "indisponible",
     };
+
+    let modifiees = autresOptionsModifiees(produit, option, variante, obtenue);
+    if (modifiees.length > 0 && carte.etat === "disponible") {
+      carte.mention = `Change aussi : ${modifiees.join(", ")}`;
+    }
+
+    return carte;
   });
+}
+
+/**
+ * Les noms des autres options qui changent quand on passe de la variante
+ * actuelle à la variante obtenue en choisissant une valeur de `option`.
+ */
+function autresOptionsModifiees(produit, option, actuelle, obtenue) {
+  return produit.options
+    .filter((autre) => autre !== option && autre.valeurs.length > 1)
+    .filter((autre) => {
+      let avant = autre.valeurs.find((v) => actuelle.valeurs.includes(v.id));
+      let apres = autre.valeurs.find((v) => obtenue.valeurs.includes(v.id));
+      return avant !== apres;
+    })
+    .map((autre) => autre.nom);
 }
 
 /**
