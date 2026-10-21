@@ -3,9 +3,9 @@
 
   <div data-confirmation class="flex flex-col gap-6 md:gap-8">
     <header class="flex flex-col gap-3 border border-razer bg-surface p-6 md:p-8">
-      <p class="text-mention font-semibold tracking-wide text-razer uppercase">Commande enregistrée</p>
-      <h1 class="font-titres text-titre-page-mobile leading-tight font-semibold uppercase md:text-titre-page">Merci pour votre commande</h1>
-      <p class="text-sm leading-relaxed text-texte-secondaire">Votre commande a bien été enregistrée avec le compte <span class="font-semibold wrap-anywhere text-texte">{{email}}</span>. Conservez son numéro pour la retrouver.</p>
+      <p class="text-mention font-semibold tracking-wide text-razer uppercase">{{surtitre}}</p>
+      <h1 class="font-titres text-titre-page-mobile leading-tight font-semibold uppercase md:text-titre-page">{{titre}}</h1>
+      <p class="text-sm leading-relaxed text-texte-secondaire">{{introduction}} <span class="font-semibold wrap-anywhere text-texte">{{email}}</span>.</p>
     </header>
 
     <dl class="grid grid-cols-1 gap-px border border-bordure bg-bordure sm:grid-cols-3">
@@ -25,6 +25,6 @@
 
     <slot name="recapitulatif"></slot>
 
-    <a href="{{cheminCatalogue}}" data-link class="flex min-h-12 w-full items-center justify-center border border-razer bg-razer px-6 py-3 font-titres text-[0.9375rem] font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90 sm:w-auto sm:self-start">Retour au catalogue</a>
+    <a href="{{cheminRetour}}" data-link class="flex min-h-12 w-full items-center justify-center border border-razer bg-razer px-6 py-3 font-titres text-[0.9375rem] font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90 sm:w-auto sm:self-start">{{libelleRetour}}</a>
   </div>
 </div>

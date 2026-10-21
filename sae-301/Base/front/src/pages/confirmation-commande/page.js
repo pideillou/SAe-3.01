@@ -57,13 +57,33 @@ let V = {};
 V.init = function () {
   let commande = M.commande;
 
+  // Ouverte depuis l'historique (SUI-c, adresse terminée par ?historique), la page
+  // est le détail d'une commande passée : pas de remerciement, et le retour mène
+  // à l'historique.
+  let depuisHistorique = new URLSearchParams(window.location.search).has("historique");
+  let textes = depuisHistorique
+    ? {
+        surtitre: "Détail de la commande",
+        titre: M.commande === null ? "Commande" : `Commande ${M.commande.numero}`,
+        introduction: "Commande passée avec le compte",
+        cheminRetour: urlPublique("espace-personnel/commandes"),
+        libelleRetour: "Retour à mes commandes",
+      }
+    : {
+        surtitre: "Commande enregistrée",
+        titre: "Merci pour votre commande",
+        introduction: "Votre commande a bien été enregistrée avec le compte",
+        cheminRetour: urlPublique(""),
+        libelleRetour: "Retour au catalogue",
+      };
+
   let pageFragment = htmlToFragment(
     genericRenderer(template, {
       email: commande === null ? "" : commande.email,
       numero: commande === null ? "" : commande.numero,
       statut: commande === null ? "" : (STATUTS[commande.statut] ?? commande.statut),
       date: commande === null ? "" : formaterDateHeure(commande.creeLe),
-      cheminCatalogue: urlPublique(""),
+      ...textes,
     })
   );
 

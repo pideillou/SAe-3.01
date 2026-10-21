@@ -1,0 +1,24 @@
+<div class="mx-auto flex max-w-3xl flex-col gap-6 px-5 pt-6 pb-14 md:gap-8 md:px-8 md:pt-8">
+  <slot name="fil-ariane"></slot>
+
+  <h1 tabindex="-1" class="font-titres text-titre-page-mobile leading-tight font-semibold uppercase md:text-titre-page">Mes commandes</h1>
+
+  <slot name="message"></slot>
+
+  <div data-contenu class="flex flex-col gap-6">
+    <slot name="filtre"></slot>
+
+    <p data-compteur class="text-mention text-texte-secondaire" aria-live="polite">{{compteur}}</p>
+
+    <div data-vide class="flex flex-col items-start gap-5 border border-bordure bg-surface p-6">
+      <p class="text-sm text-texte-secondaire">{{texteVide}}</p>
+      <a data-lien-catalogue href="{{cheminCatalogue}}" data-link class="flex min-h-12 items-center justify-center border border-razer bg-razer px-6 py-3 font-titres text-[0.9375rem] font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90">Voir le catalogue</a>
+    </div>
+
+    <ul data-liste class="flex flex-col gap-4">
+      <slot name="commandes"></slot>
+    </ul>
+
+    <slot name="pagination"></slot>
+  </div>
+</div>

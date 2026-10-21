@@ -32,4 +32,32 @@ CommandeData.fetchOne = async function (numero) {
   return getRequest(`commande?numero=${encodeURIComponent(numero)}`);
 };
 
+/**
+ * L'historique du client connecté : GET /api/commandes?statut=&du=&au=&page=1
+ *
+ * filtre : { statut, du, au } ; une chaîne vide ne filtre pas. Les dates sont
+ * au format AAAA-MM-JJ et incluses. Les commandes arrivent de la plus récente à
+ * la plus ancienne, 10 par page.
+ *
+ * { commandes: [ { numero, statut, total, creeLe, articles,
+ *                  lignes: [ { produitNom, nom, options, quantite }, … ] }, … ],
+ *   total: 23,      // commandes correspondant au filtre, toutes pages confondues
+ *   page: 1, pages: 3, parPage: 10 }
+ *
+ * 401 : visiteur non connecté. 422 : statut ou date invalide.
+ */
+CommandeData.fetchAll = async function (filtre, page = 1) {
+  let parametres = new URLSearchParams();
+
+  for (let cle of ["statut", "du", "au"]) {
+    if (filtre[cle] !== "") {
+      parametres.set(cle, filtre[cle]);
+    }
+  }
+
+  parametres.set("page", String(page));
+
+  return getRequest(`commandes?${parametres.toString()}`);
+};
+
 export { CommandeData };

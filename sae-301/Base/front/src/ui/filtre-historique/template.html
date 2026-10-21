@@ -1,0 +1,21 @@
+<form novalidate aria-label="Filtrer mes commandes" class="flex flex-col gap-4 border border-bordure bg-surface p-4 md:flex-row md:flex-wrap md:items-end">
+  <div class="flex flex-col gap-2">
+    <label for="historique-statut" class="text-mention font-medium">Statut</label>
+    <select id="historique-statut" name="statut" class="h-11 w-full border border-bordure bg-fond px-3 text-sm text-texte transition-colors hover:border-texte-secondaire md:w-52"></select>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label for="historique-du" class="text-mention font-medium">Du</label>
+    <input id="historique-du" name="du" type="date" value="{{du}}" class="h-11 w-full border border-bordure bg-fond px-3 text-sm text-texte transition-colors hover:border-texte-secondaire md:w-44" />
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label for="historique-au" class="text-mention font-medium">Au</label>
+    <input id="historique-au" name="au" type="date" value="{{au}}" class="h-11 w-full border border-bordure bg-fond px-3 text-sm text-texte transition-colors hover:border-texte-secondaire md:w-44" />
+  </div>
+
+  <div class="flex gap-3">
+    <button type="submit" class="min-h-11 border border-razer bg-razer px-5 font-titres text-sm font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90">Filtrer</button>
+    <button type="button" data-action="reinitialiser" class="min-h-11 border border-bordure px-5 font-titres text-sm font-semibold uppercase transition-colors hover:border-razer hover:text-razer">Réinitialiser</button>
+  </div>
+</form>

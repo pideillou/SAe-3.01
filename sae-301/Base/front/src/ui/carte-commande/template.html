@@ -1,0 +1,20 @@
+<li class="flex flex-col gap-4 border border-bordure bg-surface p-5">
+  <div class="flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
+    <div class="flex min-w-0 flex-col gap-1">
+      <h2 class="font-titres text-lg font-semibold wrap-anywhere">
+        <a href="{{chemin}}" data-link class="underline-offset-4 hover:text-razer hover:underline">{{numero}}</a>
+      </h2>
+      <p class="text-mention text-texte-secondaire">Passée le {{date}}</p>
+    </div>
+    <p class="font-semibold {{classesStatut}}">{{statut}}</p>
+  </div>
+
+  <ul class="flex flex-col gap-2 border-t border-bordure pt-4 text-sm">
+    <slot name="lignes"></slot>
+  </ul>
+
+  <div class="flex flex-wrap items-center justify-between gap-3 border-t border-bordure pt-4">
+    <p class="text-sm"><span class="text-texte-secondaire">{{articles}} · Total</span> <span class="font-titres text-lg font-semibold">{{total}}</span></p>
+    <a href="{{chemin}}" data-link class="flex min-h-11 items-center justify-center border border-bordure px-5 font-titres text-sm font-semibold uppercase transition-colors hover:border-razer hover:text-razer" aria-label="Voir le détail de la commande {{numero}}">Voir le détail</a>
+  </div>
+</li>

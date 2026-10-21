@@ -1,7 +1,7 @@
 import { AuthData } from "../../data/auth.js";
 import { naviguer } from "../../lib/navigation.js";
 import { definirMetadonnees } from "../../lib/seo.js";
-import { genericRenderer, htmlToFragment } from "../../lib/utils.js";
+import { genericRenderer, htmlToFragment, urlPublique } from "../../lib/utils.js";
 import { MessageView } from "../../ui/message/index.js";
 import template from "./template.html?raw";
 
@@ -67,7 +67,7 @@ V.rafraichir = function () {
 };
 
 V.createPageFragment = function () {
-  let pageFragment = htmlToFragment(genericRenderer(template, { email: M.email }));
+  let pageFragment = htmlToFragment(genericRenderer(template, { email: M.email, cheminCommandes: urlPublique("espace-personnel/commandes") }));
 
   pageFragment.querySelector('slot[name="message"]').replaceWith(MessageView.dom(M.message));
   pageFragment

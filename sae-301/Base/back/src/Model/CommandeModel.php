@@ -17,6 +17,9 @@ final class CommandeModel
     /** Lettres et chiffres du numéro de commande, sans ceux qui se confondent (0/O, 1/I). */
     private const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
+    /** Les statuts d'une commande, dans l'ordre de son déroulement. */
+    public const STATUTS = ['en cours', 'disponible', 'retirée', 'annulée'];
+
     /** Longueur de la partie aléatoire du numéro. */
     private const LONGUEUR_ALEATOIRE = 6;
 
@@ -188,6 +191,93 @@ final class CommandeModel
         $commande['lignes'] = $lignes->fetchAll();
 
         return $commande;
+    }
+
+    /**
+     * L'historique des commandes d'un client, de la plus récente à la plus
+     * ancienne, avec les lignes de chaque commande (nom, options, quantité).
+     * Une page à la fois ; le filtre par statut et par période est facultatif.
+     *
+     * @param string|null $statut  ne garde que ce statut ; null pour tous
+     * @param string|null $du      première date incluse (AAAA-MM-JJ), ou null
+     * @param string|null $au      dernière date incluse (AAAA-MM-JJ), ou null
+     * @return array{commandes: array<int, array>, total: int}  total : nombre de
+     *         commandes correspondant au filtre, toutes pages confondues
+     */
+    public function listerPourClient(int $utilisateurId, ?string $statut, ?string $du, ?string $au, int $limite, int $decalage): array
+    {
+        $conditions = ['commande.utilisateur_id = :utilisateur'];
+        $valeurs    = [':utilisateur' => $utilisateurId];
+
+        if ($statut !== null && isset(self::TRANSITIONS[$statut])) {
+            $conditions[]       = 'commande.statut = :statut';
+            $valeurs[':statut'] = $statut;
+        }
+
+        if ($du !== null) {
+            $conditions[]    = 'commande.cree_le >= :du';
+            $valeurs[':du']  = $du . ' 00:00:00';
+        }
+
+        if ($au !== null) {
+            // Le jour entier : strictement avant minuit du lendemain.
+            $conditions[]    = 'commande.cree_le < DATE_ADD(:au, INTERVAL 1 DAY)';
+            $valeurs[':au']  = $au;
+        }
+
+        $where = implode(' AND ', $conditions);
+
+        $compte = $this->pdo->prepare("SELECT COUNT(*) FROM commande WHERE {$where}");
+        $compte->execute($valeurs);
+        $total = (int) $compte->fetchColumn();
+
+        $requete = $this->pdo->prepare(
+            "SELECT commande.id, commande.numero, commande.statut, commande.total, commande.cree_le
+               FROM commande
+              WHERE {$where}
+           ORDER BY commande.cree_le DESC, commande.id DESC
+              LIMIT :limite OFFSET :decalage"
+        );
+
+        foreach ($valeurs as $cle => $valeur) {
+            $requete->bindValue($cle, $valeur);
+        }
+
+        $requete->bindValue(':limite', $limite, PDO::PARAM_INT);
+        $requete->bindValue(':decalage', $decalage, PDO::PARAM_INT);
+        $requete->execute();
+
+        $commandes = $requete->fetchAll();
+
+        foreach ($commandes as &$commande) {
+            $commande['lignes'] = [];
+        }
+        unset($commande);
+
+        if ($commandes !== []) {
+            $ids          = array_column($commandes, 'id');
+            $emplacements = implode(',', array_fill(0, count($ids), '?'));
+
+            $lignes = $this->pdo->prepare(
+                "SELECT commande_id, produit_nom, variante_nom, options, quantite
+                   FROM ligne_commande
+                  WHERE commande_id IN ({$emplacements})
+               ORDER BY id"
+            );
+            $lignes->execute($ids);
+
+            $parCommande = [];
+            foreach ($lignes->fetchAll() as $ligne) {
+                $parCommande[(int) $ligne['commande_id']][] = $ligne;
+            }
+
+            foreach ($commandes as &$commande) {
+                $commande['lignes'] = $parCommande[(int) $commande['id']] ?? [];
+            }
+            unset($commande);
+        }
+
+        return ['commandes' => $commandes, 'total' => $total];
     }
 
     /**
