@@ -1,4 +1,4 @@
-import { getRequest } from "../lib/api-request.js";
+import { getFichier, getRequest } from "../lib/api-request.js";
 
 let StatsData = {};
 
@@ -12,6 +12,29 @@ let StatsData = {};
  */
 StatsData.fetch = async function () {
   return getRequest("admin/stats");
+};
+
+/**
+ * Les statistiques du tableau de bord : GET /api/admin/statistiques, lues dans
+ * la base à chaque appel (rien n'est mis en cache). Réservé aux administrateurs.
+ *
+ * { genereLe: "2026-10-21 14:55:03", seuil: 5,
+ *   stocks: [ { produit, categorie, unites, variantes, etat } ],   // histogramme
+ *   revenus: [ { date: "2026-10-15", commandes: 2, revenu: "379.98" }, … ],   // 7 jours
+ *   commandes: { total: 12, parStatut: { "en cours": 3, disponible: 2, retirée: 6, annulée: 1 } },
+ *   plusVendus: [ { produit, unites, chiffreAffaires: "759.96" } ],
+ *   stocksFaibles: [ { produit, variante, stock, etat: "epuise" | "bientot-epuise" } ] }
+ */
+StatsData.fetchStatistiques = async function () {
+  return getRequest("admin/statistiques");
+};
+
+/**
+ * L'export des statistiques : GET /api/admin/statistiques/export, un fichier
+ * CSV (Blob) des mêmes données.
+ */
+StatsData.exporter = async function () {
+  return getFichier("admin/statistiques/export");
 };
 
 export { StatsData };

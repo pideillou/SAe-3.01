@@ -1,0 +1,10 @@
+<section aria-labelledby="titre-revenus" class="flex flex-col gap-5 border border-bordure bg-surface p-5 md:p-6">
+  <div class="flex flex-col gap-1">
+    <h2 id="titre-revenus" class="font-titres text-xl font-semibold uppercase">Revenus des 7 derniers jours</h2>
+    <p class="text-mention text-texte-secondaire">Total : <strong class="text-texte">{{total}}</strong> pour {{commandes}}. Commandes annulées exclues.</p>
+  </div>
+
+  <ul class="grid grid-cols-7 gap-1.5 md:gap-3">
+    <slot name="jours"></slot>
+  </ul>
+</section>

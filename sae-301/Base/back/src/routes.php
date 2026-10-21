@@ -62,4 +62,6 @@ return [
     'GET  /api/admin/commande' => [AdminCommandeController::class, 'detail'],
     'POST /api/admin/commandes/statut' => [AdminCommandeController::class, 'changerStatut'],
     'GET  /api/admin/stats' => [StatsController::class,     'index'],
+    'GET  /api/admin/statistiques' => [StatsController::class, 'statistiques'],
+    'GET  /api/admin/statistiques/export' => [StatsController::class, 'exporter'],
 ];

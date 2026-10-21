@@ -113,7 +113,7 @@ try {
         CommandeController::class  => new CommandeController($commandes, $produits),
         PanierController::class    => new PanierController($produits, $parametres),
         ProfilController::class    => new ProfilController($utilisateurs, $commandes),
-        StatsController::class     => new StatsController($produits, $commandes),
+        StatsController::class     => new StatsController($produits, $commandes, $parametres),
     ];
 
     $routes = require __DIR__ . '/src/routes.php';

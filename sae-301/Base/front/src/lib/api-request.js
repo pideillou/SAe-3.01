@@ -85,4 +85,24 @@ let postFormData = function (uri, formData) {
   });
 };
 
-export { getRequest, postRequest, postFormData, ErreurApi };
+/**
+ * Téléchargement d'un fichier (export CSV). Renvoie le contenu en Blob ; une
+ * erreur du serveur (JSON) lève une ErreurApi comme les autres requêtes.
+ */
+let getFichier = async function (uri) {
+  const response = await fetch(API_URL + uri, { method: "GET" });
+
+  if (!response.ok) {
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (e) {
+      // Réponse sans JSON : on garde le code de statut seul.
+    }
+    throw new ErreurApi(data?.erreur ?? `Erreur ${response.status}`, response.status);
+  }
+
+  return response.blob();
+};
+
+export { getRequest, postRequest, postFormData, getFichier, ErreurApi };

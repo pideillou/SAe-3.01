@@ -350,6 +350,99 @@ final class CommandeModel
     }
 
     /**
+     * L'heure de la base de données. Les dates des commandes viennent d'elle :
+     * c'est la même horloge qu'il faut pour dater les statistiques (celle de PHP
+     * peut être réglée sur un autre fuseau).
+     */
+    public function maintenant(): string
+    {
+        return (string) $this->pdo->query('SELECT NOW()')->fetchColumn();
+    }
+
+    /**
+     * Nombre de commandes par statut, y compris les statuts sans commande (0).
+     *
+     * @return array<string, int>  indexé par statut, dans l'ordre du déroulement
+     */
+    public function compterParStatut(): array
+    {
+        $comptes = array_fill_keys(self::STATUTS, 0);
+
+        foreach ($this->pdo->query('SELECT statut, COUNT(*) AS nombre FROM commande GROUP BY statut')->fetchAll() as $ligne) {
+            $comptes[$ligne['statut']] = (int) $ligne['nombre'];
+        }
+
+        return $comptes;
+    }
+
+    /**
+     * Les revenus des 7 derniers jours (aujourd'hui compris), un jour par ligne,
+     * du plus ancien au plus récent. Un jour sans commande vaut 0. Les commandes
+     * annulées ne comptent pas : elles n'ont rapporté rien.
+     *
+     * @return array<int, array{date: string, commandes: int, revenu: string}>
+     *         revenu : montant en euros, chaîne à deux décimales
+     */
+    public function revenusDesSeptDerniersJours(): array
+    {
+        $aujourdhui = $this->pdo->query('SELECT CURDATE()')->fetchColumn();
+
+        $lignes = $this->pdo->query(
+            "SELECT DATE(cree_le) AS jour, COUNT(*) AS commandes, SUM(total) AS revenu
+               FROM commande
+              WHERE statut <> 'annulée' AND cree_le >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+           GROUP BY DATE(cree_le)"
+        )->fetchAll();
+
+        $parJour = [];
+        foreach ($lignes as $ligne) {
+            $parJour[$ligne['jour']] = $ligne;
+        }
+
+        $jours = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date    = (new \DateTimeImmutable($aujourdhui))->modify("-$i day")->format('Y-m-d');
+            $jours[] = [
+                'date'      => $date,
+                'commandes' => (int) ($parJour[$date]['commandes'] ?? 0),
+                'revenu'    => number_format((float) ($parJour[$date]['revenu'] ?? 0), 2, '.', ''),
+            ];
+        }
+
+        return $jours;
+    }
+
+    /**
+     * Les produits les plus vendus : unités vendues et chiffre d'affaires, hors
+     * commandes annulées. Les lignes gardent le nom du produit au moment de la
+     * commande : un produit supprimé depuis reste dans le classement.
+     *
+     * @return array<int, array{produit: string, unites: int, chiffreAffaires: string}>
+     */
+    public function produitsLesPlusVendus(int $limite): array
+    {
+        $requete = $this->pdo->prepare(
+            "SELECT ligne_commande.produit_nom AS produit,
+                    SUM(ligne_commande.quantite) AS unites,
+                    SUM(ligne_commande.quantite * ligne_commande.prix_unitaire) AS chiffre
+               FROM ligne_commande
+         INNER JOIN commande ON commande.id = ligne_commande.commande_id
+              WHERE commande.statut <> 'annulée'
+           GROUP BY ligne_commande.produit_nom
+           ORDER BY unites DESC, chiffre DESC, produit
+              LIMIT :limite"
+        );
+        $requete->bindValue(':limite', $limite, PDO::PARAM_INT);
+        $requete->execute();
+
+        return array_map(static fn (array $l): array => [
+            'produit'         => $l['produit'],
+            'unites'          => (int) $l['unites'],
+            'chiffreAffaires' => number_format((float) $l['chiffre'], 2, '.', ''),
+        ], $requete->fetchAll());
+    }
+
+    /**
      * Les commandes de tous les clients pour le back-office, triées et
      * éventuellement filtrées par statut. Limité aux plus récentes selon le tri :
      * la liste reste légère.

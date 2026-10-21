@@ -273,6 +273,61 @@ final class ProduitModel
     }
 
     /**
+     * Le stock de chaque produit (somme du stock de ses variantes), pour
+     * l'histogramme du tableau de bord (PIL-a). Les produits les mieux fournis
+     * d'abord.
+     *
+     * @return array<int, array{produit: string, categorie: string, unites: int, variantes: int}>
+     */
+    public function stocksParProduit(): array
+    {
+        $lignes = $this->pdo->query(
+            'SELECT produit.nom AS produit,
+                    categorie.nom AS categorie,
+                    COALESCE(SUM(variante.stock), 0) AS unites,
+                    COUNT(variante.id) AS variantes
+               FROM produit
+         INNER JOIN categorie ON categorie.id = produit.categorie_id
+          LEFT JOIN variante ON variante.produit_id = produit.id
+           GROUP BY produit.id, produit.nom, categorie.nom
+           ORDER BY unites DESC, produit.nom'
+        )->fetchAll();
+
+        return array_map(static fn (array $l): array => [
+            'produit'   => $l['produit'],
+            'categorie' => $l['categorie'],
+            'unites'    => (int) $l['unites'],
+            'variantes' => (int) $l['variantes'],
+        ], $lignes);
+    }
+
+    /**
+     * Les variantes dont le stock est à la limite du seuil « Bientôt épuisé »
+     * (ou épuisé), les plus basses d'abord : ce sont les alertes du tableau de
+     * bord (PIL-a).
+     *
+     * @return array<int, array{produit: string, variante: string, stock: int}>
+     */
+    public function stocksFaibles(int $seuil): array
+    {
+        $requete = $this->pdo->prepare(
+            'SELECT produit.nom AS produit, variante.nom AS variante, variante.stock
+               FROM variante
+         INNER JOIN produit ON produit.id = variante.produit_id
+              WHERE variante.stock <= :seuil
+           ORDER BY variante.stock, produit.nom, variante.nom'
+        );
+        $requete->bindValue(':seuil', $seuil, PDO::PARAM_INT);
+        $requete->execute();
+
+        return array_map(static fn (array $l): array => [
+            'produit'  => $l['produit'],
+            'variante' => $l['variante'],
+            'stock'    => (int) $l['stock'],
+        ], $requete->fetchAll());
+    }
+
+    /**
      * Indicateurs simples pour la zone d'administration.
      */
     public function statistiques(): array

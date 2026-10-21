@@ -1,0 +1,12 @@
+<section aria-labelledby="titre-vendus" class="flex flex-col gap-5 border border-bordure bg-surface p-5 md:p-6">
+  <div class="flex flex-col gap-1">
+    <h2 id="titre-vendus" class="font-titres text-xl font-semibold uppercase">Produits les plus vendus</h2>
+    <p class="text-mention text-texte-secondaire">Classés par unités vendues. Commandes annulées exclues.</p>
+  </div>
+
+  <p data-vide class="text-sm text-texte-secondaire">Aucune vente pour le moment.</p>
+
+  <ol data-liste class="flex flex-col divide-y divide-bordure text-sm">
+    <slot name="produits"></slot>
+  </ol>
+</section>

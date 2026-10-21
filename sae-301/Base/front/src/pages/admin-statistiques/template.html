@@ -1,0 +1,27 @@
+<section class="flex flex-col gap-6 px-5 py-8 md:px-8">
+  <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div class="flex flex-col gap-1">
+      <h1 class="font-titres text-titre-page-mobile leading-tight font-semibold uppercase md:text-titre-categorie">Statistiques</h1>
+      <p data-genere class="text-mention text-texte-secondaire" aria-live="polite">{{genereLe}}</p>
+    </div>
+
+    <div class="flex flex-col gap-3 sm:flex-row">
+      <button type="button" data-action="actualiser" class="min-h-11 border border-bordure px-5 font-titres text-sm font-semibold uppercase transition-colors hover:border-razer hover:text-razer disabled:cursor-wait disabled:opacity-40">Actualiser</button>
+      <button type="button" data-action="exporter" class="min-h-11 border border-razer bg-razer px-5 font-titres text-sm font-semibold text-sur-razer uppercase transition-opacity hover:opacity-90 disabled:cursor-wait disabled:opacity-40">Exporter (CSV)</button>
+    </div>
+  </div>
+
+  <slot name="message"></slot>
+
+  <div data-contenu class="flex flex-col gap-6">
+    <slot name="alerte"></slot>
+
+    <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+      <slot name="revenus"></slot>
+      <slot name="commandes"></slot>
+    </div>
+
+    <slot name="vendus"></slot>
+    <slot name="stocks"></slot>
+  </div>
+</section>

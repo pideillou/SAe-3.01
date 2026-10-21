@@ -11,6 +11,7 @@ const SECTIONS = [
   { libelle: "Produits", chemin: "/admin/produits" },
   { libelle: "Catégories", chemin: "/admin/categories" },
   { libelle: "Commandes", chemin: "/admin/commandes" },
+  { libelle: "Statistiques", chemin: "/admin/statistiques" },
 ];
 
 /**
