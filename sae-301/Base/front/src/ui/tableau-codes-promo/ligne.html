@@ -1,0 +1,18 @@
+<tr>
+  <th scope="row" class="px-4 py-3 font-semibold whitespace-nowrap">{{code}}</th>
+  <td class="px-4 py-3 whitespace-nowrap">−{{pourcentage}} %</td>
+  <td class="px-4 py-3 font-semibold whitespace-nowrap {{classesEtat}}">{{etat}}</td>
+  <td class="px-4 py-3">
+    {{utilisations}}
+    <span data-annulees class="block text-mention font-normal text-texte-secondaire">{{annulees}}</span>
+  </td>
+  <td class="px-4 py-3 text-right whitespace-nowrap">{{reductionTotale}}</td>
+  <td class="px-4 py-3 text-right whitespace-nowrap">{{chiffreAffaires}}</td>
+  <td class="px-4 py-3">
+    <div class="flex flex-wrap justify-end gap-2">
+      <button type="button" data-action="modifier" aria-label="Modifier le code {{code}}" class="min-h-10 border border-bordure px-4 text-sm transition-colors hover:border-razer hover:text-razer">Modifier</button>
+      <button type="button" data-action="basculer" aria-label="{{libelleBascule}} le code {{code}}" class="min-h-10 border border-bordure px-4 text-sm transition-colors hover:border-razer hover:text-razer disabled:cursor-wait disabled:opacity-40">{{libelleBascule}}</button>
+      <button type="button" data-action="supprimer" aria-label="Supprimer le code {{code}}" class="min-h-10 border border-bordure px-4 text-sm transition-colors hover:border-erreur hover:text-erreur">Supprimer</button>
+    </div>
+  </td>
+</tr>

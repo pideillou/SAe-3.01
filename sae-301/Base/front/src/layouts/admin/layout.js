@@ -1,5 +1,5 @@
 import { AdminAuthData } from "../../data/admin-auth.js";
-import { naviguer } from "../../lib/navigation.js";
+import { remplacer } from "../../lib/navigation.js";
 import { htmlToFragment, urlPublique } from "../../lib/utils.js";
 import { NavigationAdminView } from "../../ui/navigation-admin/index.js";
 import template from "./template.html?raw";
@@ -11,6 +11,7 @@ const SECTIONS = [
   { libelle: "Produits", chemin: "/admin/produits" },
   { libelle: "Catégories", chemin: "/admin/categories" },
   { libelle: "Commandes", chemin: "/admin/commandes" },
+  { libelle: "Codes promo", chemin: "/admin/codes-promo" },
   { libelle: "Statistiques", chemin: "/admin/statistiques" },
 ];
 
@@ -46,7 +47,7 @@ export function AdminLayout() {
     try {
       await AdminAuthData.logout();
     } finally {
-      naviguer("admin/connexion");
+      remplacer("admin/connexion");
     }
   });
 

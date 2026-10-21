@@ -20,6 +20,7 @@ use App\Controller\AdminAuthController;
 use App\Controller\AdminCategorieController;
 use App\Controller\AdminImageController;
 use App\Controller\AdminProduitController;
+use App\Controller\AdminCodePromoController;
 use App\Controller\AdminCommandeController;
 use App\Controller\AuthController;
 use App\Controller\CatalogueController;
@@ -110,6 +111,7 @@ try {
             new RedimensionneurImage(),
         ),
         AdminCategorieController::class => new AdminCategorieController($categories),
+        AdminCodePromoController::class => new AdminCodePromoController($codesPromo),
         AdminCommandeController::class => new AdminCommandeController($commandes),
         AdminAuthController::class => new AdminAuthController($administrateurs),
         CommandeController::class  => new CommandeController($commandes, $produits, $codesPromo),

@@ -1,0 +1,11 @@
+<section class="flex flex-col gap-6 px-5 py-8 md:px-8">
+  <div class="flex flex-col gap-2">
+    <h1 class="font-titres text-titre-page-mobile leading-tight font-semibold uppercase md:text-titre-categorie">Codes promo</h1>
+    <p data-resume class="text-sm text-texte-secondaire">{{resume}}</p>
+  </div>
+
+  <slot name="message"></slot>
+  <slot name="confirmation"></slot>
+  <slot name="tableau"></slot>
+  <slot name="formulaire"></slot>
+</section>

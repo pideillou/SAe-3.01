@@ -6,6 +6,7 @@ use App\Controller\AdminAuthController;
 use App\Controller\AdminCategorieController;
 use App\Controller\AdminImageController;
 use App\Controller\AdminProduitController;
+use App\Controller\AdminCodePromoController;
 use App\Controller\AdminCommandeController;
 use App\Controller\AuthController;
 use App\Controller\CatalogueController;
@@ -63,6 +64,10 @@ return [
     'GET  /api/admin/commande' => [AdminCommandeController::class, 'detail'],
     'POST /api/admin/commandes/statut' => [AdminCommandeController::class, 'changerStatut'],
     'GET  /api/admin/stats' => [StatsController::class,     'index'],
+    'GET  /api/admin/codes-promo' => [AdminCodePromoController::class, 'index'],
+    'POST /api/admin/codes-promo' => [AdminCodePromoController::class, 'creer'],
+    'POST /api/admin/codes-promo/modifier' => [AdminCodePromoController::class, 'modifier'],
+    'POST /api/admin/codes-promo/supprimer' => [AdminCodePromoController::class, 'supprimer'],
     'GET  /api/admin/statistiques' => [StatsController::class, 'statistiques'],
     'GET  /api/admin/statistiques/export' => [StatsController::class, 'exporter'],
 ];
